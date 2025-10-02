@@ -15,14 +15,118 @@ from reportlab.lib.pagesizes import A4
 from datetime import datetime, timedelta
 
 conn = psycopg2.connect(
-    database="oddz",
-    user="postgres",
-    password="2006",
-    host="localhost",
+    database="oddz_7d2m",
+    user="oddz_7d2m_user",
+    password="XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw",
+    host="dpg-d3f1mo15pdvs73ccof50-a",
     port="5432"
 )
 cur = conn.cursor()
 
+CREATE_TABLE_SQL = """
+CREATE TABLE IF NOT EXISTS admins(
+    id serial primary key,
+    fullname varchar(100),
+    email vvarchar(255),
+    password text
+);
+CREATE TABLE IF NOT EXISTS restaurants(
+    id serial primary key,
+    admin_id int not null references admins(id) on delete cascade,
+    restaurant_name varchar(100),
+    address text,
+    phone numeric,
+    logo bytea,
+    category varchar(50)
+    );
+CREATE TABLE IF NOT EXISTS menu(
+    id serial primary key,
+    restaurants_id int not null references restaurants(id) on delete cascade,
+    admins_id int not null references admins(id) on delete cascade,
+    item_name varchar(255),
+    price numeric,
+    category varchar(100),
+    about varchar(255)
+    );
+
+CREATE TABLE IF NOT EXISTS team(
+    id serial primary key,
+    restaurants_id int not null references restaurants(id) on delete cascade,
+    name varchar(100),
+    role varchar(50),
+    phone numeric
+    );
+CREATE TABLE IF NOT EXISTS orders(
+    order_id serial primary key,
+    restaurant_id int not null references restaurants(id) on delete cascade,
+    table_number int,
+    total_amount numeric(10,2),
+    status varchar(25),
+    order_time timestamp default current_timestamp,
+    txn_id varchar(255)
+);
+
+CREATE TABLE IF NOT EXISTS order_items(
+    item_id serial primary key,
+    order_id int not null references order_id(order_id) on delete cascade,
+    menu_item_id int not null references menu(id) on delete cascade,
+    quantity int,
+    price numeric(10,2)
+    );
+
+CREATE TABLE IF NOT EXISTS qr_token(
+    id serial primary key,
+    token uuid,
+    admin_id int not null references admins(id) on delete cascade,
+    restaurant_id int not null references restaurants(id) on delete cascade,
+    table_number INTEGER NOT NULL,
+    UNIQUE (restaurant_id, table_number),
+    created_at timestamp default current_timestamp
+    );
+
+ CREATE TABLE IF NOT EXISTS payment_credentials(
+    id serial primary key,
+    admin_id int not null references admins(id) on delete cascade,
+    upi_id varchar(100),
+    created_at timestamp default current_timestamp,
+    updated_at timestamp default current_timestamp
+    );
+
+CREATE TABLE IF NOT EXISTS subscriptions(
+    id serial primary key,
+    restaurant_name text,
+    restaurant_id int,
+    email text,
+    contact numeric,
+    plan_name text,
+    plan_amount real,
+    validity text,
+    subscription_id text,
+    status text,
+    admin_id int,
+    active text,
+    start_at timestamp default current_timestamp,
+    end_at timestamp default current_timestamp
+    );
+"""
+def create_db_tables():
+    cur = conn.cursor()
+    try:
+        print("Attempting to create database tables...")
+        cur.execute(CREATE_TABLE_SQL)
+        conn.commit()
+        print("database created")
+        cur.close()
+
+    except Exception as e:
+        print(f"ERROR: Could not connect to PostgreSQL or execute command.")
+        print(f"Details: {e}")
+        
+    finally:
+        if conn is not None:
+            conn.close()
+
+            
 app = Flask("__main__")
 app.secret_key = "my_dream_project_of_2006"
 socketio = SocketIO(app)
