@@ -67,7 +67,7 @@ def init_db():
 
         CREATE TABLE IF NOT EXISTS order_items(
             item_id serial primary key,
-            order_id int not null references order_id(order_id) on delete cascade,
+            order_id int not null references orders(order_id) on delete cascade,
             menu_item_id int not null references menu(id) on delete cascade,
             quantity int,
             price numeric(10,2)
@@ -133,7 +133,7 @@ def logout():
     session.clear()
     return redirect(url_for('landing'))
 
-@app.route('/')
+@app.route('privacy')
 def privacy():
     return render_template('privacy.html')
 
