@@ -139,12 +139,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 @app.route("/")
 def landing():
-    import os
-    print("Current working directory:", os.getcwd())
-    print("Templates folder exists:", os.path.exists("templates"))
-    if os.path.exists("templates"):
-        print("Files in templates folder:", os.listdir("templates"))
-    return render_template('landing.html')
+    return render_template("landing.html")
 
 
 @app.route('/logout')
