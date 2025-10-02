@@ -7,6 +7,7 @@ from flask_socketio import SocketIO, emit
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import qrcode
+import eventlet 
 import uuid
 import io, base64
 import encodings
@@ -139,7 +140,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 @app.route("/")
 def landing():
-    return render_template('landing.html')
+    return render_template("landing.html")
 
 @app.route('/logout')
 def logout():
