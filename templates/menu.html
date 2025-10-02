@@ -1,0 +1,163 @@
+{% extends "main_dashboard.html" %}
+
+{% block content %}
+<div class="details-wrapper">
+    <div class="details-card">
+        <h2>Add Your Restaurant/Hotel Menu</h2>
+        <form method="POST" action="/add_multiple_menu" enctype="multipart/form-data" class="details-form" id="menuForm">
+            <div class="form-group">
+                <label for="itemCount">How many items do you want to add?</label>
+                <input type="number" id="itemCount" name="itemCount" min="1" max="100" value="1" required>
+            </div>
+            <div id="itemsContainer"></div>
+            <button type="button" class="btn-submit" onclick="showMultipleForms()">Enter..</button>
+            <button type="submit" class="btn-submit" style="display:none;" id="submitBtn">Add Items</button>
+        </form>
+    </div>
+</div>
+
+
+<style>
+body {
+    margin: 5%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.details-wrapper {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    color: #f9f9f9;
+}
+.details-card {
+    background: none;
+    color: #300d0d;
+    border: none;
+    padding: 30px;
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
+}
+.details-card h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #000000;
+}
+.item {
+    font-weight: bold;
+    margin-top: 10px;
+}
+.details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.form-group {
+    text-align: left;
+}
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: #380d0d;
+}
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    background: #f9f9f9;
+    transition: 0.3s;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #3a6186;
+    background: #fff;
+    outline: none;
+}
+.btn-submit {
+    background: #3a6186;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+.btn-submit:hover {
+    background: #2d4d66;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 768px) {
+    .details-card {
+        margin-top: 10%;
+        padding: 20px;
+    }
+    .details-card h2 {
+        font-size: 22px;
+    }
+
+}
+</style>
+
+<script>
+function showMultipleForms() {
+    const count = document.getElementById('itemCount').value;
+    const container = document.getElementById('itemsContainer');
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        container.innerHTML += `
+            <label class="item">Item ${i+1}</label>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" name="name_${i}" required>
+            </div>
+            <div class="form-group">
+                <label>About/Description/Quantity:</label>
+                <input type="text" name="about_${i}" placeholder="e.g.. 1 plate, 1 cup/optional">
+            </div>
+            <div class="form-group">
+                <label>Price:</label>
+                <input type="number" step="0.01" name="price_${i}" required>
+            </div>
+            <div class="form-group">
+                <label>Category:</label>
+                <input type="text" name="category_${i}" placeholder="e.g. Desert, Drink" required>
+            </div>
+        `;
+    }
+    document.getElementById('submitBtn').style.display = 'inline-block';
+}
+document.getElementById("menuForm").addEventListener("keydown", function(event){
+    if (event.key === "Enter" && event.target.tagName !== "TEXTAREA"){
+        event.preventDefault();
+    }
+});
+
+
+document.getElementById("menuForm").addEventListener("submit", function(event){
+    event.preventDefault();
+    fetch("/add_multiple_menu", {
+        method: "POST",
+        body: new FormData(this)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        window.location.reload();
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
+{% endblock %}

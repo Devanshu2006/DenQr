@@ -1,0 +1,1119 @@
+
+
+
+<!-- {% extends "main_dashboard.html" %}
+{% block content %}
+<style>
+body {
+    margin-top: 10%;
+    padding: 0;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+.container h2 {
+    /* margin-top: 20%; */
+    color: rgb(0, 0, 0);
+    
+}
+.rform input{
+    width: 30%;
+    padding: 6px 6px;
+    border-radius: 5px;
+    border-color: goldenrod;
+}
+.rform button {
+    padding: 5px 5px;
+    border-radius: 5px;
+    color: aliceblue;
+    border-color: goldenrod;
+    background-color: #3a6186;
+}
+button:hover {
+    background-color: #2d4d66;
+}
+.qr-card {
+    display: inline-block;
+    margin: 10px;
+    padding: 10px;
+    background: #fff;  /* ✅ white box for QR, stops mixing with gradient */
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.qr-card img{
+    margin-top: 5%;
+    display:block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.qr-card a {
+    color: yellowgreen;
+    
+}
+@media (max-width: 768px) {
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    .rform h2{
+        margin-top: 20%;
+    }
+    .qr-card img {
+        width: 100px;
+        margin-top: 5%;
+    }
+    .qr-card a {
+        margin-left: 5%;
+    }
+}
+</style>
+<div class="container">
+    <form class="rform" id="qrForm" method="POST" action="/qr">
+        <h2>Number of tables:</h2>
+        <input type="number" class="form-control" id="tableCount" name="tableCount" placeholder="1" min="1" required>
+        <button type="submit" class="btn btn-success">Generate</button>
+    </form>
+</div>
+<div id="qr-container"></div>
+<div id="qrResults" class="mt-3">
+    <!-- <div id="qr-container"></div> -->
+    <!-- {% for qr in qr_data%}
+    <div class="qr-card">
+        <img src="{{url_for('static', filename=qr.path) }}" width="120" >
+        <a class="link" href="{{ qr.link }}" target="_blank">TABLE{{ loop.index }}</a>
+    </div>
+    {% endfor %} -->
+<!-- </div>
+<script>
+    fetch("/generate_qr", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.qrs){
+            const container = document.getElementById("qr-container");
+            container.innerHTML = "";
+            
+            data.qrs.forEach((qr) => {
+                const img = document.createElement("img");
+                img.src = qr.image;
+                img.alt = qr.path;
+                img.style.margin = "10px";
+                container.appendChild(img);
+
+
+                const link = document.createElement("a");
+                link.href = qr.image;
+                link.download = qr.path;
+                link.click();
+            });
+        }
+    });
+</script>
+{% endblock %} --> -->
+//////////////////////
+///////////////
+///////////////////
+//////////
+{% extends "main_dashboard.html" %}
+{% block content %}
+<div class="p-4 sm:p-6 md:p-8 bg-[#f7f3e9] min-h-screen">
+    <div class="max-w-7xl mx-auto rounded-xl shadow-lg bg-white p-6 sm:p-8">
+<section class="Analatics_Section">
+    <div class="card">
+        <h3>📊 Last 7 Days Performance</h3>
+        
+        <div class="hidden sm:block">
+            <canvas id="salesOrdersChart"></canvas>
+        </div>
+
+        <div class="sm:hidden">
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                {% for day_data in chart_data %}
+                    <div class="flex justify-between items-center p-4 border-b border-[#e0d9cc] last:border-b-0">
+                        <span class="text-base font-semibold text-[#3d3d3d]">{{ day_data.date }}</span>
+                        <div class="flex flex-col items-end text-sm">
+                            <span class="font-bold text-[#c98835]">{{ day_data.orders }} Orders</span>
+                            <span class="text-xs text-gray-500">₹{{ day_data.sales }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <p>Total Orders: {{ total_orders }} | Total Sales: ₹{{ total_sales }}</p>
+    </div>
+</section>
+
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 my-8">
+            <div class="rounded-xl shadow-md bg-white p-6 transition-transform duration-200 hover:scale-[1.01]">
+                <h3 class="text-xl font-bold text-[#3d3d3d] mb-4 pb-2 border-b-2 border-[#e0d9cc]">📦 Orders</h3>
+                <div class="flex flex-col gap-2 text-[#6d6d6d]">
+                    {% for order in orders_week %}
+                    <div class="flex justify-between items-center py-2 border-b border-dashed border-[#e0d9cc] last:border-b-0">
+                        <span class="font-semibold">{{ order[0] }}</span>
+                        <span class="font-bold text-[#c98835]">{{ order[1] }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="rounded-xl shadow-md bg-white p-6 transition-transform duration-200 hover:scale-[1.01]">
+                <h3 class="text-xl font-bold text-[#3d3d3d] mb-4 pb-2 border-b-2 border-[#e0d9cc]">💰 Revenue</h3>
+                <div class="flex flex-col gap-2 text-[#6d6d6d]">
+                    {% for mon in money %}
+                    <div class="flex justify-between items-center py-2 border-b border-dashed border-[#e0d9cc] last:border-b-0">
+                        <span class="font-semibold">{{ mon[0] }}</span>
+                        <span class="font-bold text-[#27ae60]">₹ {{ mon[1] }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        
+        <div class="section-header flex items-center justify-start my-4">
+            <h2 class="text-2xl font-bold text-[#4a4a4a] mr-2 pb-1 border-b-2 border-[#c98835]">Menu</h2>
+            <i class="fa-solid fa-pen-to-square text-[#c98835] cursor-pointer transition-colors hover:text-[#a86c2d]" 
+               onclick="toggleForm('menuForm')"></i>
+        </div>
+        <div class="overflow-x-auto rounded-lg shadow-md mb-8">
+            <table class="w-full text-center table-fixed bg-white">
+                <thead class="bg-[#f0ebe2] text-[#c98835]">
+                    <tr>
+                        <th class="p-4 text-sm uppercase tracking-wide">Id</th>
+                        <th class="p-4 text-sm uppercase tracking-wide">Name</th>
+                        <th class="p-4 text-sm uppercase tracking-wide">Price</th>
+                        <th class="p-4 text-sm uppercase tracking-wide">Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in menu %}
+                    <tr class="hover:bg-[#f7f3e9] text-[#4a4a4a] transition-colors duration-200">
+                        <td class="Id p-3 font-bold">{{ item[0] }}</td>
+                        <td class="Name p-3">{{ item[3] }}</td>
+                        <td class="price p-3">{{ item[4] }}</td>
+                        <td class="Category p-3">{{ item[5] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="menuForm" class="hidden-form hidden p-4 sm:p-6 bg-white rounded-lg shadow-md border border-[#e0d9cc] mb-8">
+            <h2 class="text-xl font-bold mb-4 text-[#3d3d3d]">Edit Menu Items</h2>
+            <form class="delete_menu" method="POST" action="/delete_menu">
+                <label class="block mb-2 font-bold text-[#6d6d6d]">Name:</label>
+                <input type="text" name="name" required class="w-full p-2 mb-4 rounded-md border border-[#e0d9cc] focus:outline-none focus:border-[#c98835] focus:ring-2 focus:ring-[#c98835]/30">
+
+                <label class="block mb-2 font-bold text-[#6d6d6d]">Price:</label>
+                <input type="number" name="price" required class="w-full p-2 mb-4 rounded-md border border-[#e0d9cc] focus:outline-none focus:border-[#c98835] focus:ring-2 focus:ring-[#c98835]/30"> 
+
+                <button type="submit" class="btn-submit w-full sm:w-auto px-6 py-3 rounded-lg font-bold bg-[#c98835] text-white transition-colors hover:bg-[#a86c2d]">
+                    Remove
+                </button>
+            </form>
+        </div>
+
+        <div class="section-header flex items-center justify-start my-4">
+            <h2 class="text-2xl font-bold text-[#4a4a4a] mr-2 pb-1 border-b-2 border-[#c98835]">Team</h2>
+            <i class="fa-solid fa-pen-to-square text-[#c98835] cursor-pointer transition-colors hover:text-[#a86c2d]" 
+               onclick="toggleForm('teamForm')"></i>
+        </div>
+        <div class="overflow-x-auto rounded-lg shadow-md mb-8">
+            <table class="w-full text-center table-fixed bg-white">
+                <thead class="bg-[#f0ebe2] text-[#c98835]">
+                    <tr>
+                        <th class="p-4 text-sm uppercase tracking-wide">Id</th>
+                        <th class="p-4 text-sm uppercase tracking-wide">Name</th>
+                        <th class="p-4 text-sm uppercase tracking-wide">Role</th>
+                        <th class="p-4 text-sm uppercase tracking-wide">Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for member in team %}
+                    <tr class="hover:bg-[#f7f3e9] text-[#4a4a4a] transition-colors duration-200">
+                        <td class="Id p-3 font-bold">{{ member[0] }}</td>
+                        <td class="Name p-3">{{ member[2] }}</td>
+                        <td class="Role p-3">{{ member[3] }}</td>
+                        <td class="Phone p-3">{{ member[4] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="teamForm" class="hidden-form hidden p-4 sm:p-6 bg-white rounded-lg shadow-md border border-[#e0d9cc] mb-8">
+            <h2 class="text-xl font-bold mb-4 text-[#3d3d3d]">Update Your Staff</h2>
+            <form class="delete_staff" method="POST" action="/delete_staff">
+                <label class="block mb-2 font-bold text-[#6d6d6d]">Name:</label>
+                <input type="text" name="name" required class="w-full p-2 mb-4 rounded-md border border-[#e0d9cc] focus:outline-none focus:border-[#c98835] focus:ring-2 focus:ring-[#c98835]/30">
+
+                <label class="block mb-2 font-bold text-[#6d6d6d]">Role:</label>
+                <input type="text" name="role" required class="w-full p-2 mb-4 rounded-md border border-[#e0d9cc] focus:outline-none focus:border-[#c98835] focus:ring-2 focus:ring-[#c98835]/30"> 
+
+                <button type="submit" class="btn-submit w-full sm:w-auto px-6 py-3 rounded-lg font-bold bg-[#c98835] text-white transition-colors hover:bg-[#a86c2d]">
+                    Remove
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- <style>
+body {
+    /* Warm, light-off white background */
+    background-color: #f7f3e9; 
+    margin: 0;
+    padding: 0;
+    font-family: 'Times New Roman', Times, serif;
+    font-weight: bold;
+    color: #4a4a4a; /* Dark gray for prose text */
+}
+
+/* Overall container for the dashboard */
+.home {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08); /* Softened shadow */
+    background: #fff; /* A clean, bright background for the main content area */
+}
+
+/* Sections for stats and cards */
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin: 30px auto;
+  max-width: 900px;
+  padding: 10px;
+}
+
+/* Each card */
+.card {
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  padding: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* Card headings */
+.card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #3d3d3d; /* Darker gray for headings */
+  border-bottom: 2px solid #e0d9cc; /* Soft, warm border */
+  padding-bottom: 8px;
+}
+
+/* Inside body */
+.card-body .row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed #e0d9cc; /* Consistent soft border */
+}
+
+.card-body .row:last-child {
+  border-bottom: none;
+}
+
+/* Labels & Values */
+.label {
+  font-weight: 600;
+  color: #6d6d6d;
+}
+
+.value {
+  font-weight: bold;
+  color: #c98835; /* Unique earthy-orange for values */
+}
+
+/* Special for revenue values */
+.card-body .row .value {
+  color: #27ae60; /* A fresh green for money */
+}
+
+.home h2 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+    font-size: 1.6rem;
+    color: #4a4a4a;
+    border-bottom: 3px solid #c98835; /* Warm accent line */
+    padding-bottom: 5px;
+}
+
+/* Table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    overflow: hidden;
+    table-layout: fixed;  
+}
+
+table th {
+    background-color: #f0ebe2; /* Light, warm header background */
+    color: #c98835;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;   
+}
+
+table td {
+    background-color: #fff;
+    color: #4a4a4a;
+    padding: 12px 15px;
+    border-bottom: 1px solid #e0d9cc;
+    text-align: center;   
+    word-wrap: break-word;
+}
+
+table tr:hover {
+    background: #f7f3e9; /* Light, subtle hover effect */
+}
+
+.btn-submit {
+    background: #c98835; /* Unique, earthy button color */
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    display: inline-block;
+    color: #fff; /* White text on the button */
+}
+
+.btn-submit:hover {
+    background: #a86c2d; /* Slightly darker shade on hover */
+    transform: scale(1.05);  
+}
+
+.Id {
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Form styling */
+form {
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.08);
+    background-color: #fff;
+}
+
+form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #3d3d3d;
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #e0d9cc;
+    border-radius: 6px;
+    outline: none;
+    font-size: 1rem;
+}
+
+form input:focus {
+    border-color: #c98835;
+    box-shadow: 0 0 5px rgba(201, 136, 53, 0.6);
+}
+
+/* Edit icon styling */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 15px 0;
+}
+
+.section-header h2 {
+    margin: 0;
+    margin-right: 10px;
+}
+
+.edit-icon {
+    color: #c98835; /* Consistent accent color */
+    font-size: 18px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.edit-icon:hover {
+    color: #a86c2d;
+}
+
+.hidden-form {
+    display: none;
+    margin: 15px 0;
+    padding: 15px;
+    border: 1px solid #e0d9cc;
+    border-radius: 8px;
+    background-color: #fff;
+}
+
+/* Chart card styling */
+.card {
+    background-color: #fff;
+    color: #4a4a4a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card canvas {
+    background-color: #fcf8f0; /* Very light, warm background for the chart */
+    border-radius: 12px;
+    padding: 10px;
+    border: 1px solid #e0d9cc;
+}
+
+/* Tooltip for the chart */
+.chartjs-tooltip {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #4a4a4a;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card {
+        padding: 15px;
+        margin: 15px;
+    }
+    .card h3 {
+        font-size: 1.4rem;
+    }
+    .card p {
+        font-size: 1rem;
+    }
+    .card canvas {
+        height: 300px !important;
+    }
+}
+</style> -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script> // Replace with the actual restaurant ID from your template or a global variable
+
+    function renderChart(chartData) {
+        const chartLabels = chartData.map(item => item.date);
+        const orderCounts = chartData.map(item => item.orders);
+        const salesAmounts = chartData.map(item => item.sales);
+        
+        // Calculate totals from the received data
+        const totalOrders = orderCounts.reduce((sum, current) => sum + current, 0);
+        const totalSales = salesAmounts.reduce((sum, current) => sum + current, 0);
+
+        // Update the totals in the HTML
+        document.getElementById('total-orders').textContent = totalOrders;
+        document.getElementById('total-sales').textContent = totalSales.toFixed(2); // Use toFixed for currency
+
+        new Chart(document.getElementById("salesOrdersChart"), {
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Orders',
+                        data: orderCounts,
+                        borderColor: 'blue',
+                        borderWidth: 2,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Sales (₹)',
+                        data: salesAmounts,
+                        borderColor: 'green',
+                        borderWidth: 2,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        type: 'bar',
+                        label: 'Total Sales (Bar)',
+                        data: salesAmounts,
+                        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: { mode: 'index', intersect: false },
+                stacked: false,
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Orders' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Sales (₹)' },
+                        grid: { drawOnChartArea: false }
+                    }
+                }
+            }
+        });
+    }
+
+    // Fetch data from the API endpoint
+    fetch('/api/chart_data')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            renderChart(data);
+        })
+        .catch(error => {
+            console.error('Error fetching data:', error);
+            // Optionally, display an error message on the page
+        });
+</script>
+
+{% endblock %}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////
+//////////////////////////////////
+////////////////////
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UPI Checkout</title>
+</head>
+<body style="background:#300; color:white; font-family:sans-serif; text-align:center; padding:30px;">
+
+  <button onclick="payUPI(1)">Pay via UPI</button>
+
+  <div id="upi-section" style="display:none; margin-top:20px;">
+    <p id="upi-msg"></p>
+    <div id="upi-qr"></div>
+    <p id="upi-amount"></p>
+    <br>
+    <label>After payment, enter Transaction ID:</label><br>
+    <input type="text" placeholder="Enter UPI Transaction ID">
+    <button>Confirm & Place Order</button>
+  </div>
+
+  <!-- QRCode library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+
+  <script>
+    // Sample cart
+    // let cart = [];
+
+    async function payUPI(adminId) {
+      if (!cart || cart.length === 0) return alert("Cart is empty!");
+
+      let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+      try {
+        // Call backend to get deeplink
+        const response = await fetch("/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ admin_id: adminId, total_amount: totalPrice })
+        });
+
+        const result = await response.json();
+
+        if (!result.deeplink) {
+          return alert("❌ " + (result.error || "UPI not available"));
+        }
+
+        const deeplink = result.deeplink;
+
+        const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+
+        if (isMobile) {
+          // Mobile → open UPI app
+          window.location.href = deeplink;
+        } else {
+          // Desktop → show QR code
+          document.getElementById("upi-section").style.display = "block";
+          document.getElementById("upi-msg").innerText = "📱 Scan this QR to Pay via UPI:";
+          document.getElementById("upi-amount").innerText = "Amount: ₹" + totalPrice;
+
+          // Generate QR
+          let qr = qrcode(0, "L");
+          qr.addData(deeplink);
+          qr.make();
+          document.getElementById("upi-qr").innerHTML = qr.createImgTag(6);
+        }
+      } catch (err) {
+        alert("⚠️ Error: " + err.message);
+      }
+    }
+  </script>
+
+</body>
+</html>
+
+/
+/
+/
+//
+/
+/
+/
+<div class="payment-options">
+  <button onclick="payCash()">Pay with Cash</button>
+  <button onclick="payUPI()">Pay with UPI</button>
+</div>
+
+<div id="upi-section" style="display:none; margin-top:20px;">
+  <p>After payment, enter Transaction ID:</p>
+  <input type="text" id="txnId" placeholder="Enter UPI Transaction ID" />
+  <button onclick="confirmOrder()">Confirm Order</button>
+</div>
+
+<script>
+async function payUPI() {
+  const orderData = {
+    restaurant_id: 1,  // dynamically set from QR/session
+    total_amount: 550  // dynamically set from cart
+  };
+
+  const response = await fetch("/checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(orderData)
+  });
+  const result = await response.json();
+
+  if (result.deeplink) {
+    // open UPI apps
+    window.location.href = result.deeplink;
+    // show txn input
+    document.getElementById("upi-section").style.display = "block";
+  } else {
+    alert("UPI not available");
+  }
+}
+
+function payCash() {
+  alert("Please pay cash to waiter!");
+  // here you can directly confirm order as Cash order
+}
+
+async function confirmOrder() {
+  const txnId = document.getElementById("txnId").value;
+  if (!txnId) {
+    alert("Please enter transaction ID");
+    return;
+  }
+
+  // send txn id + order to backend
+  const response = await fetch("/confirm_order", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ txn_id: txnId })
+  });
+
+  const result = await response.json();
+  if (result.success) {
+    alert("Order placed successfully!");
+    // redirect to thank-you page or order status page
+  } else {
+    alert("Error confirming order");
+  }
+}
+</script>
+
+/
+/
+/
+/
+/<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ restaurant_name }} - Menu</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='orderpage.css') }}">
+ <style>
+    #cartItems {
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 5px 0;
+      padding: 5px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 6px 0;
+      font-size: 14px;
+      color: #fff;
+    }
+    .cart-name {
+      flex: 1;
+    }
+    .cart-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .qty-btn {
+      background: #444;
+      color: white;
+      border: none;
+      padding: 3px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h2>🍴 {{ restaurant_name }}</h2>
+    <p>Table - {{ table_number }}</p>
+  </header>
+
+  <section class="menu-grid">
+    {% for item in menu %}
+    <div class="menu-card">
+      <button class="add-btn" onclick="addToCart('{{ item[0] }}', '{{ item[1] }}', '{{ item[2] }}')">Order</button>
+      <a class="loop" style="text-align: left;">{{ item[1] }} - </a>
+      <a class="price">₹{{ '%.2f'|format(item[2]) }}</a>
+    </div>
+    {% endfor %}
+  </section>
+  
+
+  <div class="cart-bar" id="cartBar">
+    <div id="cartItems"></div>
+    <span id="cartCount">0 items</span> | 
+    <span id="cartTotal">₹0</span>
+    <button class="checkout-btn" onclick="checkout('{{ restaurant_id }}', '{{ table_number }}')">Checkout →</button>
+  </div>
+
+  <script>
+    let cart = [];
+
+    function addToCart(id, name, price) {
+      price = Number(price);
+      let existing = cart.find(item => item.id === id);
+
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ id, name, price, quantity: 1 });
+      }
+      updateCart();
+    }
+
+    function updateCart() {
+      let cartItemsDiv = document.getElementById("cartItems");
+      cartItemsDiv.innerHTML = "";
+
+      let totalItems = 0;
+      let totalPrice = 0;
+
+      cart.forEach((item, index) => {
+        let subtotal = item.price * item.quantity;
+        totalItems += item.quantity;
+        totalPrice += subtotal;
+
+        let div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <span class="cart-name">${item.name}</span>
+          <div class="cart-controls">
+            <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+            <span>${item.quantity}</span>
+            <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+            <span>= ₹${subtotal.toFixed(2)}</span>
+          </div>
+        `;
+        cartItemsDiv.appendChild(div);
+      });
+
+      document.getElementById("cartCount").innerText = totalItems + " items";
+      document.getElementById("cartTotal").innerText = "₹" + totalPrice.toFixed(2);
+    }
+
+    function changeQty(index, delta) {
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1); // remove item if qty is 0
+      }
+      updateCart();
+    }
+
+    async function checkout(restaurantId, tableId) {
+      if (cart.length === 0) return alert("Cart is empty!");
+      try {
+        const response = await fetch('/place_order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            table_id: tableId,
+            items: cart
+          })
+        });
+        if (response.ok) {
+          const data = await response.json();
+          alert("✅ Order placed! Order ID: " + data.order_id);
+          cart = [];
+          updateCart();
+        } else {
+          alert("❌ Failed to place order.");
+        }
+      } catch (error) {
+        alert("⚠️ Error: " + error.message);
+      }
+    }
+  </script>
+</body>
+</html> -->
+
+
+
+/////<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ restaurant_name }} - Menu</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='orderpage.css') }}"> -->
+ <style>
+    #cartItems {
+      max-height: 200px;
+      overflow-y: auto;
+      margin: 5px 0;
+      padding: 5px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 6px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 6px 0;
+      font-size: 14px;
+      color: #fff;
+    }
+    .cart-name {
+      flex: 1;
+    }
+    .cart-controls {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .qty-btn {
+      background: #444;
+      color: white;
+      border: none;
+      padding: 3px 7px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h2>🍴 {{ restaurant_name }}</h2>
+    <p>Table - {{ table_number }}</p>
+  </header>
+
+  <section class="menu-grid">
+    {% for item in menu %}
+    <div class="menu-card">
+      <button class="add-btn" onclick="addToCart('{{ item[0] }}', '{{ item[1] }}', '{{ item[2] }}')">Order</button>
+      <a class="loop" style="text-align: left;">{{ item[1] }} - </a>
+      <a class="price">₹{{ '%.2f'|format(item[2]) }}</a>
+    </div>
+    {% endfor %}
+  </section>
+  
+
+  <div class="cart-bar" id="cartBar">
+    <div id="cartItems"></div>
+    <span id="cartCount">0 items</span> | 
+    <span id="cartTotal">₹0</span>
+    <button class="checkout-btn" onclick="checkout('{{ restaurant_id }}', '{{ table_number }}')">Checkout →</button>
+  </div>
+
+  <script>
+    let cart = [];
+
+    function addToCart(id, name, price) {
+      price = Number(price);
+      let existing = cart.find(item => item.id === id);
+
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ id, name, price, quantity: 1 });
+      }
+      updateCart();
+    }
+
+    function updateCart() {
+      let cartItemsDiv = document.getElementById("cartItems");
+      cartItemsDiv.innerHTML = "";
+
+      let totalItems = 0;
+      let totalPrice = 0;
+
+      cart.forEach((item, index) => {
+        let subtotal = item.price * item.quantity;
+        totalItems += item.quantity;
+        totalPrice += subtotal;
+
+        let div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <span class="cart-name">${item.name}</span>
+          <div class="cart-controls">
+            <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+            <span>${item.quantity}</span>
+            <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+            <span>= ₹${subtotal.toFixed(2)}</span>
+          </div>
+        `;
+        cartItemsDiv.appendChild(div);
+      });
+
+      document.getElementById("cartCount").innerText = totalItems + " items";
+      document.getElementById("cartTotal").innerText = "₹" + totalPrice.toFixed(2);
+    }
+
+    function changeQty(index, delta) {
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) {
+        cart.splice(index, 1); // remove item if qty is 0
+      }
+      updateCart();
+    }
+
+    async function checkout(restaurantId, tableId) {
+      if (cart.length === 0) return alert("Cart is empty!");
+      try {
+        const response = await fetch('/place_order', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
+          },
+          body: JSON.stringify({
+            restaurant_id: restaurantId,
+            table_id: tableId,
+            items: cart
+          })
+        });
+        if (response.ok) {
+          const data = await response.json();
+          alert("✅ Order placed! Order ID: " + data.order_id);
+          cart = [];
+          updateCart();
+        } else {
+          alert("❌ Failed to place order.");
+        }
+      } catch (error) {
+        alert("⚠️ Error: " + error.message);
+      }
+    }
+  </script>
+</body>
+</html>
+
+//////
+<!-- <div class="home">
+        <h2>Menu</h2>
+        <table class="menu-grid" method="POST" action="/show_menu">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+            </tr>
+            {% for item in menu %}
+                <tr class="show_menu">
+                    <td class="Id">{{ item[0] }}</td>
+                    <td class="Name">{{ item[3] }}</td>
+                    <td class="price">{{ item[4] }}</td>
+                    <td class="Category">{{ item[5] }}</td>
+                </tr>
+                
+            </div>
+            {% endfor %}
+        </table>
+        <h2>Team</h2>
+        <table class="team-grid" method="POST" action="/show_team">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Role</th>
+                <th>Phone</th>
+            </tr>
+            {% for member in team %}
+                <tr class="show_team">
+                    <td class="Id">{{ member[0] }}</td>
+                    <td class="Name">{{ member[2] }}</td>
+                    <td class="Role">{{ member[3] }}</td>
+                    <td class="Phone">{{ member[4] }}</td>
+                </tr>
+            </div>
+            {% endfor %}
+        </table>
+        <h2 class="menu-delete">Edit menu Items</h2>
+        <form class="delete_menu" method="POST" action="/delete_menu">
+            <label>Name:</label>
+            <input type="text" name="name" required><br>
+
+            <label>Price:</label>
+            <input type="number" name="price" required><br> 
+
+            <button type="submit" class="btn-submit">Remove</button>
+        </form>
+        <h2 class="Remove-teams">Update Your Staff</h2>
+        <form class="delete_staff" method="POST" action="/delete_staff">
+            <label>Name:</label>
+            <input type="text" name="name" required><br>
+
+            <label>Role:</label>
+            <input type="text" name="role" required><br> 
+
+            <button type="submit" class="btn-submit">Remove</button>
+        /<form>
+    </div> -->
+    ////

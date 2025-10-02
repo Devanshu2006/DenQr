@@ -1,0 +1,161 @@
+{% extends "main_dashboard.html" %}
+
+{% block content %}
+<div class="details-wrapper">
+    <div class="details-card">
+        <h2>Restaurant/Hotel Staff</h2>
+        <form method="POST" action="/add_multiple_team" enctype="multipart/form-data" class="details-form" id="teamForm">
+            <div class="form-group">
+                <label for="memberCount">Number of Members:</label>
+                <input type="number" id="memberCount" name="memberCount" min="1" max="50" value="1" required>
+            </div>
+            <div id="membersContainer"></div>
+            <button type="button" class="btn-submit" onclick="showMultipleTeamForms()">Enter..</button>
+            <button type="submit" class="btn-submit" style="display:none;" id="submitTeamBtn">Add Members</button>
+        </form>
+    </div>
+</div>
+
+<style>
+body {
+    margin: 5%;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+.details-wrapper {
+    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+    color: #f9f9f9;
+}
+.details-card {
+    background: none;
+    color: #410f0f;
+    border: none;
+    padding: 30px;
+    text-align: center;
+    animation: fadeIn 0.8s ease-in-out;
+}
+.details-card h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #000000;
+}
+.item {
+    font-weight: bold;
+    margin-top: 10px;
+}
+.details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.form-group {
+    text-align: left;
+}
+.form-group label {
+    display: block;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    color: rgb(59, 11, 11);
+}
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    background: #f9f9f9;
+    transition: 0.3s;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #3a6186;
+    background: #fff;
+    outline: none;
+}
+.btn-submit {
+    background: #3a6186;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 10px;
+}
+.btn-submit:hover {
+    background: #2d4d66;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 768px) {
+    .details-card {
+        margin-top: 10%;
+        padding: 20px;
+    }
+    .details-card h2 {
+        font-size: 22px;
+    }
+}
+</style>
+
+<script>
+function showMultipleTeamForms() {
+    const count = document.getElementById('memberCount').value;
+    const container = document.getElementById('membersContainer');
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        container.innerHTML += `
+            <label class="item">Member ${i+1}</label>
+            <div class="form-group">
+                <label>Name:</label>
+                <input type="text" name="name_${i}" required>
+            </div>
+            <div class="form-group">
+                <label>Role:</label>
+                <input type="text" name="role_${i}" required>
+            </div>
+            <div class="form-group">
+                <label>contact:</label>
+                <input type="number" name="contact_${i}" required>
+            </div>
+        `;
+    }
+    document.getElementById('submitTeamBtn').style.display = 'inline-block';
+}
+document.getElementById("teamForm").addEventListener("keydown", function(event){
+    if (event.key === "Enter" && event.target.tagName !== "TEXTAREA"){
+        event.preventDefault();
+    }
+}
+);
+
+document.getElementById("teamForm").addEventListener("submit", function(event){
+    event.preventDefault();
+
+    fetch("/add_multiple_team", {
+        method: "POST",
+        body: new FormData(this)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        window.location.reload();
+    }).catch(error => {
+        console.error("Error:", error);
+        alert("An error accurred. Please Try again.");
+    })
+
+})
+</script>
+{% endblock %}

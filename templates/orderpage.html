@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>{{ restaurant_name }} - Menu</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    body { 
+      font-family:'Times New Roman', Times, serif;
+      font-weight: bolder;
+      margin: 20px; 
+      background:linear-gradient(to right,#450303,rgb(48, 3, 3));
+      padding-bottom: 200px;
+    }
+    
+    h2 { 
+      text-align:center;
+      font-weight: 600;
+      margin-bottom:20px;
+      color: #f2f2f2;
+    }
+
+    .order-card{
+      color: rgb(40, 8, 8);
+    }
+
+    .tabs { display: flex; gap: 15px; cursor: pointer; margin-bottom: 15px; justify-content:center; flex-wrap:wrap; }
+    .tab { padding: 10px 15px; border-radius: 8px; background: #f1f1f1; transition: 0.3s; }
+    .tab.active { background: #4CAF50; color: white; transform: scale(1.05); }
+
+    .category { display: none; animation: fadeIn 0.4s ease-in-out; }
+    .category.active { display: block; }
+
+    .item { 
+      padding: 12px; 
+      margin: 8px 0; 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      background: white; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      transition: transform 0.2s;
+    }
+    .item:hover { transform: translateY(-3px); }
+    .item-name { font-weight: 600; }
+    .item-price { font-weight: bold; margin-left:10px; color:#333; }
+
+    .add-btn { background:#4CAF50; color:white; border:none; padding:6px 12px; border-radius:5px; cursor:pointer; transition:0.2s; }
+    .add-btn:hover { background:#45a049; transform: scale(1.1); }
+
+    .cart-bar { 
+      position:fixed; 
+      bottom:0; 
+      left:0; 
+      right:0; 
+      background:#333; 
+      color:white; 
+      padding:10px 20px; 
+      display:flex; 
+      justify-content:space-between; 
+      align-items:center; 
+      font-size: 18px;
+    }
+
+    #scrollable-items-container {
+    font-size: 18px;
+    max-height: 100px;
+    overflow-y: auto; 
+    padding: 5px 10px;
+    scrollbar-width: thin;
+}
+
+    .checkout-btn { background:#ff9800; border:none; border-radius:6px; cursor:pointer; color:white; font-weight:bold; transition:0.3s; }
+    .checkout-btn:hover { background:#e68a00; transform: scale(1.05); }
+
+    .cart-item { display:flex; justify-content:space-between; padding:5px 0; font-size: 13px; }
+    .cart-controls { display:flex; align-items:center; gap:5px; }
+    .qty-btn { padding:2px 6px; border:none; background:#ddd; border-radius:4px; cursor:pointer; transition:0.2s; }
+    .qty-btn:hover { background:#bbb; }
+
+    .payment-options { margin-top:20px; text-align:center; }
+    .payment-options button { 
+      background:#008CBA;
+      display: flex;
+      border:none; 
+      padding:8px 15px; 
+      border-radius:6px; 
+      cursor:pointer; 
+      color:white; 
+      font-weight:bold; 
+      margin: 5px; 
+      transition:0.3s;
+    }
+    .payment-options button:hover { background:#0077a3; transform: scale(1.05); }
+
+    #upi-section { text-align:center; color:white; }
+    #upi-section input { padding:6px; border-radius:4px; border:1px solid #ccc; margin-top:10px; }
+    #upi-section button { background:#4CAF50; color:white; border:none; padding:8px 15px; border-radius:6px; cursor:pointer; margin-top:10px; }
+    #upi-section button:hover { background:#45a049; }
+    
+    @media (max-width: 600px) {
+    /* body {
+      margin: 10px;
+      padding-bottom: 180px;
+    }
+
+    .tab { 
+      font-size: 14px; 
+      padding: 8px 10px; 
+    }
+
+    .item { 
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .item-price, .add-btn {
+      font-size: 13px;
+    } */
+
+    .cart-item { 
+      font-size: 16px; 
+    }
+
+    .checkout-btn {
+      font-size: 13px;
+      padding: 7px 12px;
+    }
+  } 
+
+  @keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px);} 
+    to { opacity: 1; transform: translateY(0);} 
+  }
+  </style>
+</head>
+<body>
+
+  <h2>🍽 {{ restaurant_name }}</h2>
+  <div class="tabs" id="tabs"></div>
+  <div id="menu-container"></div>
+
+  <div class="cart-bar" id="cartBar">
+    <div id="scrollable-items-container">
+    <div id="cartItems"></div>
+    </div>
+    <span id="cartCount">  0 items</span> | 
+    <span id="cartTotal">₹0</span>
+    <div class="payment-options">
+    <button onclick="payCash('{{ admin_id }}')">Pay Cash</button>
+    <button onclick="payUPI('{{ admin_id }}')">Pay $UPI</button>
+  </div>
+  </div>
+
+  <div id="upi-section" style="display:none; margin-top:20px;">
+    <p id="upi-msg"></p>
+    <div id="upi-qr"></div>
+    <p id="upi-amount"></p>
+    <br>
+    <p>After payment, Enter Transaction ID:</p>
+    <input type="text" id="txnId" placeholder="Enter UPI Transaction ID" />
+    <button onclick="placeOrder('{{ admin_id }}')">Confirm & Place Order</button>
+  </div>
+
+  <div style="position: fixed; top: 20px; left: 20px; z-index: 1000;">
+    <img src="/static/inbox_logo.png" 
+        alt="Inbox" 
+        style="width: 32px; height: 32px; cursor: pointer;" 
+        onclick="toggleInbox()">
+  </div>
+
+<div id="orderInbox" 
+    style="display: none; position: fixed; top: 60px; left: 20px; width: 280px; background: #fff; border: 1px solid #ccc; padding: 12px; border-radius: 8px; box-shadow: 0px 4px 6px rgba(0,0,0,0.15); z-index: 1000;">
+    <h4 style="margin: 0 0 10px 0; font-size: 16px; text-align: center;">📦 My Orders</h4>
+    <div id="orders"></div> 
+</div>
+
+  
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+    const menu = JSON.parse('{{ menu | safe }}');
+    const categories = {};
+    menu.forEach(item => {
+      if (!categories[item.category]) categories[item.category] = [];
+      categories[item.category].push(item);
+    });
+
+    const tabs = document.getElementById("tabs");
+    const container = document.getElementById("menu-container");
+
+    Object.keys(categories).forEach((cat, index) => {
+      const tab = document.createElement("div");
+      tab.className = "tab" + (index === 0 ? " active" : "");
+      tab.textContent = cat;
+      tab.onclick = () => showCategory(cat, tab);
+      tabs.appendChild(tab);
+
+      const section = document.createElement("div");
+      section.className = "category" + (index === 0 ? " active" : "");
+      section.id = cat;
+
+      categories[cat].forEach(item => {
+    const div = document.createElement("div");
+    div.className = "item";
+    const detailId = `details-${item.id}`; 
+    div.innerHTML = `
+        <span class="item-name" onclick="toggleItemDetails('${detailId}')" style="cursor: pointer; font-weight: bold;">
+            ${item.item_name} 
+        </span>
+        <div id="${detailId}" style="display: none; margin-top: 5px; padding: 5px; background: #f0f0f0; border-radius: 4px;">
+             <p style="font-size:12px; color:#555; margin: 0;">${item.about}</p>
+        </div>
+        <span class="item-price">₹${Number(item.price).toFixed(2)}</span>
+        <button class="add-btn" onclick="addToCart('${item.id}', '${item.item_name}', ${item.price})">Order!</button>
+    `;
+    section.appendChild(div);
+    });
+      container.appendChild(section);
+    });
+    function toggleItemDetails(detailId) {
+    const detailPanel = document.getElementById(detailId);
+
+    if (detailPanel) {
+        if (detailPanel.style.display === 'none' || detailPanel.style.display === '') {
+            detailPanel.style.display = 'block';
+        } else {
+            detailPanel.style.display = 'none';
+        }
+      }
+    }
+
+    function showCategory(cat, tabElement) {
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      tabElement.classList.add("active");
+      document.querySelectorAll(".category").forEach(c => c.classList.remove("active"));
+      document.getElementById(cat).classList.add("active");
+    }
+
+    let cart = [];
+    function addToCart(id, name, price) {
+      price = Number(price);
+      let existing = cart.find(item => item.id === id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ id, name, price, quantity: 1 });
+      }
+      updateCart();
+    }
+
+    function updateCart() {
+      let cartItemsDiv = document.getElementById("cartItems");
+      cartItemsDiv.innerHTML = "";
+      let totalItems = 0;
+      let totalPrice = 0;
+      cart.forEach((item, index) => {
+        let subtotal = item.price * item.quantity;
+        totalItems += item.quantity;
+        totalPrice += subtotal;
+        let div = document.createElement("div");
+        div.className = "cart-item";
+        div.innerHTML = `
+          <span>${item.name}</span>
+          <div class="cart-controls">
+            <button class="qty-btn" onclick="changeQty(${index}, -1)">-</button>
+            <span>${item.quantity}</span>
+            <button class="qty-btn" onclick="changeQty(${index}, 1)">+</button>
+            <span>= ₹${subtotal.toFixed(2)}</span>
+          </div>
+        `;
+        cartItemsDiv.appendChild(div);
+      });
+      document.getElementById("cartCount").innerText = totalItems + " items";
+      document.getElementById("cartTotal").innerText = "₹" + totalPrice.toFixed(2);
+    }
+
+    function changeQty(index, delta) {
+      cart[index].quantity += delta;
+      if (cart[index].quantity <= 0) cart.splice(index, 1); 
+      updateCart();
+    }
+
+   
+   async function payUPI(adminId) {
+  if (cart.length === 0) return alert("Cart is empty!");
+
+  let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+      try {
+       
+        const response = await fetch("/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ admin_id: adminId, total_amount: totalPrice })
+        });
+
+        const result = await response.json();
+
+        if (!result.deeplink) {
+          return alert("❌ " + (result.error || "UPI not available"));
+        }
+
+        const deeplink = result.deeplink;
+
+        const isMobile = /Android|iPhone|iPad/i.test(navigator.userAgent);
+
+        if (isMobile) {
+          
+          window.location.href = deeplink;
+        } else {
+          
+          document.getElementById("upi-section").style.display = "block";
+          document.getElementById("upi-msg").innerText = "📱 Scan this QR to Pay via UPI:";
+          document.getElementById("upi-amount").innerText = "Amount: ₹" + totalPrice;
+
+          
+          let qr = qrcode(0, "L");
+          qr.addData(deeplink);
+          qr.make();
+          document.getElementById("upi-qr").innerHTML = qr.createImgTag(6);
+        }
+      } catch (err) {
+        alert("⚠️ Error: " + err.message);
+      }
+    }
+
+    
+    async function placeOrder(admin_id) {
+      const txnId = document.getElementById("txnId").value;
+      if (!txnId) return alert("Please enter UPI Transaction ID");
+      let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const response = await fetch("/place_order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_id: admin_id, items: cart, total_amount: totalPrice, txn_id: txnId })
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert(`✅ ${result.message}\n🆔 Order ID: ${result.order_id}`);
+        addOrder(result);
+        // const ordersDiv = document.getElementById("orders");
+        // const card = `
+        //   <div class="order-card">
+        //     <h3>Order Id: ${result.order_id}<h3>
+        //     <p><b>Status:</b><span class="badge">${result.status}</span></p>
+        //   </div>
+        // `;
+        // ordersDiv.innerHTML = card + ordersDiv.innerHTML;
+
+        if (result.order_id && result.pdf_data) {
+          const linkSource = `data:application/pdf;base64,${result.pdf_data}`;
+          const downloadLink = document.createElement("a");
+          downloadLink.href = linkSource;
+          downloadLink.download = `order_${result.order_id}_slip.pdf`;
+          downloadLink.click();
+        }
+
+        cart = [];
+        updateCart();
+        document.getElementById("upi-section").style.display = "none";
+      } else {
+        alert("❌ Failed to place order");
+      }
+    }
+
+    
+    function payCash(admin_id) {
+      if (cart.length === 0){
+        alert("⚠️ Cart is empty! Please add iteams before placing an order.")
+        return;
+      }
+      let totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      if (totalPrice <= 0){
+        alert("⚠️ Invalid total amount. please check your cart.")
+        return;
+      }
+      fetch("/place_order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_id: admin_id, items: cart, total_amount: totalPrice, txn_id: "CASH" })
+      })
+      .then(res => res.json())
+      .then(result => {
+        alert(`✅ ${result.message}\n🆔 Order ID: ${result.order_id}\n Give Money to the Staff`);
+        addOrder(result);
+        // const ordersDiv = document.getElementById("orders");
+        // const card = `
+        //   <div class="order-card">
+        //     <h3>Order Id: ${result.order_id}<h3>
+        //     <p><b>Status:</b><span class="badge">${result.status}</span></p>
+        //   </div>
+        // `;
+        // ordersDiv.innerHTML = card + ordersDiv.innerHTML;
+
+        if (result.order_id && result.pdf_data) {
+          const linkSource = `data:application/pdf;base64,${result.pdf_data}`;
+          const downloadLink = document.createElement("a");
+          downloadLink.href = linkSource;
+          downloadLink.download = `order_${result.order_id}_slip.pdf`;
+          downloadLink.click();
+        }
+        cart = [];
+        updateCart();
+      })
+      .catch(err => alert("Error: " + err.message));
+    }
+    function toggleInbox() {
+      const inbox = document.getElementById("orderInbox");
+      inbox.style.display = (inbox.style.display === "none" || inbox.style.display === "") ? "block" : "none";
+    }
+
+
+    function addOrder(result) {
+        const ordersDiv = document.getElementById("orders");
+        const card = `
+          <div class="order-card" style="border:1px solid #ddd; border-radius:6px; padding:10px; margin-bottom:8px; color:black;">
+            <h3 style="margin:0; font-size:14px;">Order Id: ${result.order_id}</h3>
+            <p style="margin:4px 0 0 0; font-size:13px;">
+              <b>Status:</b> 
+              <span id="status-${result.order_id}" class="badge ${result.status.toLowerCase()}">${result.status}</span>
+            </p>
+          </div>
+        `;
+        ordersDiv.innerHTML = card + ordersDiv.innerHTML;
+    }
+    const socket = io("http://127.0.0.1:5000");
+
+    socket.on("connect", () => {
+    console.log("Connected to socket server ✅");
+    });
+
+    socket.on("status_update", (result) => {
+    console.log("📢 Status update received:", result);
+    const badge = document.getElementById(`status-${result.order_id}`);
+    if (badge) {
+      badge.innerText = result.status;
+      badge.className = `badge ${result.status.toLowerCase()}`;
+    } else {
+      console.warn(`⚠️ No badge found for order ${result.order_id}`);
+    }
+  });
+  </script>
+</body>
+</html>

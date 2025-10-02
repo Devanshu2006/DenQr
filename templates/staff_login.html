@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <div class="container-form">
+        <form id="form-work" method="POST" action="/staff_login">
+            <h3>Please Login to your account.</h3>
+
+            <div class="input-group">
+                <input type="text" id="name" name="name">
+                <label for="name">Name:</label>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="role" name="role">
+                <label for="text">Role:</label>
+            </div>
+
+            <div class="input-group">
+                <input type="number" id="contact" name="contact">
+                <label for="number">phone:</label>
+            </div>
+
+            <button type="submit" class="Button" value="Submit">Login</button>
+            <p class="signin-text">Login as Admin ? <a href="/login">login</a></p>
+            <br>
+        </form>
+    </div>
+    
+</body>
+</html>

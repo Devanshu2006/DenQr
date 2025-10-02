@@ -1,0 +1,68 @@
+body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .app-cell {
+            display: flex;
+        }
+        .sidebar {
+            width: 220px;
+            background: #222;
+            color: #fff;
+            height: 100vh;
+            padding-top: 20px;
+            position: fixed;
+            left: 0;
+            top: 0;
+            transition: transform 0.3s ease;
+        }
+        .sidebar .brand {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .sidebar a {
+            display: block;
+            color: #fff;
+            text-decoration: none;
+            padding: 15px 25px;
+            transition: background 0.2s;
+        }
+        .sidebar a:hover {
+            background: #444;
+        }
+        .menu-toggle {
+            display: none;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #222;
+            color: #fff;
+            border: none;
+            font-size: 1.5em;
+            z-index: 1001;
+            cursor: pointer;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 1000;
+                height: 100%;
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .app-cell {
+                margin-left: 0;
+            }
+        }
+        @media (min-width: 769px) {
+            .app-cell {
+                margin-left: 220px;
+            }
+        }

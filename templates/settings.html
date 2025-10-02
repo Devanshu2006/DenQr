@@ -1,0 +1,278 @@
+{% extends "main_dashboard.html"%}
+{% block content %}
+    <style>
+        
+        body {
+            color: #f0f2f5;
+            padding: 20px;
+            margin-top: 5%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        
+        .settings-container {
+            width: 100%;
+            max-width: 600px;
+            margin-top: 20px;
+        }
+
+        
+        .settings-card {
+            background-color: #242526;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .settings-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 18px;
+        }
+
+        .settings-card a {
+            color: aliceblue;
+            font-size: 18px;
+            font-weight: 500;
+            
+        }
+        
+        .danger-zone {
+            background-color: #3b282c;
+            border: 1px solid #dc3545;
+            padding: 24px;
+        }
+
+        .danger-zone p {
+            font-size: 14px;
+            color: #c9c9c9;
+            line-height: 1.5;
+        }
+
+        
+        .btn {
+            padding: 10px 18px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0069d9;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        
+        .dropdown-toggle {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            color: #f0f2f5;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        
+        .dropdown-toggle::after {
+            content: '▼';
+            font-size: 12px;
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-toggle.active::after {
+            transform: rotate(180deg);
+        }
+
+        .dropdown-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+            margin-top: 15px;
+        }
+
+        .dropdown-panel.show {
+            max-height: 200px;
+        }
+
+        .dropdown-panel input {
+            width: 100%;
+            padding: 10px;
+            background-color: #3a3b3c;
+            border: 1px solid #000000;
+            color: #e4e6eb;
+            border-radius: 6px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .dropdown-panel input::placeholder {
+            color: #a0a0a0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="settings-container">
+
+    <h2>Settings</h2>
+
+    <div  class="settings-card danger-zone">
+        <h3>Delete Your Account</h3>
+        <p>
+            This action is permanent and cannot be undone. Deleting your account will erase all of your , Branch information, Menu, Payment details Permanently.
+        </p>
+        <form method="POST" action="/settings">
+            <button type="submit" class="btn btn-danger">Delete Account</button>
+        </form>
+    </div>
+
+    <div class="settings-card">
+        <h3>Payment Information</h3>
+        <button type="button" class="dropdown-toggle" id="paymentToggle">
+            Recive Payment by UPI-ID
+        </button>
+        <form class="dropdown-panel" id="paymentPanel" method="POST" action="/get_upi">
+            <input type="text" name="upi_id" placeholder="Enter Your UPI ID" required>
+            <button type="submit" class="btn btn-primary">Submit UPI ID</button>
+        </form>
+    </div>
+
+    <div class="settings-card">
+        <button type="button" class="dropdown-toggle" id="clearToggle">
+            Update UPI-ID
+        </button>
+        <form class="dropdown-panel" id="clearPanel" method="POST" action="/update_upi">
+            <input type="text" name="upi_id" placeholder="Enter Your UPI ID" required>
+            <button type="submit" class="btn btn-primary">Remove UPI ID</button>
+        </form>
+    </div>
+
+    <div class="settings-card">
+        <!-- <h3>Update Your Password</h3> -->
+        <button type="button" class="dropdown-toggle" id="resetPassword">
+            Change Password
+        </button>
+        <form class="dropdown-panel" id="resetPanel" method="POST" action="/change_password">
+            <input type="password" name="currentpassword" placeholder="Current Password" required>
+            <input type="password" name="newpassword" placeholder="New Password" required>
+            <input type="password" name="confirmpassword" placeholder="Confirm Password" required>
+            
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+
+    <div class="settings-card">
+        <button type="button" class="dropdown-toggle" id="accountToggle">
+            Account Information
+        </button>
+        <form class="dropdown-panel" id="accountPanel" method="POST" action="/Account_info">
+            <ul>
+                <li>Admin id : {{admin_id}}</li>
+                <li>restaurant_id : {{restaurant_id}}</li>
+            </ul>
+        </form>
+    </div>
+
+    <div class="settings-card">
+        <a href="/logout">Logout</a>
+    </div>
+
+</div>
+
+<script>
+   
+    const paymentToggle = document.getElementById('paymentToggle');
+    const paymentPanel = document.getElementById('paymentPanel');
+
+    paymentToggle.addEventListener('click', function() {
+        paymentPanel.classList.toggle('show');
+        this.classList.toggle('active'); 
+    });
+
+    
+    document.addEventListener('click', function(e) {
+        if (!paymentPanel.contains(e.target) && !paymentToggle.contains(e.target)) {
+            paymentPanel.classList.remove('show');
+            paymentToggle.classList.remove('active');
+        }
+    });
+
+    const clearToggle = document.getElementById('clearToggle');
+    const clearPanel = document.getElementById('clearPanel');
+
+    clearToggle.addEventListener('click', function() {
+        clearPanel.classList.toggle('show');
+        this.classList.toggle('active'); 
+    });
+
+    
+    document.addEventListener('click', function(e) {
+        if (!clearPanel.contains(e.target) && !clearToggle.contains(e.target)) {
+            clearPanel.classList.remove('show');
+            clearToggle.classList.remove('active');
+        }
+    });
+
+    const resetToggle = document.getElementById('resetPassword');
+    const resetPanel = document.getElementById('resetPanel')
+
+    resetToggle.addEventListener('click', function() {
+        resetPanel.classList.toggle('show');
+        this.classList.toggle('active');
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!resetPanel.contains(e.target) && !resetToggle.contains(e.target)) {
+            resetPanel.classList.remove('show');
+            resetToggle.classList.remove('active');
+        }
+    });
+
+    const accountToggle = document.getElementById('accountToggle');
+    const accountPanel = document.getElementById('accountPanel');
+    accountToggle.addEventListener('click', function() {
+        accountPanel.classList.toggle('show');
+        this.classlist.toggle('active');
+    });
+    document.addEventListener('click', function(e) {
+        if (!accountPanel.contains(e.target) && !accountToggle.contains(e.target)) {
+            accountPanel.classList.remove('show');
+            accountToggle.classList.remove('active');
+        }
+    });
+    
+</script>
+
+
+{% endblock %}

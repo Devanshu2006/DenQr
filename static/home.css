@@ -1,0 +1,101 @@
+
+body {
+    margin: 0;
+    padding-top: 0%;
+    min-height: 100vh;
+    background: linear-gradient(to bottom,rgb(42, 4, 4),black,rgb(42, 4, 4));
+    /* background-image: url('delicious-black-pasta-dish-copy-space.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat; */
+}
+
+.container-form {
+    margin: 50px auto;
+    padding: 20px;
+    max-width: 400px;
+    color: white;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+h3 {
+    text-align: center;
+    margin-bottom: 40px;
+}
+.input-group {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.input-group input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    width: 100%;
+    /* color: #ffffff; */
+}
+
+.input-group label {
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    /* background-color: #ffffff; */
+    padding: 0 5px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    position: absolute;
+}
+
+.input-group input:focus + label,
+.input-group input:not(:placeholder-shown) + label {
+    left: 5px;
+    font-size: 16px;
+    color: #333;
+    top: -10px;
+    color: #ffffff;
+}
+
+.input-group address {
+    width: 50%;
+}
+.Button {
+    width: 105%;
+    padding: 12px 28px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.Button:hover {
+    background-color: #45a049;
+}
+
+.signin-text {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.signin-text a {
+    color: #8e8eed;
+    text-decoration: none;
+}
+
+.signin-text a:hover {
+    text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurent Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css')}}">
+</head>
+<body>
+    <div class="container-form">
+        <form  id="form-work" method="POST" action="/details" enctype="multipart/form-data" class="details-form">
+            <h2>Branch Details</h2>
+           <div class="input-group">
+                <input type="text" id="restaurant_name" name="restaurant_name" required>
+                <label for="restaurant_name">Restaurant/Hotel Name:</label>
+            </div>
+            
+            <div class="input-group">
+                <input type="text" id="address" name="address" required>
+                <label for="address">Address:</label>
+            </div>
+
+            <div class="input-group">
+                <input type="tel" id="contact_number" name="phone" required>
+                <label for="contact_number">Contact Number:</label>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="domain" name="category">
+                <label for="category">Category:</label>
+            </div>
+
+            
+            <div class="input-group">
+                <input type="file" id="logo" name="logo" accept="image/*">
+                <label for="logo">Upload Logo:</label>
+            </div>
+
+            <button type="submit" class="Button">Save Details</button>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <div class="container-form">
+        <form id="form-work" method="POST" action="/login">
+            <h3>Please Login to your account.</h3>
+
+            <p class="signin-text">Don't have an account? <a href="/Admin">Create Account</a></p><br>
+            <div class="input-group">
+                <input type="text" id="username" name="username">
+                <label for="username">Email/Phone:</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" name="password">
+                <label for="password">Password:</label>
+            </div>
+
+            <button type="submit" class="Button" value="Submit">Login</button>
+            <p class="signin-text">Login as kitchen staff ? <a href="/staff_login">login</a></p>
+            <br>
+        </form>
+    </div>
+    
+</body>
+</html>

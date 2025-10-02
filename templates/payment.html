@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Plans - OrderEase</title>
+    <style>
+        /* --- Poetic Color Palette ---
+           Deep Teal: #004d40 (Background Accent/Button Hover)
+           Soft Gold: #ffc107 (Accent Color/Price)
+           Earthy Brown: #6d4c41 (Text/Title)
+           Soft Cream: #fff8e1 (Card Background)
+           Calm White: #ffffff (Body Background)
+        */
+        
+        body {
+            font-family: 'Georgia', serif; /* Softer, literary font */
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #3a445d, #1a1f2b); /* Calm White */
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff8e1; 
+            border-radius: 15px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #6d4c41; /* Earthy Brown */
+            margin-bottom: 40px;
+            font-family: 'Playfair Display', serif; /* Optional: Use a flowing headline font */
+            font-size: 2.5em;
+        }
+
+        /* --- Plan Cards --- */
+        .plan-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+        .plan-card {
+            background: linear-gradient(to bottom right, #fff8e1, #ffe082); /* Soft Cream */
+            border: 2px solid #ffc107; /* Soft Gold Border */
+            border-radius: 12px;
+            padding: 35px 25px;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            transition: transform 0.4s ease-in-out, box-shadow 0.4s;
+            box-sizing: border-box;
+        }
+        .plan-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+            border-color: #004d40; /* Deep Teal on hover */
+        }
+        
+        .plan-card h2 {
+            color: #004d40; /* Deep Teal */
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .plan-card .price {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ffc107; /* Soft Gold */
+            margin-bottom: 20px;
+            border-bottom: 2px dashed #e0e0e0;
+            padding-bottom: 10px;
+        }
+        .plan-card .validity {
+            color: #6d4c41; /* Earthy Brown */
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        /* Feature List Styling */
+        .plan-card ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .plan-card ul li {
+            padding: 10px 0;
+            color: #333;
+            display: flex;
+            align-items: center;
+            font-size: 1.05em;
+        }
+        .plan-card ul li::before {
+            content: '🌿'; /* Poetic bullet point */
+            margin-right: 12px;
+            font-size: 1.2em;
+        }
+        
+        /* Purchase Button */
+        .purchase-btn {
+            background-color: #ffc107; /* Soft Gold */
+            color: #004d40; /* Deep Teal Text */
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.15em;
+            transition: background-color 0.3s, color 0.3s;
+            width: 100%;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 4px #e0a800; /* 3D effect */
+        }
+        .purchase-btn:hover {
+            background-color: #004d40; /* Deep Teal Background */
+            color: #ffffff; /* White Text */
+            box-shadow: 0 4px #00332e;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px 10px;
+                padding: 15px;
+            }
+            .plan-container {
+                flex-direction: column;
+            }
+            .plan-card {
+                max-width: none;
+                padding: 25px 15px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Your Journey Begins Here: Choose Your Plan</h1>
+    <div class="plan-container">
+    
+        <div class="plan-card">
+                <h2>Basic (Trial)</h2>
+                <p class="price">₹0</p>
+                <p class="validity">7 Days Validity</p>
+                
+                <ul>
+                    <li>Upto 10 Tables QR</li>
+                    <li>Basic Analytics Access</li>
+                    <li>Standard Support</li>
+                    <li>Automatic Reciept Generation</li>
+                    <li>Live Status Updation</li>
+                </ul>
+
+                <button class="purchase-btn" 
+                        data-plan-name="Basic" 
+                        data-plan-amount="0" 
+                        data-validity-days="7">
+                    Start 7 Day Trial
+                </button>
+            </div>
+
+            <div class="plan-card">
+                <h2>Basic</h2>
+                <p class="price">₹999</p>
+                <p class="validity">30 Days Validity</p>
+                
+                <ul>
+                    <li>Upto 6 Tables QR</li>
+                    <li>Basic Analytics Access</li>
+                    <li>Priority Support</li>
+                    <li>Custom Branding</li>
+                    <li>Automatic Reciept Generation</li>
+                    <li>Live Status Updation</li>
+                </ul>
+
+                <button id="basic" class="purchase-btn" 
+                        data-plan-name="Basic" 
+                        data-plan-amount="999" 
+                        data-validity-days="30">
+                    Subscribe Now
+                </button>
+            </div>
+
+            <div class="plan-card">
+                <h2>Moderate</h2>
+                <p class="price">₹1999</p>
+                <p class="validity">30 Days Validity</p>
+                
+                <ul>
+                    <li>Upto 12 Tables QR</li>
+                    <li>Advanced Analytics</li>
+                    <li>Priority Support</li>
+                    <li>Custom Branding</li>
+                    <li>Automatic Reciept Generation</li>
+                    <li>Live Status Updation</li>
+                </ul>
+
+                <button class="purchase-btn" 
+                        data-plan-name="Moderate" 
+                        data-plan-amount="1999" 
+                        data-validity-days="30" onclick="window.location.href='https://rzp.io/rzp/HCPnrRa'">
+                    Subscribe Now
+                </button>
+            </div>
+
+            <div class="plan-card">
+                <h2>Premium</h2>
+                <p class="price">₹2999</p>
+                <p class="validity">30 Days Validity</p>
+                
+                <ul>
+                    <li>Unlimited Tables QR</li>
+                    <li>Advanced Analytics</li>
+                    <li>Priority Support</li>
+                    <li>Custom Branding</li>
+                    <li>Automatic Reciept Generation</li>
+                    <li>Live Status Updation</li>
+                </ul>
+
+                <button class="purchase-btn" 
+                        data-plan-name="Premium" 
+                        data-plan-amount="2999" 
+                        data-validity-days="30">
+                    Subscribe Now
+                </button>
+            </div>
+
+
+            <div class="plan-card">
+                <h2>Yearly/Premium Plan</h2>
+                <p class="price">₹24001</p>
+                <p class="validity">1 Year Validity</p>
+                
+                <ul>
+                    <li>Unlimited Tables QR</li>
+                    <li>Advanced Analytics</li>
+                    <li>Priority Support</li>
+                    <li>Custom Branding</li>
+                    <li>Automatic Reciept Generation</li>
+                    <li>Live Status Updation</li>
+                </ul>
+
+                <button class="purchase-btn" 
+                        data-plan-name="Yearly/Premium Plan" 
+                        data-plan-amount="24001" 
+                        data-validity-days="365">
+                    Subscribe Now
+                </button>
+            </div>
+
+        </div>
+        <!-- <div class="plan-card">
+            <h2>The Seedling (Trial)</h2>
+            <p class="price">₹0</p>
+            <p class="validity">Seven Days of Discovery</p>
+            
+            <ul>
+                <li>Upto 10 Tables QR Generation</li>
+                <li>Essential Analytics</li>
+                <li>Foundational Support</li>
+            </ul>
+
+            <button class="purchase-btn" 
+                    data-plan-name="Trial" 
+                    data-plan-amount="0" 
+                    data-validity-days="7">
+                Begin the Trial
+            </button>
+        </div>
+
+        <div class="plan-card">
+            <h2>The Evergreen (Premium)</h2>
+            <p class="price">₹499</p>
+            <p class="validity">A Month of Flourishing</p>
+            
+            <ul>
+                <li>Unlimited Tables QR Generation</li>
+                <li>Advanced Insights & Reports</li>
+                <li>Dedicated Priority Support</li>
+                <li>Custom Branding & Themes</li>
+            </ul>
+
+            <button class="purchase-btn" 
+                    data-plan-name="Evergreen" 
+                    data-plan-amount="499" 
+                    data-validity-days="30">
+                Unlock Full Potential
+            </button>
+        </div> -->
+        
+
+
+    </div>
+</div>
+<script>
+    document.getElementById('basic').addEventListener('click', function(){
+        window.location.href='https://rzp.io/rzp/zgI8Vj3m'
+    })
+</script>
+<!-- <script>
+document.querySelectorAll('.purchase-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const planName = this.getAttribute('data-plan-name');
+        const planAmount = this.getAttribute('data-plan-amount');
+        const validityDays = this.getAttribute('data-validity-days');
+        const container = document.querySelector('.container');
+
+        // Display a simple loading message
+        container.innerHTML = `
+            <h1 style="color: #004d40;">Processing ${planName} Plan...</h1>
+            <p style="text-align: center; color: #6d4c41;">Please wait for the server response.</p>
+        `;
+
+
+        // 1. Handle Free/Trial Plan
+        if (planAmount === '0') {
+            handleSubscription('free', planName, planAmount, validityDays);
+            return;
+        }
+
+        // 2. Handle Paid Plan (In a real app, this initiates the payment gateway)
+        alert(`Initiating payment for ${planName} Plan (₹${planAmount}). A payment gateway will open now...`);
+        
+        // DEMO: Simulate successful payment after a small delay
+        setTimeout(() => {
+            handleSubscription('paid', planName, planAmount, validityDays);
+        }, 1500); // Simulate 1.5 second payment process
+    });
+});
+
+function handleSubscription(type, planName, planAmount, validityDays) {
+    // Back-end (Flask) AJAX call
+    fetch('/process_subscription', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            plan_name: planName,
+            plan_amount: planAmount,
+            validity_days: validityDays,
+            payment_status: (type === 'free' ? 'FREE_TRIAL' : 'PAID')
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const container = document.querySelector('.container');
+        
+        if (data.success) {
+            container.innerHTML = `
+                <h1 style="color: #004d40;">✨ Success! ✨</h1>
+                <p style="text-align: center; color: green; font-size: 1.2em;">${data.message}</p>
+                <p style="text-align: center; margin-top: 30px;">
+                    <a href="/admin_dashboard" style="color: #ffc107; font-weight: bold; text-decoration: none;">Go to Dashboard</a>
+                </p>
+            `;
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                window.location.href = '/admin_dashboard'; 
+            }, 3000);
+        } else {
+            container.innerHTML = `
+                <h1 style="color: #6d4c41;">Subscription Failed</h1>
+                <p style="text-align: center; color: red; font-size: 1.2em;">Error: ${data.message}</p>
+                <p style="text-align: center; margin-top: 30px;">Please try again later.</p>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while contacting the server.');
+    });
+}
+</script>
+
+</body>
+</html> -->

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lets Create, Generate and Work|den-qr</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='navbar.css')}}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<style>
+body {
+    background-color: white;
+    /* margin: 5%;
+    padding: 0;
+    
+    justify-content: center;
+    align-items: center;
+    height: 100%; */
+}
+</style>    
+<nav class="navbar" method="POST" action="/main_dashboard">
+        <div class="navbar-container container">
+            <input type="checkbox" name="" id="">
+            <div class="hamburger-lines">
+                <span class="line line1"></span>
+                <span class="line line2"></span>
+                <span class="line line3"></span>
+            </div>
+            <ul class="menu-items">
+                <li><a href="/Analytics">Home</a></li>
+                <li><a href="/menu">Menu</a></li>
+                <li><a href="/qr">Generate</a></li>
+                <li><a href="/kitchen_dashboard">Orders</a></li>
+                <li><a href="/team">Team</a></li>
+                <li><a href="/settings">Settings</a></li>
+                <!-- <li><a href="/logout">Logout</a></li> -->
+            </ul>
+            <h1 class="logo">{{ restaurant_name }}</h1>
+        </div>
+    </nav>
+
+{% block content%}{% endblock %}
+</body>
+</html>

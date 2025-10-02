@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+#orders-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.order-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    transition: transform 0.2s;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+}
+
+.order-card h3 {
+    margin-top: 0;
+    color: #555;
+}
+
+.order-card p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.status-new {
+    color: #e74c3c; /* Red */
+    font-weight: bold;
+}
+
+.status-in-progress {
+    color: #f39c12; /* Orange */
+    font-weight: bold;
+}
+
+.status-completed {
+    color: #27ae60; /* Green */
+    font-weight: bold;
+}

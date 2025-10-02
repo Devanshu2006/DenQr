@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kitchen Dashboard</title>
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <style>
+    h3{
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right ,rgb(234, 227, 227),rgb(16, 61, 57));
+      padding: 20px;
+    }
+    #orders {
+      display: grid;
+      gap: 15px;
+    }
+    .order-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    div {
+      margin: 0;
+      padding: 0;
+    }
+    .header-container {
+      padding: 0;
+      margin-bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center; /* Vertically centers the headings */
+      width: 100%; /* Ensure the container spans the full width */
+    }
+    .header-container {
+      font-size: 3vmin;
+    }
+    .order-card ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .order-card li {
+      margin-bottom: 5px;
+    }
+    .order-card p {
+      font-size: 14px;
+      
+    }
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        color: rgb(38, 8, 8);
+    }
+    .badge.received { color: #3498db;}   /* Blue */
+    .badge.making { color: #f39c12;}     /* Orange */
+    .badge.delivered { color: #2ecc71;}  /* Green */
+
+    @media (min-width: 768px) {
+        .order-card p {
+          font-size: 16px;
+        }
+        .status-badge {
+          font-size: 18px;
+          font-weight: bold;
+        }
+      
+    }
+  </style>
+</head>
+<body>
+  <h1>👨‍🍳 Kitchen Dashboard of {{ restaurant_name }}</h1>
+  <div id="orders">Loading orders...</div>
+
+
+  <audio id="newOrderSound" src="{{ url_for('static', filename='new order sound.mp3')}}" preload="auto"></audio>
+  <script>
+    const socket = io("http://127.0.0.1:5000");
+    const ordersDiv = document.getElementById("orders");
+
+    
+    function fetchOrders() {
+      fetch("/get_orders")
+        .then(res => res.json())
+        .then(data => {
+          ordersDiv.innerHTML = "";
+
+          data.forEach(order => {
+            let itemsHtml = "";
+
+           
+            if (order.items && Array.isArray(order.items)) {
+              order.items.forEach(item => {
+                itemsHtml += `<li>${item.item_name} - ${item.quantity} × ₹${item.price}</li>`;
+              });
+            }
+
+            const card = `
+              <div class="order-card">
+                <div class="header-container">
+                  <h3>Table #${order.table_number}</h3>
+                  <h3>Order Id:${order.order_id}</h3>
+                </div>
+                <h4>AT: ${order.order_time}</h4>
+                <p><b>Total:</b> ₹${order.total_amount}</p>
+                <ul>${itemsHtml}</ul>
+              </div>
+              <div class="status-badge">
+                <span id="status-${order.order_id}" class="badge ${order.status.toLowerCase()}">Status: ${order.status}</span>
+                <select onchange="updateStatus(${order.order_id}, this.value)">
+                  <option value="In Process" ${order.status} === "In Process" ? "selected" : ""}>In Process</option>
+                  <option value="Received" ${order.status === "Received" ? "selected" : ""}>Received</option>
+                  <option value="Making" ${order.status === "Making" ? "selected" : ""}>Making</option>
+                  <option value="Delivered" ${order.status === "Delivered" ? "selected" : ""}>Delivered</option>
+                </select>
+              </div>
+            `;
+            ordersDiv.innerHTML += card;
+          });
+
+          if (data.length === 0) {
+            ordersDiv.innerHTML = "<p>No active orders yet</p>";
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching orders:", err);
+          ordersDiv.innerHTML = "<p>⚠️ Failed to load orders</p>";
+        });
+    }
+    // First load
+    fetchOrders();
+
+    socket.on('status_update', (data) => {
+      const badge = document.getElementById(`status-${data.order_id}`);
+      if (badge) {
+        badge.innerText = `Status: ${data.status}`;
+        badge.className = `badge ${data.status.toLowerCase()}`; 
+      } 
+    });
+
+    socket.on("new_order", () => {
+      console.log("📦 New order event received from server");
+      fetchOrders();
+      const sound = document.getElementById("newOrderSound");
+      sound.play().catch(err => console.error("Error playing sound:", err));
+
+    });
+
+    socket.on("connect", () => {
+      console.log("✅ Connected to server");
+    });
+
+    socket.on("disconnect", () => {
+      console.log("❌ Disconnected from server");
+    });
+    
+
+  async function updateStatus(orderId, newStatus){
+    try{
+      const response = await fetch("/update_status", {
+        method:"POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({order_id: orderId, status: newStatus})
+      });
+    }
+    catch (error) {
+      alert("⚠️ Error: " + "It doesnt work out well");
+    }
+  }
+  </script>
+</body>
+</html>

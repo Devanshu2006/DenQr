@@ -1,0 +1,139 @@
+{% extends "main_dashboard.html" %}
+{% block content %}
+<style>
+.qr-card {
+    display: inline-block;
+    margin: 15px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.qr-card img {
+    margin-top: 5px;
+    width: 200px; 
+    height: 200px;
+}
+.qr-card a {
+    display: block; 
+    margin-top: 10px;
+    text-decoration: none;
+    color: #3a6186;
+    font-weight: bold;
+}
+.rform {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+.rform input{
+    width: 20%;
+    padding: 6px 6px;
+    border-radius: 5px;
+    border-color: goldenrod;
+}
+.rform h2{
+    margin-top: 10%;
+    margin-bottom: 2%;
+    color: #000000;
+}
+.rform button {
+    padding: 5px 5px;
+    border-radius: 5px;
+    color: aliceblue;
+    border-color: goldenrod;
+    background-color: #3a6186;
+}
+button:hover {
+    background-color: #2d4d66;
+}
+@media (max-width: 768px) {
+    *{
+        padding: 0;
+        margin: 0;
+    }
+    .rform h2{
+        margin-top: 20%;
+    }
+    .rform input{
+        width: 30%;
+    }
+    
+
+}
+
+</style>
+
+<div class="container">
+    <form class="rform" id="qrForm"> <h2>Number of tables:</h2>
+        <input type="number" class="form-control" id="tableCount" name="tableCount" placeholder="1" min="1" required>
+        <button type="submit" class="btn btn-success">Generate</button>
+    </form>
+</div>
+
+<div id="qr-container" style="margin-top: 30px;">
+    </div>
+
+<script>
+    document.getElementById('qrForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const tableCount = document.getElementById('tableCount').value;
+        const container = document.getElementById("qr-container");
+        container.innerHTML = "Generating QR Codes... Please wait.";
+
+        
+        fetch("/generate_qrs_json", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            
+            body: JSON.stringify({
+                tableCount: parseInt(tableCount)
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            container.innerHTML = "";
+
+            if (data.error) {
+                container.innerHTML = `<p style="color: red;">Error: ${data.error}</p>`;
+                return;
+            }
+
+            if (data.qrs) {
+                data.qrs.forEach((qr) => {
+                    
+                    const qrCard = document.createElement("div");
+                    qrCard.className = "qr-card";
+                    
+                    const img = document.createElement("img");
+                    img.src = qr.image;
+                    img.alt = `Order Link (Table ${qr.path.split('_').pop().replace('.png', '')})`;
+                    qrCard.appendChild(img);
+
+                    const pagetitlelink = document.createElement("a")
+                    pagetitlelink.href = qr.link;
+                    pagetitlelink.textContent = `Table ${qr.path.split('_').pop().replace('.png', '')}`;
+                    pagetitlelink.target = "_blank";
+                    qrCard.appendChild(pagetitlelink);
+
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = qr.image;
+                    downloadLink.download = qr.path;
+                    container.appendChild(qrCard);
+                    downloadLink.click();
+                });
+            } else {
+                container.innerHTML = "<p>No QR codes were generated.</p>";
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            container.innerHTML = `<p style="color: red;">An error occurred while fetching data: ${error.message}</p>`;
+        });
+    });
+</script>
+{% endblock %}

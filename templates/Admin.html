@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <div class="container-form">
+        <form id="form-work" method="POST" action="/Admin">
+            <h2>Create Account</h2>
+
+            <div class="input-group">
+                <input type="text" id="username" name="username" required>
+                <label for="username">Full Name</label>
+            </div>
+
+            <div class="input-group">
+                <input type="email" id="email" name="email" required>
+                <label for="email">Email</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="password" name="password" maxlength="16" required>
+                <label for="password">Password</label>
+            </div>
+
+            <div class="input-group">
+                <input type="password" id="cpassword" name="confirm_password" required>
+                <label for="cpassword">Confirm Password</label>
+            </div>
+
+            <button type="submit" class="Button">Continue</button>
+            <p class="signin-text">Already have an account? <a href="/login">Sign in</a></p>
+        </form>
+    </div>
+
+<script>
+    document.getElementById('form-work').addEventListner("submit", function(event){
+        event.preventDefault();
+        
+        fetch("/Admin", {
+            method: "POST",
+            body: new FormData(this)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.error)
+                alert(data.error);
+            else
+                window.location.href = "/dashboard";
+        })
+    });
+</script>
+</body>
+</html>
+

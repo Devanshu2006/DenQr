@@ -1,0 +1,494 @@
+{% extends "main_dashboard.html" %}
+{% block content %}
+<div class="container">
+    <div class="bgm">
+
+        {%if plan_name == 'trail' and status == 'active'%}
+        <section style="display: none;">
+            <div class="section-card">
+                <h3 class="section-title">📊 Last 7 Days Performance</h3>
+                <div class="chart-wrapper desktop-only">
+                    <canvas id="salesOrdersChart"></canvas>
+                </div>
+                <div class="table-wrapper mobile-only">
+                    {% for day_data in chart_data %}
+                        <div class="table-row">
+                            <span class="date">{{ day_data.date }}</span>
+                            <div class="right">
+                                <span class="orders">{{ day_data.orders }} Orders</span>
+                                <span class="sales">₹{{ day_data.sales }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <p class="totals">
+                    Total Orders: <span id="total-orders"></span><br>
+                    Total Sales: ₹<span id="total-sales"></span>
+                </p>
+            </div>
+        </section>
+        {%endif%}
+
+        {%if plan_name == 'moderate' and status == 'active'%}
+        <section>
+            <div class="section-card">
+                <h3 class="section-title">📊 Last 7 Days Performance</h3>
+                <div class="chart-wrapper desktop-only">
+                    <canvas id="salesOrdersChart"></canvas>
+                </div>
+                <div class="table-wrapper mobile-only">
+                    {% for day_data in chart_data %}
+                        <div class="table-row">
+                            <span class="date">{{ day_data.date }}</span>
+                            <div class="right">
+                                <span class="orders">{{ day_data.orders }} Orders</span>
+                                <span class="sales">₹{{ day_data.sales }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <p class="totals">
+                    Total Orders: <span id="total-orders"></span><br>
+                    Total Sales: ₹<span id="total-sales"></span>
+                </p>
+            </div>
+        </section>
+        {%endif%}
+
+
+        <section class="stats-section">
+            <div class="card">
+                <h3>📦 Orders</h3>
+                <div class="card-body"> 
+                    {% for order in orders_week %} 
+                    <div class="row">
+                        <span class="label">{{ order[0] }}</span>
+                        <span class="value">{{ order[1] }}</span>
+                    </div> {% endfor %}
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3>💰 Revenue</h3>
+                <div class="card-body">
+                    {% for mon in money %}
+                    <div class="row">
+                        <span class="label">{{ mon[0] }}</span>
+                        <span class="value">₹ {{ mon[1] }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </section>
+        <div class="section-header">
+            <h2>Menu</h2>
+            <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('menuForm')"></i>
+        </div>
+        
+        <table class="menu-grid" method="POST" action="/show_menu">
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+            </tr>
+            
+            {% for item in menu %}
+            <tr>
+                <td class="Id">{{ item[0] }}</td>
+                <td class="Name">{{ item[3] }}</td>
+                <td class="price">{{ item[4] }}</td>
+                <td class="Category">{{ item[5] }}</td>
+            </tr>
+            {% endfor %}
+        </table> <div id="menuForm" class="hidden-form">
+            <h2>Edit Menu Items</h2>
+            <form class="delete_menu" method="POST" action="/delete_menu">
+                <label>Name:</label>
+                <input type="text" name="name" required><br>
+                <label>Price:</label> <input type="number" name="price" required><br>
+                <button type="submit" class="btn-submit">Remove</button>
+            </form> </div> <div class="section-header">
+                <h2>Team</h2> <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('teamForm')"></i>
+            </div> <table class="team-grid" method="POST" action="/show_team">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Role</th>
+                    <th>Phone</th>
+                </tr>
+                {% for member in team %}
+                <tr>
+                    <td class="Id">{{ member[0] }}</td>
+                    <td class="Name">{{ member[2] }}</td>
+                    <td class="Role">{{ member[3] }}</td>
+                    <td class="Phone">{{ member[4] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <div id="teamForm" class="hidden-form">
+                <h2>Update Your Staff</h2>
+                <form class="delete_staff" method="POST" action="/delete_staff">
+                    <label>Name:</label>
+                    <input type="text" name="name" required><br>
+                    <label>Role:</label> <input type="text" name="role" required><br>
+                    <button type="submit" class="btn-submit">Remove</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    function toggleForm(formId)
+    { let form = document.getElementById(formId);
+        if (form.style.display === "none" || form.style.display === ""){
+            form.style.display = "block";
+        }
+        else{
+            form.style.display = "none";
+        }
+    }
+
+    function renderChart(chartData) {
+        const chartLabels = chartData.map(item => item.date);
+        const orderCounts = chartData.map(item => item.orders);
+        const salesAmounts = chartData.map(item => item.sales);
+
+        const totalOrders = orderCounts.reduce((sum, current) => sum + current, 0);
+        const totalSales = salesAmounts.reduce((sum, current) => sum + current, 0);
+
+        document.getElementById('total-orders').textContent = totalOrders;
+        document.getElementById('total-sales').textContent = totalSales.toFixed(2);
+
+        new Chart(document.getElementById("salesOrdersChart"), {
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        type: 'line',
+                        label: 'Orders',
+                        data: orderCounts,
+                        font: {size: 14, weight: 'bold'},
+                        borderColor: '#2563eb',
+                        backgroundColor: '#2563eb',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Sales (₹)',
+                        data: salesAmounts,
+                        font: {size: 14, weight: 'bold'},
+                        borderColor: '#16a34a',
+                        backgroundColor: '#16a34a',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        type: 'bar',
+                        label: 'Total Sales (Bar)',
+                        data: salesAmounts,
+                        backgroundColor: 'rgba(239, 68, 68, 0.5)',
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'top' ,
+                        labels: {
+                            color: 'rgb(59, 11, 11)',
+                            font: {size: 14, weight: "bold"}
+                        },
+                        tooltip: {
+                            titleColor: 'rgb(59, 11, 11)',
+                            titleFont: { size: 14, weight: "bold" },
+                            bodyFont: { size: 12 }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            
+                        },
+                        ticks: {font: {size: 14, weight: 'bold'}, color: 'rgb(59, 11, 11)'}
+                        },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: 'Orders',font: {size: 14, weight: 'bold'}, color: 'black'},
+                        ticks: {font: {size: 14, weight: 'bold'}, color: 'rgb(59, 11, 11)'}
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: 'Sales (₹)',font: {size: 14, weight: 'bold'}, color:'black' },
+                        grid: { drawOnChartArea: false },
+                        ticks: {font: {size: 14, weight: 'bold'}, color: 'rgb(59, 11, 11)'}
+                    }
+                }
+            }
+        });
+    }
+
+    function handleView() {
+        const isDesktop = window.matchMedia('(min-width: 768px)').matches;
+        fetch('/api/chart_data')
+            .then(response => response.json())
+            .then(data => {
+                if (isDesktop) {
+                    renderChart(data);
+                }
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    handleView();
+    window.addEventListener('resize', handleView);
+</script>
+
+<style>
+    .home { 
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 20px;
+        border-radius: 12px; 
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .stats-section { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px; margin: 30px auto;
+        max-width: 900px;
+        padding: 10px;
+    } 
+    .card {
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.1); 
+        padding: 20px; transition: transform 0.2s ease, box-shadow 0.2s ease; 
+    } 
+    .card:hover { 
+        transform: translateY(-6px); 
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+    }
+    .card h3 { 
+        font-size: 1.5rem; 
+        margin-bottom: 15px; 
+        color: #333; 
+        border-bottom: 2px solid #f1f1f1; 
+        padding-bottom: 8px; 
+    }
+    .card-body .row { 
+        display: flex; 
+        justify-content: space-between; 
+        padding: 10px 0; 
+        border-bottom: 1px dashed #eee; 
+    } 
+    .card-body .row:last-child { 
+        border-bottom: none; 
+    } /* Labels & Values */ 
+    .label { 
+        font-weight: 600; 
+        color: #380606; 
+    } 
+    .value { 
+        font-weight: bold; 
+        color: #222; 
+    } /* Special for revenue values */ 
+    .card-body .row .value { 
+        color: #16a34a; /* Green for money */ 
+    } 
+    .home h2 { 
+        margin-top: 30px; 
+        margin-bottom: 15px; 
+        font-size: 1.6rem; 
+        color: #ffffff; 
+        border-bottom: 3px solid #FFD700; 
+        padding-bottom: 5px; 
+    } 
+    table { 
+        width: 100%; 
+        border-collapse: collapse; 
+        margin-bottom: 30px; 
+        border-radius: 8px; 
+        overflow: hidden;
+        table-layout: fixed; 
+        background-color:#ffffff;
+    } table th { 
+        color: #350707; 
+        background-color: #b1c6e7;
+        font-size: 1rem; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        text-align: center; 
+    } /* Cells */ 
+    table td { 
+        padding: 12px 15px; 
+        border-bottom: 1px solid #ddd; 
+        text-align: center; 
+        word-wrap: break-word; 
+    } /* table tr:nth-child(even) { } */ 
+    table tr:hover { 
+        background: #ddc3c3; 
+    } .btn-submit { 
+        background: #d9e8e8; 
+        border: none; 
+        padding: 12px 20px; 
+        border-radius: 6px; 
+        font-size: 1rem; 
+        font-weight: bold; 
+        cursor: pointer; 
+        transition: background 0.3s, transform 0.2s; 
+        display: inline-block; 
+    } .btn-submit:hover { 
+        background: #e6c200; 
+        transform: scale(1.05); 
+    } .Id { text-align: center; 
+        font-weight: bold; 
+    } form { padding: 20px; 
+        border-radius: 10px; 
+        margin-bottom: 30px; 
+        box-shadow: 0px 2px 6px rgba(0,0,0,0.1); 
+        background-color: #bad1ea;
+    } form label { 
+        display: block; 
+        margin-bottom: 8px; 
+        font-weight: bold; 
+    } form input { 
+        width: 100%; 
+        padding: 10px; 
+        margin-bottom: 15px; 
+        border: 1px solid #ccc; 
+        border-radius: 6px; 
+        outline: none; 
+        font-size: 1rem; 
+    } form input:focus { 
+        border-color: #FFD700; 
+        box-shadow: 0 0 5px rgba(255, 215, 0, 0.6); 
+    } .section-header { 
+        display: flex; 
+        align-items: center; 
+        justify-content: flex-start; 
+        margin: 15px 0; 
+    } .section-header h2 { 
+        margin: 0; 
+        margin-right: 10px; 
+    } .edit-icon { 
+        color: #ff008c; 
+        font-size: 18px; 
+        cursor: pointer; 
+        transition: color 0.3s ease; 
+    } .edit-icon:hover { 
+        color: #9200b3; 
+    } .hidden-form { 
+        display: none; 
+        margin: 15px 0; 
+        padding: 15px; 
+        border: 1px solid #ccc; 
+        border-radius: 8px; 
+    }
+    .bgm {
+        
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+
+    .section-card {
+        margin-top: 5%;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+    }
+
+    .section-title {
+        font-size: 22px;
+        font-weight: bold;
+        color: #000000;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 8px;
+    }
+
+    .chart-wrapper {
+        width: 100%;
+        height: 400px;
+        position: relative;
+        /* background-color: #ffffff;
+        border-radius: 10px; */
+    }
+
+    .table-wrapper {
+        background: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid #e0d9cc;
+    }
+
+    .table-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 16px;
+        border-bottom: 1px solid #e0d9cc;
+    }
+
+    .table-row:last-child {
+        border-bottom: none;
+    }
+
+    .date {
+        font-size: 15px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .right {
+        text-align: right;
+    }
+
+    .orders {
+        display: block;
+        font-weight: bold;
+        color: #c98835;
+        font-size: 14px;
+    }
+
+    .sales {
+        font-size: 12px;
+        color: #380f07;
+    }
+
+    .totals {
+        margin-top: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #361414;
+    }
+
+    /* Responsive behavior */
+    .desktop-only { display: block; }
+    .mobile-only { display: none; }
+
+    @media (max-width: 768px) {
+        .desktop-only { display: none; }
+        .mobile-only { display: block; }
+        .chart-wrapper { height: 250px; }
+        .section-card {margin-top: 10%;}
+    }
+</style>
+{% endblock %}

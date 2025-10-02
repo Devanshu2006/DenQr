@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Legal Information</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9f9f9;
+      color: #333;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #222;
+    }
+    /* Tabs (Desktop) */
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #ddd;
+      margin-bottom: 20px;
+      overflow-x: auto;
+    }
+    .tabs button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: #f5f5f5;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 16px;
+    }
+    .tabs button.active {
+      background: #333;
+      color: #fff;
+      font-weight: bold;
+    }
+    /* Dropdown (Mobile) */
+    .dropdown {
+      display: none;
+      margin-bottom: 20px;
+    }
+    .dropdown select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    .tab-content {
+      display: none;
+      padding: 10px 0;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    h2 {
+      margin-top: 0;
+      color: #444;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    @media (max-width: 700px) {
+      .tabs {
+        display: none;
+      }
+      .dropdown {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Legal Information</h1>
+
+    <!-- Tabs (Desktop) -->
+    <div class="tabs">
+      <button class="tab-link active" data-tab="privacy">Privacy Policy</button>
+      <button class="tab-link" data-tab="terms">Terms & Conditions</button>
+      <button class="tab-link" data-tab="contact">Contact</button>
+      <button class="tab-link" data-tab="refund">Refund Policy</button>
+      <button class="tab-link" data-tab="data">Data Privacy</button>
+    </div>
+
+    <!-- Dropdown (Mobile) -->
+    <div class="dropdown">
+      <select id="tab-select">
+        <option value="privacy">Privacy Policy</option>
+        <option value="terms">Terms & Conditions</option>
+        <option value="contact">Contact</option>
+        <option value="refund">Refund Policy</option>
+        <option value="data">Data Privacy</option>
+      </select>
+    </div>
+
+    <!-- Tab Contents -->
+    <div id="privacy" class="tab-content active">
+      <h2>Privacy Policy</h2>
+      <p>We are committed to protecting the privacy of all individuals using our platform. Any personal information, such as name, phone number, email address, or payment details, will be collected solely for the purposes of order processing, account management, and service improvement.</p>
+      <p>We do not sell, rent, or trade your personal information with third parties. Limited information may be shared with payment processors and service providers strictly for fulfilling your order or complying with legal obligations.</p>
+      <p>All payment data is processed securely, and sensitive information such as UPI IDs or card details is not stored by us directly.</p>
+    </div>
+
+    <div id="terms" class="tab-content">
+      <h2>Terms & Conditions</h2>
+      <ul>
+        <li>By accessing or using this platform, you agree to abide by all applicable rules, policies, and regulations.</li>
+        <li>Restaurants are responsible for ensuring that their account details, menus, and payment credentials are accurate and up-to-date.</li>
+        <li>Customers are responsible for providing correct details when placing an order, including accurate contact and payment information.</li>
+        <li>We reserve the right to suspend or terminate accounts in case of fraud, misuse, or violations of our policies.</li>
+        <li>We may update these Terms & Conditions periodically. Continued use of the platform after updates implies acceptance of the revised terms.</li>
+      </ul>
+    </div>
+
+    <div id="contact" class="tab-content">
+      <h2>Contact Us</h2>
+      <p>For inquiries, complaints, or support, you may contact us through the following channels:</p>
+      <p><strong>Email:</strong> support@yourdomain.com</p>
+      <p><strong>Phone:</strong> +91-XXXXXXXXXX</p>
+      <p><strong>Address:</strong> [Registered Business Address]</p>
+    </div>
+
+    <div id="refund" class="tab-content">
+      <h2>Refund Policy</h2>
+      <ul>
+        <li>Refunds will be processed only in cases where payment has been deducted but the order was not successfully placed, or where the restaurant fails to fulfill a confirmed order.</li>
+        <li>Refunds, if applicable, will be initiated to the original payment method within 5–7 business days.</li>
+        <li>Refunds are not applicable once an order has been successfully delivered.</li>
+      </ul>
+    </div>
+
+    <div id="data" class="tab-content">
+      <h2>Data Privacy Policy</h2>
+      <ul>
+        <li>We collect only the minimum data required to operate our services effectively, such as order details, payment methods, and contact information.</li>
+        <li>Your data is stored securely and is accessible only for legitimate business purposes.</li>
+        <li>Each restaurant has access exclusively to its own account and order data.</li>
+        <li>Customer order history may be used for improving services but will not be shared with unrelated third parties.</li>
+        <li>Individuals may request data deletion or modification by contacting our support team.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    const tabLinks = document.querySelectorAll(".tab-link");
+    const tabContents = document.querySelectorAll(".tab-content");
+    const tabSelect = document.getElementById("tab-select");
+
+    // Desktop Tabs
+    tabLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        tabLinks.forEach(btn => btn.classList.remove("active"));
+        tabContents.forEach(content => content.classList.remove("active"));
+
+        link.classList.add("active");
+        document.getElementById(link.dataset.tab).classList.add("active");
+        tabSelect.value = link.dataset.tab; // sync with dropdown
+      });
+    });
+
+    // Mobile Dropdown
+    tabSelect.addEventListener("change", (e) => {
+      const selectedTab = e.target.value;
+      tabLinks.forEach(btn => btn.classList.remove("active"));
+      tabContents.forEach(content => content.classList.remove("active"));
+
+      document.getElementById(selectedTab).classList.add("active");
+      document.querySelector(`.tab-link[data-tab="${selectedTab}"]`).classList.add("active");
+    });
+  </script>
+</body>
+</html>
