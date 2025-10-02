@@ -139,7 +139,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 @app.route("/")
 def landing():
-    return render_template("landing.html")
+    return render_template('landing.html')
 
 @app.route('/logout')
 def logout():
