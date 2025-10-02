@@ -128,7 +128,9 @@ def create_db_tables():
             conn.close()
 
 
-app = Flask("__main__")
+# app = Flask("__main__")
+app = Flask(__name__, template_folder="templates")
+print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
 app.secret_key = "my_dream_project_of_2006"
 socketio = SocketIO(app)
 
@@ -137,20 +139,10 @@ client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:2006@localhost:5432/oddz'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-@app.route("/")
-def debug():
-    import os
-    templates_path = os.path.join(os.getcwd(), "templates")
-    files = os.listdir(templates_path) if os.path.exists(templates_path) else []
-    return f"""
-    <h3>Current working dir:</h3> {os.getcwd()} <br>
-    <h3>Templates folder exists:</h3> {os.path.exists(templates_path)} <br>
-    <h3>Templates files:</h3> {files}
-    """
 
-# @app.route('/')
-# def landing():
-#     return render_template("landing.html")
+@app.route('/')
+def landing():
+    return render_template("landing.html")
 
 @app.route('/logout')
 def logout():
