@@ -137,6 +137,16 @@ client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:2006@localhost:5432/oddz'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+@app.route("/debug")
+def debug():
+    import os
+    templates_path = os.path.join(os.getcwd(), "templates")
+    files = os.listdir(templates_path) if os.path.exists(templates_path) else []
+    return f"""
+    <h3>Current working dir:</h3> {os.getcwd()} <br>
+    <h3>Templates folder exists:</h3> {os.path.exists(templates_path)} <br>
+    <h3>Templates files:</h3> {files}
+    """
 
 @app.route('/')
 def landing():
