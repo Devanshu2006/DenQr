@@ -28,7 +28,7 @@ def init_db():
             fullname varchar(100),
             email varchar(255),
             password text
-        );
+        )
         CREATE TABLE IF NOT EXISTS restaurants(
             id serial primary key,
             admin_id int not null references admins(id) on delete cascade,
@@ -37,7 +37,7 @@ def init_db():
             phone numeric,
             logo bytea,
             category varchar(50)
-            );
+            )
         CREATE TABLE IF NOT EXISTS menu(
             id serial primary key,
             restaurants_id int not null references restaurants(id) on delete cascade,
@@ -46,7 +46,7 @@ def init_db():
             price numeric,
             category varchar(100),
             about varchar(255)
-            );
+            )
 
         CREATE TABLE IF NOT EXISTS team(
             id serial primary key,
@@ -54,7 +54,7 @@ def init_db():
             name varchar(100),
             role varchar(50),
             phone numeric
-            );
+            )
         CREATE TABLE IF NOT EXISTS orders(
             order_id serial primary key,
             restaurant_id int not null references restaurants(id) on delete cascade,
@@ -63,7 +63,7 @@ def init_db():
             status varchar(25),
             order_time timestamp default current_timestamp,
             txn_id varchar(255)
-        );
+        )
 
         CREATE TABLE IF NOT EXISTS order_items(
             item_id serial primary key,
@@ -71,7 +71,7 @@ def init_db():
             menu_item_id int not null references menu(id) on delete cascade,
             quantity int,
             price numeric(10,2)
-            );
+            )
 
         CREATE TABLE IF NOT EXISTS qr_token(
             id serial primary key,
@@ -81,7 +81,7 @@ def init_db():
             table_number INTEGER NOT NULL,
             UNIQUE (restaurant_id, table_number),
             created_at timestamp default current_timestamp
-            );
+            )
 
         CREATE TABLE IF NOT EXISTS payment_credentials(
             id serial primary key,
@@ -89,7 +89,7 @@ def init_db():
             upi_id varchar(100),
             created_at timestamp default current_timestamp,
             updated_at timestamp default current_timestamp
-            );
+            )
 
         CREATE TABLE IF NOT EXISTS subscriptions(
             id serial primary key,
@@ -106,7 +106,7 @@ def init_db():
             active text,
             start_at timestamp default current_timestamp,
             end_at timestamp default current_timestamp
-            );
+            )
         """)
     conn.commit()
     print("worked well")
