@@ -16,11 +16,12 @@ from reportlab.lib.pagesizes import A4
 from datetime import datetime, timedelta
 
 conn = psycopg2.connect(
-    database="oddz_7d2m",
-    user="oddz_7d2m_user",
-    password="XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw",
-    host="dpg-d3f1mo15pdvs73ccof50-a",
-    port="5432"
+    DATABASE_URL = "postgresql://oddz_7d2m_user:XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw@dpg-d3f1mo15pdvs73ccof50-a/oddz_7d2m"
+    # database="oddz_7d2m",
+    # user="oddz_7d2m_user",
+    # password="XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw",
+    # host="dpg-d3f1mo15pdvs73ccof50-a",
+    # port="5432"
 )
 cur = conn.cursor()
 
