@@ -133,7 +133,7 @@ def logout():
     session.clear()
     return redirect(url_for('landing'))
 
-@app.route('privacy')
+@app.route('/privacy')
 def privacy():
     return render_template('privacy.html')
 
