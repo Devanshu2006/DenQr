@@ -26,7 +26,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS admins(
             id serial primary key,
             fullname varchar(100),
-            email vvarchar(255),
+            email varchar(255),
             password text
         );
         CREATE TABLE IF NOT EXISTS restaurants(
