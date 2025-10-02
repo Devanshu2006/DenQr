@@ -1,13 +1,14 @@
-import os
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, json
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2
+import os
 import razorpay
 from flask_socketio import SocketIO, emit
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import qrcode
-import eventlet 
 import uuid
 import io, base64
 import encodings
@@ -15,6 +16,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from datetime import datetime, timedelta
 
+app = Flask(__name__, template_folder="templates")
+print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
+app.secret_key = "my_dream_project_of_2006"
+socketio = SocketIO(app)
 
 DATABASE_URL = "postgresql://oddz_7d2m_user:XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw@dpg-d3f1mo15pdvs73ccof50-a/oddz_7d2m"
 conn = psycopg2.connect(DATABASE_URL)
@@ -110,18 +115,17 @@ def init_db():
         """)
     conn.commit()
     print("worked well")
-init_db()
+
+with app.app_context:
+    init_db()
 
 # app = Flask("__main__")
-app = Flask(__name__, template_folder="templates")
-print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
-app.secret_key = "my_dream_project_of_2006"
-socketio = SocketIO(app)
 
 client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:2006@localhost:5432/oddz'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 
 @app.route('/')
