@@ -81,7 +81,7 @@
 
   <audio id="newOrderSound" src="{{ url_for('static', filename='new order sound.mp3')}}" preload="auto"></audio>
   <script>
-    const socket = io("http://127.0.0.1:5000");
+    const socket = io();
     const ordersDiv = document.getElementById("orders");
 
     
