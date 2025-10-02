@@ -116,7 +116,7 @@ def init_db():
     conn.commit()
     print("worked well")
 
-with app.app_context:
+with app.app_context():
     init_db()
 
 # app = Flask("__main__")
