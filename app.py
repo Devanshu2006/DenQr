@@ -138,9 +138,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:2006@localhost:54
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
-@app.route("/")
+@app.route('/')
 def landing():
-    return "hello world"
+    return render_template("landing.html")
 
 @app.route('/logout')
 def logout():
