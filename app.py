@@ -126,7 +126,7 @@ def create_db_tables():
         if conn is not None:
             conn.close()
 
-            
+
 app = Flask("__main__")
 app.secret_key = "my_dream_project_of_2006"
 socketio = SocketIO(app)
