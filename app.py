@@ -137,19 +137,19 @@ client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:2006@localhost:5432/oddz'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+@app.route('/')
+def privacy():
+    return render_template('privacy.html')
 
-@app.route("/")
-def landing():
-    return render_template("landing.html")
+# @app.route("/")
+# def landing():
+#     return render_template("landing.html")
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('landing'))
 
-@app.route('/privacy')
-def privacy():
-    return render_template('privacy.html')
 
 @app.route('/terms')
 def terms():
