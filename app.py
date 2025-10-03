@@ -28,8 +28,13 @@ cur = conn.cursor()
 def init_db():
     cur = conn.cursor()
     cur.execute("""
-        alter table orders
-        alter column status set default 'In Process';
+                alter table orders
+                alter column status set default 'In Process';
+                """)
+    conn.commit()
+
+
+    cur.execute("""
 
         CREATE TABLE IF NOT EXISTS admins(
             id serial primary key,
@@ -900,7 +905,6 @@ def get_orders():
         })
 
     conn.close()
-    print("orders_fetched",orders)
     return jsonify(orders)
     
 
