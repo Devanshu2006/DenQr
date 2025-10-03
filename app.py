@@ -27,7 +27,7 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("ALTER DATABASE oddz Set timezone = 'Asia/Kolkata';")
+    cur.execute("ALTER DATABASE oddz_7d2m Set timezone = 'Asia/Kolkata';")
     conn.commit()
 
 
