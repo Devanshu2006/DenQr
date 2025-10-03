@@ -28,6 +28,9 @@ cur = conn.cursor()
 def init_db():
     cur = conn.cursor()
     cur.execute("""
+        alter table orders
+        alter column status set default 'In Process';
+
         CREATE TABLE IF NOT EXISTS admins(
             id serial primary key,
             fullname varchar(100),
