@@ -418,7 +418,7 @@ def signin():
             subscription_check = check_admin()
             if subscription_check is not None:
                 return subscription_check
-            cur.execute('SELECT id, restaurant_name FROM restaurants WHERE admin_id = %s', (admin_id,))
+            cur.execute('SELECT id FROM restaurants WHERE admin_id = %s', (admin_id,))
             res_id = cur.fetchone()
             session['restaurants_id'] = res_id[0]
             cur.execute("SELECT restaurant_name FROM restaurants WHERE admin_id = %s", (admin_id,))
@@ -938,7 +938,7 @@ def get_admin_upi(admin_id):
     cur = conn.cursor()
     cur.execute("SELECT upi_id from payment_credentials where admin_id = %s", (admin_id,))
     row = cur.fetchone()
-    return row[0] if row else None
+    return row if row else None
 
 @app.route('/checkout', methods=['GET','POST'])
 def checkout():
@@ -947,7 +947,7 @@ def checkout():
     total_amount = data.get('total_amount')
     upi_id = get_admin_upi(admin_id)
     if not upi_id:
-        return jsonify({"error":"Upi id not found for this admin"}), 400
+        return jsonify({"error":"Upi id not found for this admin"})
     
     deeplink = f"upi://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order"
 
