@@ -157,9 +157,9 @@ def refund():
 def payment():
     return render_template("payment.html")
 
-@app.route('/webhook')
-def webhook():
-    pass
+@app.route('/shipping')
+def shipping():
+    return render_template('/shipping.html')
 
 @app.route('/Analytics')
 def Analytics():
@@ -730,7 +730,10 @@ def qr_generation_page():
 @app.route("/order/<string:token>", methods=['GET','POST'])
 def orderpage(token):
     cur = conn.cursor()
-    cur.execute("SELECT admin_id, restaurant_id, table_number FROM qr_token WHERE token = %s", (token,))
+    cur.execute("""SELECT q.admin_id, r.id, q.table_number, r.restaurant_name 
+                FROM qr_token q 
+                JOIN restaurants r ON r.id=q.restaurant_id 
+                WHERE q.token = %s""", (token,))
     rows = cur.fetchone()
     
     if not rows:
@@ -739,7 +742,12 @@ def orderpage(token):
     admin_id = row[0]
     restaurant_id = row[1]
     table_number = row[2]
+    restaurant_name = row[3]
     session['table_number']=table_number
+    session['restaurant_name']=restaurant_name
+    session['restaurants_id']=restaurant_id
+    session['admin_id']=admin_id
+
     if not restaurant_id:
         return "didnt get admin_id"
     menu = fetch_menu(restaurant_id)
