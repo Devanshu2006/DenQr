@@ -897,6 +897,7 @@ def get_orders():
         })
 
     conn.close()
+    print("orders_fetched",orders)
     return jsonify(orders)
     
 
@@ -957,7 +958,7 @@ def checkout():
     if not upi_id:
         return jsonify({"error":"Upi id not found for this admin"})
     
-    deeplink = f"upi://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order"
+    deeplink = f"intent://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order"
 
     return jsonify({"deeplink":deeplink})
 

@@ -86,11 +86,11 @@
 
     
     function fetchOrders() {
-      fetch("/get_orders")
+      fetch("/get_orders", {credentials: "include"})
         .then(res => res.json())
         .then(data => {
           ordersDiv.innerHTML = "";
-
+          console.log("Orders data:", data)
           data.forEach(order => {
             let itemsHtml = "";
 
