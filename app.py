@@ -853,13 +853,7 @@ def generate_slip(restaurant_name, order_id, table_number, items, total_amount, 
 
 @app.route("/get_orders")
 def get_orders():
-    conn = psycopg2.connect(
-    database="oddz",
-    user="postgres",
-    password="2006",
-    host="localhost",
-    port="5432")
-
+    conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     restaurant_id = session.get('restaurants_id')
     cur.execute("""
