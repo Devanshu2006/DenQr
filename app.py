@@ -780,8 +780,8 @@ def kitchen_dashboard():
 
 @app.route("/place_order", methods=['GET','POST'])
 def place_order():
+    restaurant_name = session.get('restaurant_name')
     if request.method == 'POST':
-        restaurant_name = session.get('restaurant_name')
         if not restaurant_name:
             print("restaurant_name", restaurant_name)
             return "try another way"
