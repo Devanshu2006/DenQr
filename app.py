@@ -27,14 +27,7 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("""
-                UPDATE orders
-                SET status = 'In Process'
-                WHERE status IS NULL;
-
-                ALTER TABLE orders
-                ALTER COLUMN status SET DEFAULT 'In Process';
-                """)
+    cur.execute("ALTER DATABASE oddz Set timezone = 'Asia/Kolkata';")
     conn.commit()
 
 
@@ -969,7 +962,7 @@ def checkout():
     if not upi_id:
         return jsonify({"error":"Upi id not found for this admin"})
     
-    deeplink = f"intent://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order"
+    deeplink = f"upi://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order"
 
     return jsonify({"deeplink":deeplink})
 
