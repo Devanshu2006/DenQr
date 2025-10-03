@@ -29,11 +29,11 @@ def init_db():
     cur = conn.cursor()
     cur.execute("""
                 UPDATE orders
-                SET status = 'In process'
+                SET status = 'In Process'
                 WHERE status IS NULL;
 
                 ALTER TABLE orders
-                ALTER COLUMN status SET DEFAULT 'in process';
+                ALTER COLUMN status SET DEFAULT 'In Process';
                 """)
     conn.commit()
 
@@ -1079,4 +1079,4 @@ def add_header(response):
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 10000))
-    socketio.run(app, host="0.0.0.0", port=port, debug=True)
+    socketio.run(app, host="0.0.0.0", port=port)
