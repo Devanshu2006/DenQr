@@ -28,8 +28,12 @@ cur = conn.cursor()
 def init_db():
     cur = conn.cursor()
     cur.execute("""
-                alter table orders
-                alter column status set default 'In Process';
+                UPDATE orders
+                SET status = 'In process'
+                WHERE status IS NULL;
+
+                ALTER TABLE orders
+                ALTER COLUMN status SET DEFAULT 'in process';
                 """)
     conn.commit()
 
