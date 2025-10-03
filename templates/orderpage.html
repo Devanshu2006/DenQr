@@ -310,7 +310,10 @@
 
         if (isMobile) {
           
-          window.location.href = deeplink;
+          document.getElementById("upi-section").style.display = "block";
+          document.getElementById("upi-msg").innerText = "📱 Scan this QR to Pay via UPI:";
+          document.getElementById("upi-amount").innerText = "Amount: ₹" + totalPrice;
+          // window.location.href = deeplink;
         } else {
           
           document.getElementById("upi-section").style.display = "block";
