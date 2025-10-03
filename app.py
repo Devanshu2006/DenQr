@@ -1045,10 +1045,10 @@ def staff_login():
         role = request.form.get('role')
         phone = request.form.get('contact')
         cur.execute("SELECT name , restaurants_id FROM team WHERE name=%s AND role=%s AND phone=%s", (name, role, phone))
-        rows = cur.fetchall()
-        for row in rows:
-            result = row[0]
-            restaurant_id = row[1]
+        rows = cur.fetchone()
+        row = rows
+        result = row[0]
+        restaurant_id = row[1]
 
         session['restaurants_id'] = restaurant_id
         if result:
