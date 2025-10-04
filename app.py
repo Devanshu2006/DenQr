@@ -294,7 +294,7 @@ def revenue(restaurant_id):
     cur = conn.cursor()
     if restaurant_id:
         cur.execute("""SELECT
-                    DATE_TRUNC('month',order_time) AS Month,
+                    TO_CHAR(order_time,'%d-%m-%Y') AS Month,
                     SUM(total_amount) as total_amount
                     from orders
                     where restaurant_id = %s
