@@ -962,7 +962,7 @@ def checkout():
     if not upi_id:
         return jsonify({"error":"Upi id not found for this admin"})
     
-    deeplink = f"upi://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order"
+    deeplink = f"intent://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order;package=com.phonepe.app;end"
 
     return jsonify({"deeplink":deeplink})
 
@@ -1044,21 +1044,27 @@ def staff_login():
         name = request.form.get('name')
         role = request.form.get('role')
         phone = request.form.get('contact')
-        cur.execute("SELECT name , restaurants_id FROM team WHERE name=%s AND role=%s AND phone=%s", (name, role, phone))
-        rows = cur.fetchone()
-        row = rows
-        result = row[0]
-        restaurant_id = row[1]
-
-        session['restaurants_id'] = restaurant_id
-        if result:
-            db_name = result
-            if db_name.lower() == name.lower():
-                return redirect(url_for('kitchen_dashboard', restaurant_id=restaurant_id))
+        if not name or not role or not phone:
+            return "Please enter all details!", 400 
+        try:
+            cur.execute(
+                "SELECT name, role, phone, restaurants_id FROM team WHERE name=%s AND role=%s AND phone=%s", 
+                (name, role, phone)
+            )
+            row = cur.fetchone() 
+            if row is None:
+                return "You have entered wrong details!", 401
+            
+            db_name, db_role, db_phone, restaurant_id = row
+            session['restaurants_id'] = restaurant_id
+            
+            return redirect(url_for('kitchen_dashboard', restaurant_id=restaurant_id))
         
-        return "You have entered wrong details!"
-    
-    return render_template("staff_login.html")
+        except Exception as e:
+            print(f"Database/Login Error: {e}")
+            return "An internal server error occurred during login.", 500
+        
+        return render_template("staff_login.html")
 
 
 
