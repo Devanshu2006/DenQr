@@ -791,7 +791,7 @@ def kitchen_dashboard():
     restaurant_name = session.get('restaurant_name')
     return render_template("kitchen_dashboard.html", restaurant_name = restaurant_name)
 
-@socketio('join')
+@socketio.on('join')
 def handle_join(data):
     restaurant_id = data['restaurant_id']
     join_room(str(restaurant_id))
