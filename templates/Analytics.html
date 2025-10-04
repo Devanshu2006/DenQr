@@ -81,133 +81,133 @@
             </div>
         </section>
         {%if not menu%}
-        <div class="section-header" style="display: none;">
-            <h2>Menu</h2>
-            <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('menuForm')"></i>
-        </div>
-        
-        <table class="menu-grid" method="POST" action="/show_menu">
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Category</th>
-            </tr>
+            <div class="section-header" style="display: none;">
+                <h2>Menu</h2>
+                <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('menuForm')"></i>
+            </div>
             
-            {% for item in menu %}
-            <tr>
-                <td class="Id">{{ item[0] }}</td>
-                <td class="Name">{{ item[3] }}</td>
-                <td class="price">{{ item[4] }}</td>
-                <td class="Category">{{ item[5] }}</td>
-            </tr>
-            {% endfor %}
-        </table> 
-        <div id="menuForm" class="hidden-form">
-            <h2>Edit Menu Items</h2>
-            <form class="delete_menu" method="POST" action="/delete_menu">
-                <label>Name:</label>
-                <input type="text" name="name" required><br>
-                <label>Price:</label> <input type="number" name="price" required><br>
-                <button type="submit" class="btn-submit">Remove</button>
-            </form> 
-        </div>
+            <table class="menu-grid" method="POST" action="/show_menu">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                </tr>
+                
+                {% for item in menu %}
+                <tr>
+                    <td class="Id">{{ item[0] }}</td>
+                    <td class="Name">{{ item[3] }}</td>
+                    <td class="price">{{ item[4] }}</td>
+                    <td class="Category">{{ item[5] }}</td>
+                </tr>
+                {% endfor %}
+            </table> 
+            <div id="menuForm" class="hidden-form">
+                <h2>Edit Menu Items</h2>
+                <form class="delete_menu" method="POST" action="/delete_menu">
+                    <label>Name:</label>
+                    <input type="text" name="name" required><br>
+                    <label>Price:</label> <input type="number" name="price" required><br>
+                    <button type="submit" class="btn-submit">Remove</button>
+                </form> 
+            </div>
         {%else%}
-        <div class="section-header">
-            <h2>Menu</h2>
-            <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('menuForm')"></i>
-        </div>
-        
-        <table class="menu-grid" method="POST" action="/show_menu">
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Category</th>
-            </tr>
+            <div class="section-header">
+                <h2>Menu</h2>
+                <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('menuForm')"></i>
+            </div>
             
-            {% for item in menu %}
-            <tr>
-                <td class="Id">{{ item[0] }}</td>
-                <td class="Name">{{ item[3] }}</td>
-                <td class="price">{{ item[4] }}</td>
-                <td class="Category">{{ item[5] }}</td>
-            </tr>
-            {% endfor %}
-        </table> 
-        <div id="menuForm" class="hidden-form">
-            <h2>Edit Menu Items</h2>
-            <form class="delete_menu" method="POST" action="/delete_menu">
-                <label>Name:</label>
-                <input type="text" name="name" required><br>
-                <label>Price:</label> <input type="number" name="price" required><br>
-                <button type="submit" class="btn-submit">Remove</button>
-            </form> 
-        </div>
+            <table class="menu-grid" method="POST" action="/show_menu">
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                </tr>
+                
+                {% for item in menu %}
+                <tr>
+                    <td class="Id">{{ item[0] }}</td>
+                    <td class="Name">{{ item[3] }}</td>
+                    <td class="price">{{ item[4] }}</td>
+                    <td class="Category">{{ item[5] }}</td>
+                </tr>
+                {% endfor %}
+            </table> 
+            <div id="menuForm" class="hidden-form">
+                <h2>Edit Menu Items</h2>
+                <form class="delete_menu" method="POST" action="/delete_menu">
+                    <label>Name:</label>
+                    <input type="text" name="name" required><br>
+                    <label>Price:</label> <input type="number" name="price" required><br>
+                    <button type="submit" class="btn-submit">Remove</button>
+                </form> 
+            </div>
         {%endif%}
 
         {%if not team%}
-        <div class="section-header" style="display: none;">
-                <h2>Team</h2> 
-                <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('teamForm')"></i>
-        </div> 
-            <table class="team-grid" method="POST" action="/show_team">
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Phone</th>
-                </tr>
-                {% for member in team %}
-                <tr>
-                    <td class="Id">{{ member[0] }}</td>
-                    <td class="Name">{{ member[2] }}</td>
-                    <td class="Role">{{ member[3] }}</td>
-                    <td class="Phone">{{ member[4] }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            <div id="teamForm" class="hidden-form">
-                <h2>Update Your Staff</h2>
-                <form class="delete_staff" method="POST" action="/delete_staff">
-                    <label>Name:</label>
-                    <input type="text" name="name" required><br>
-                    <label>Role:</label> <input type="text" name="role" required><br>
-                    <button type="submit" class="btn-submit">Remove</button>
-                </form>
+            <div class="section-header" style="display: none;">
+                    <h2>Team</h2> 
+                    <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('teamForm')"></i>
+            </div> 
+                <table class="team-grid" method="POST" action="/show_team">
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Phone</th>
+                    </tr>
+                    {% for member in team %}
+                    <tr>
+                        <td class="Id">{{ member[0] }}</td>
+                        <td class="Name">{{ member[2] }}</td>
+                        <td class="Role">{{ member[3] }}</td>
+                        <td class="Phone">{{ member[4] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div id="teamForm" class="hidden-form">
+                    <h2>Update Your Staff</h2>
+                    <form class="delete_staff" method="POST" action="/delete_staff">
+                        <label>Name:</label>
+                        <input type="text" name="name" required><br>
+                        <label>Role:</label> <input type="text" name="role" required><br>
+                        <button type="submit" class="btn-submit">Remove</button>
+                    </form>
+                </div>
             </div>
-        </div>
         {%else%}
-        <div class="section-header">
-                <h2>Team</h2> 
-                <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('teamForm')"></i>
-        </div> 
-            <table class="team-grid" method="POST" action="/show_team">
-                <tr>
-                    <th>Id</th>
-                    <th>Name</th>
-                    <th>Role</th>
-                    <th>Phone</th>
-                </tr>
-                {% for member in team %}
-                <tr>
-                    <td class="Id">{{ member[0] }}</td>
-                    <td class="Name">{{ member[2] }}</td>
-                    <td class="Role">{{ member[3] }}</td>
-                    <td class="Phone">{{ member[4] }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-            <div id="teamForm" class="hidden-form">
-                <h2>Update Your Staff</h2>
-                <form class="delete_staff" method="POST" action="/delete_staff">
-                    <label>Name:</label>
-                    <input type="text" name="name" required><br>
-                    <label>Role:</label> <input type="text" name="role" required><br>
-                    <button type="submit" class="btn-submit">Remove</button>
-                </form>
+            <div class="section-header">
+                    <h2>Team</h2> 
+                    <i class="fa-solid fa-pen-to-square edit-icon" onclick="toggleForm('teamForm')"></i>
+            </div> 
+                <table class="team-grid" method="POST" action="/show_team">
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Phone</th>
+                    </tr>
+                    {% for member in team %}
+                    <tr>
+                        <td class="Id">{{ member[0] }}</td>
+                        <td class="Name">{{ member[2] }}</td>
+                        <td class="Role">{{ member[3] }}</td>
+                        <td class="Phone">{{ member[4] }}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <div id="teamForm" class="hidden-form">
+                    <h2>Update Your Staff</h2>
+                    <form class="delete_staff" method="POST" action="/delete_staff">
+                        <label>Name:</label>
+                        <input type="text" name="name" required><br>
+                        <label>Role:</label> <input type="text" name="role" required><br>
+                        <button type="submit" class="btn-submit">Remove</button>
+                    </form>
+                </div>
             </div>
-        </div>
         {%endif%}
     </div>
 </div>
