@@ -83,6 +83,7 @@
   <audio id="newOrderSound" src="{{ url_for('static', filename='new order sound.mp3')}}" preload="auto"></audio>
   <script>
     const socket = io();
+    const restaurantId ="{{session['restaurant_id'] }}";
     const ordersDiv = document.getElementById("orders");
 
     
@@ -145,6 +146,7 @@
       } 
     });
 
+    socket.emit("join", {restaurant_id:restaurantId});
     socket.on("new_order", () => {
       console.log("📦 New order event received from server");
       fetchOrders();

@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 import psycopg2
 import os
 import razorpay
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
 import qrcode
@@ -791,6 +791,12 @@ def kitchen_dashboard():
     restaurant_name = session.get('restaurant_name')
     return render_template("kitchen_dashboard.html", restaurant_name = restaurant_name)
 
+@socketio('join')
+def handle_join(data):
+    restaurant_id = data['restaurant_id']
+    join_room(str(restaurant_id))
+    print(f"Restaurnt {restaurant_id} joined room")
+
 @app.route("/place_order", methods=['GET','POST'])
 def place_order():
     restaurant_name = session.get('restaurant_name')
@@ -825,7 +831,7 @@ def place_order():
 
             cur.execute('INSERT INTO order_items(order_id, menu_item_id, quantity, price) values (%s, %s, %s, %s)', (order_id, menu_item_id, quantity, price))
             conn.commit()
-        socketio.emit("new_order", {"message": "order placed"})
+        socketio.emit("new_order", {"message": "order placed"}, to=str(restaurants_id))
         pdf_base64 = generate_slip(restaurant_name, order_id, table_number, items, total_amount, txn_id)
         return jsonify({"message": "Thank You for the Order.","order_id": order_id, "status": status, "pdf_data": pdf_base64})
 
@@ -1064,7 +1070,7 @@ def staff_login():
             print(f"Database/Login Error: {e}")
             return "An internal server error occurred during login.", 500
         
-        return render_template("staff_login.html")
+    return render_template("staff_login.html")
 
 
 
