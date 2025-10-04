@@ -79,6 +79,17 @@
                     {% endfor %}
                 </div>
             </div>
+            <div class="card">
+                <h3>🤝 Speciality</h3>
+                <div class="card-body">
+                    {% for spe in special %}
+                    <div class="row">
+                        <span class="label">{{ spe[0] }}</span>
+                        <span class="value">₹ {{ spe[1] }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </section>
 
         {%if menu%}

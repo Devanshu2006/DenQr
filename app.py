@@ -187,9 +187,25 @@ def Analytics():
     orders_week = order_section(restaurants_id)
     money = revenue(restaurants_id)
     deletemenu = delete_menu()
+    special = speciality(restaurants_id)
     restaurant_name = session.get('restaurant_name')
     result = res(restaurants_id)
-    return render_template("Analytics.html", money=money, orders_week=orders_week, menu = menu,team=team, deletemenu = deletemenu, restaurant_name = restaurant_name, chart_data=result, plan_name=plan_name, status=status)
+    return render_template("Analytics.html", money=money, orders_week=orders_week, special=special, menu = menu,team=team, deletemenu = deletemenu, restaurant_name = restaurant_name, chart_data=result, plan_name=plan_name, status=status)
+
+def speciality(restaurant_id):
+    if not restaurant_id:
+        return "Restaurant is not registered"
+    cur = conn.cursor()
+    cur.execute("""select m.item_name,count(oi.menu_item_id) as Amount
+                from order_items oi
+                join menu m on oi.menu_item_id=m.id
+                where oi.restaurant_id=%s
+                group by m.item_name
+                order by Amount desc
+                limit 5;""",(restaurant_id))
+    top_items = cur.fetchall()
+    return top_items
+
 
 def res(restaurant_id):
     if not restaurant_id:
