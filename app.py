@@ -202,7 +202,7 @@ def speciality(restaurant_id):
                 where oi.restaurant_id=%s
                 group by m.item_name
                 order by Amount desc
-                limit 5;""",(restaurant_id))
+                limit 5;""",(restaurant_id,))
     top_items = cur.fetchall()
     return top_items
 
