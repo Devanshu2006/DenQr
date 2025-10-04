@@ -950,7 +950,7 @@ def get_upi():
 def get_admin_upi(admin_id):
     cur = conn.cursor()
     cur.execute("SELECT upi_id from payment_credentials where admin_id = %s", (admin_id,))
-    row = cur.fetchone()
+    row = cur.fetchone()[0]
     return row if row else None
 
 @app.route('/checkout', methods=['GET','POST'])
