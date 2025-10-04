@@ -962,7 +962,7 @@ def checkout():
     if not upi_id:
         return jsonify({"error":"Upi id not found for this admin"})
     
-    deeplink = f"intent://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order;package=com.phonepe.app;end"
+    deeplink = f"intent://pay?pa={upi_id}&pn=Restaurant&am={total_amount}&cu=INR&tn=Food%2Order#Intent;scheme=upi;package=com.phonepe.app;end"
 
     return jsonify({"deeplink":deeplink})
 
