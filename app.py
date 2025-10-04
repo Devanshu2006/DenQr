@@ -294,12 +294,12 @@ def revenue(restaurant_id):
     cur = conn.cursor()
     if restaurant_id:
         cur.execute("""SELECT
-                    TO_CHAR(order_time,'%d-%m-%Y') AS Month,
+                    TO_CHAR(order_time,'MM-YYYY') AS Month,
                     SUM(total_amount) as total_amount
                     from orders
                     where restaurant_id = %s
-                    GROUP BY Month
-                    ORDER BY Month;""", (restaurant_id,))
+                    GROUP BY TO_CHAR(order_time, 'MM-YYYY')
+                    ORDER BY MIN(order_time);""", (restaurant_id,))
         
         money = cur.fetchall()
         return money
