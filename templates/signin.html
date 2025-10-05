@@ -3,58 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - Secure Access</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
-    </head>
+    <title>Login page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
 <body>
     <div class="container-form">
-        <form id="login-form" method="POST" action="/login"> 
-            
-            <h3>Welcome Back! Please Log In.</h3>
+        <form id="form-work" method="POST" action="/login">
+            <h3>Welcom Back!</h3>
 
-            {% if error %}
-                <p class="error-message" role="alert">{{ error }}</p>
-            {% endif %}
-
-            <div class="input-group">
-                <input 
-                    type="text" 
-                    id="username" 
-                    name="username" 
-                    placeholder="Enter your Email or Phone" 
-                    required 
-                    autocomplete="email"> 
-                
-                <label for="username">Email / Phone:</label> 
+            {%if error %}
+                <p style="color: red; font-weight: bold; display: block;">{{ error }}</p>
+            {%endif%}
+                <div class="input-group">
+                <input type="text" id="username" name="username">
+                <label for="username">Email/Phone:</label>
             </div>
 
             <div class="input-group">
-                <input 
-                    type="password" 
-                    id="password" 
-                    name="password" 
-                    placeholder="Enter your Password" 
-                    required 
-                    autocomplete="current-password">
+                <input type="password" id="password" name="password">
                 <label for="password">Password:</label>
             </div>
-            
-            <div class="forgot-password">
-                <a href="/forgot_password">Forgot Password?</a>
+            <div class="resetpassword">
+                Forget Password?
+                <a href="/resepassord">reset</a>
             </div>
 
-            <button type="submit" class="primary-button">
-                Log In
-            </button>
-
-            <p class="account-link">
-                Don't have an account? <a href="/Admin">Create Account</a>
-            </p>
-            
-            <p class="account-link staff-link">
-                Logging in as Kitchen Staff? <a href="/staff_login">Click Here</a>
-            </p>
-            
+            <button type="submit" class="Button" value="Submit">Login</button>
+            <p class="signin-text">Login as kitchen staff ? <a href="/staff_login">login</a></p>
+            <br>
+            <p class="signin-text">Don't have an account? <a href="/Admin">Create Account</a></p><br>
         </form>
     </div>
 </body>
