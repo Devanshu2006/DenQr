@@ -966,7 +966,7 @@ def get_upi():
         cur = conn.cursor()
         upi_id = request.form.get('upi_id')
 
-        cur.execute("INSERT INTO payment_credentials (admin_id, upi_id, restaurant_id) values(%s, %s)",(admin_id, upi_id, restaurant_id))
+        cur.execute("INSERT INTO payment_credentials (admin_id, upi_id, restaurant_id) values(%s, %s, %s)",(admin_id, upi_id, restaurant_id))
         conn.commit()
         return "All Set To Recive Payments"
     return redirect(url_for('settings'))
