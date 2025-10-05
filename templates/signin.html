@@ -30,12 +30,5 @@
             <br>
         </form>
     </div>
-<script>
-    fetch("/login",{
-        method: 'POST'
-    })
-    .then(res => res.json())
-    .then(data => showToast(data.error))
-</script>
 </body>
 </html>
