@@ -25,7 +25,25 @@
       color: rgb(40, 8, 8);
     }
 
-    .tabs { display: flex; gap: 15px; cursor: pointer; margin-bottom: 15px; justify-content:center; flex-wrap:wrap; }
+    div#tabs {
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+    }
+    .tabs { 
+      display: -webkit-box; 
+      gap: 15px; 
+      cursor: pointer; 
+      margin-bottom: 15px; 
+      justify-content:center; 
+      flex-wrap:wrap; 
+      scroll-snap-align: start;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar {
+      display: none;
+    }
+    
     .tab { padding: 10px 15px; border-radius: 8px; background: #f1f1f1; transition: 0.3s; }
     .tab.active { background: #4CAF50; color: white; transform: scale(1.05); }
 
