@@ -199,7 +199,7 @@ def speciality(restaurant_id):
     cur.execute("""select m.item_name,count(oi.menu_item_id) as Amount
                 from order_items oi
                 join menu m on oi.menu_item_id=m.id
-                where oi.restaurant_id=%s
+                where m.restaurants_id=%s
                 group by m.item_name
                 order by Amount desc
                 limit 5;""",(restaurant_id,))
