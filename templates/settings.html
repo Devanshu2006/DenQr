@@ -149,17 +149,19 @@
 <div class="settings-container">
 
     
-
-    <div  class="settings-card danger-zone">
-        <h3>Delete Your Account</h3>
-        <p>
-            This action is permanent and cannot be undone. Deleting your account will erase all of your , Branch information, Menu, Payment details Permanently.
-        </p>
-        <form method="POST" action="/settings">
-            <button type="submit" class="btn btn-danger">Delete Account</button>
+    <div class="settings-card">
+        <button type="button" class="dropdown-toggle" id="accountToggle">
+            Account Information
+        </button>
+        <form class="dropdown-panel" id="accountPanel" method="POST" action="/Account_info">
+            <ul>
+                <li>Admin id : {{admin_id}}</li>
+                <li>restaurant_id : {{restaurant_id}}</li>
+            </ul>
         </form>
     </div>
 
+    
     <div class="settings-card">
         <h3>Payment Information</h3>
         <button type="button" class="dropdown-toggle" id="paymentToggle">
@@ -170,7 +172,7 @@
             <button type="submit" class="btn btn-primary">Submit UPI ID</button>
         </form>
     </div>
-
+    
     <div class="settings-card">
         <button type="button" class="dropdown-toggle" id="clearToggle">
             Update UPI-ID
@@ -180,9 +182,8 @@
             <button type="submit" class="btn btn-primary">Update UPI ID</button>
         </form>
     </div>
-
+    
     <div class="settings-card">
-        <!-- <h3>Update Your Password</h3> -->
         <button type="button" class="dropdown-toggle" id="resetPassword">
             Change Password
         </button>
@@ -194,16 +195,14 @@
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>
-
-    <div class="settings-card">
-        <button type="button" class="dropdown-toggle" id="accountToggle">
-            Account Information
-        </button>
-        <form class="dropdown-panel" id="accountPanel" method="POST" action="/Account_info">
-            <ul>
-                <li>Admin id : {{admin_id}}</li>
-                <li>restaurant_id : {{restaurant_id}}</li>
-            </ul>
+    
+    <div  class="settings-card danger-zone">
+        <h3>Delete Your Account</h3>
+        <p>
+            This action is permanent and cannot be undone. Deleting your account will erase all of your , Branch information, Menu, Payment details Permanently.
+        </p>
+        <form method="POST" action="/settings">
+            <button type="submit" class="btn btn-danger">Delete Account</button>
         </form>
     </div>
 

@@ -452,8 +452,8 @@ def signin():
                 return subscription_check
             return redirect(url_for('Analytics'))
         else:
-            return "Invalid credentials. Please try again."
-    return render_template('signin.html')
+            error = "invalid email or password"
+    return render_template('signin.html', error=error)
 
 @app.route('/main_dashboard', methods=['GET', 'POST'])
 def main_dashboard():

@@ -12,7 +12,10 @@
             <h3>Please Login to your account.</h3>
 
             <p class="signin-text">Don't have an account? <a href="/Admin">Create Account</a></p><br>
-            <div class="input-group">
+            {%if error%}
+                <p style="color: red; font-weight: bold;">{{ error }}</p>
+            {%endif%}
+                <div class="input-group">
                 <input type="text" id="username" name="username">
                 <label for="username">Email/Phone:</label>
             </div>
@@ -27,6 +30,12 @@
             <br>
         </form>
     </div>
-    
+<script>
+    fetch("/login",{
+        method: 'POST'
+    })
+    .then(res => res.json())
+    .then(data => showToast(data.error))
+</script>
 </body>
 </html>
