@@ -471,7 +471,7 @@ def check_admin():
     cur.execute("select start_at, end_at, status, active from subscriptions where admin_id=%s", (admin_id,))
     rows = cur.fetchall()
     if not rows:
-        return "Please take a subscription plan." 
+        return redirect(url_for('signin'))
         
     row = rows[0] 
     start_at = row[0]
