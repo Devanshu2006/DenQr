@@ -27,8 +27,8 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("""ALTER table payment_credentials
-                    add column restaurant_id int not null references restaurants(id) on delete cascade;""")
+    cur.execute("""drop table if exists payment_credentials;
+                """)
     conn.commit()
 
 
@@ -97,6 +97,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS payment_credentials(
             id serial primary key,
             admin_id int not null references admins(id) on delete cascade,
+            restaurant_id int not null references restaurants(id) on delete cascade,
             upi_id varchar(100),
             created_at timestamp default current_timestamp,
             updated_at timestamp default current_timestamp
@@ -768,7 +769,6 @@ def orderpage(token):
     session['table_number']=table_number
     session['restaurant_name']=restaurant_name
     session['restaurants_id']=restaurant_id
-    session['admin_id']=admin_id
 
     if not restaurant_id:
         return "didnt get admin_id"
@@ -959,29 +959,30 @@ def update_status():
 @app.route('/get_upi', methods=['GET','POST'])
 def get_upi():
     admin_id = session.get('admin_id')
+    restaurant_id = session.get('restaurants_id')
     if request.method == 'POST':
         if not admin_id:
             return redirect(url_for('signin'))
         cur = conn.cursor()
         upi_id = request.form.get('upi_id')
 
-        cur.execute("INSERT INTO payment_credentials (admin_id, upi_id) values(%s, %s)",(admin_id, upi_id))
+        cur.execute("INSERT INTO payment_credentials (admin_id, upi_id, restaurant_id) values(%s, %s)",(admin_id, upi_id, restaurant_id))
         conn.commit()
         return "All Set To Recive Payments"
     return redirect(url_for('settings'))
 
-def get_admin_upi(admin_id):
+def get_admin_upi(restaurant_id):
     cur = conn.cursor()
-    cur.execute("SELECT upi_id from payment_credentials where admin_id = %s", (admin_id,))
+    cur.execute("SELECT upi_id from payment_credentials where restaurant_id = %s", (restaurant_id,))
     row = cur.fetchone()[0]
     return row if row else None
 
 @app.route('/checkout', methods=['GET','POST'])
 def checkout():
     data = request.json
-    admin_id = session.get('admin_id')
+    restaurant_id = session.get('restaurants_id')
     total_amount = data.get('total_amount')
-    upi_id = get_admin_upi(admin_id)
+    upi_id = get_admin_upi(restaurant_id)
     if not upi_id:
         return jsonify({"error":"Upi id not found for this admin"})
     
@@ -1028,7 +1029,8 @@ def update_upi():
         cur = conn.cursor()
         upi_id = request.form.get('upi_id')
         admin_id = session.get('admin_id')
-        cur.execute("Update payment_credentials SET upi_id=%s where admin_id=%s", (upi_id, admin_id))
+        restaurant_id = session.get('restaurants_id')
+        cur.execute("Update payment_credentials SET upi_id=%s where admin_id=%s and restaurant_id=%s", (upi_id, admin_id, restaurant_id))
         conn.commit()
         cur.close()
         return "UPI has been updated successfully."
