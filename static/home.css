@@ -79,17 +79,16 @@ h3 {
 }
 
 .signin-text {
-    text-align: left;
+    text-align: center;
     margin-top: 15px;
 }
-p.signin-text {
-    padding: 0;
-    margin: 0;
-}
+
 .resetpassword{
     padding: 0;
     margin-top: 2px;
+    font-size: 11px;
     text-align: right;
+    color: #8e8eed;
 }
 .signin-text a {
     color: #8e8eed;

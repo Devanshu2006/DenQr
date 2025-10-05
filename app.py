@@ -801,7 +801,7 @@ def fetch_menu(restaurant_id):
 def kitchen_dashboard():
     cur = conn.cursor()
     restaurant_id = session.get('restaurants_id')
-    cur.execute("select restaurant_name form restaurants where id=%s",(restaurant_id,))
+    cur.execute("select restaurant_name from restaurants where id=%s",(restaurant_id,))
     restaurant_name = cur.fetchone()[0]
     return render_template("kitchen_dashboard.html", restaurant_name = restaurant_name)
 
