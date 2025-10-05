@@ -799,10 +799,10 @@ def fetch_menu(restaurant_id):
 
 @app.route("/kitchen_dashboard")
 def kitchen_dashboard():
-    # subscription_check = check_admin()
-    # if subscription_check is not None:
-    #     return subscription_check 
-    restaurant_name = session.get('restaurant_name')
+    cur = conn.cursor()
+    restaurant_id = session.get('restaurants_id')
+    cur.execute("select restaurant_name form restaurants where id=%s",(restaurant_id,))
+    restaurant_name = cur.fetchone()[0]
     return render_template("kitchen_dashboard.html", restaurant_name = restaurant_name)
 
 @socketio.on('join')
