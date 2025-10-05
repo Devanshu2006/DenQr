@@ -27,7 +27,8 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("ALTER DATABASE oddz_7d2m Set timezone = 'Asia/Kolkata';")
+    cur.execute("""ALTER table payment_credentials
+                    add column restaurant_id int not null references restaurants(id) on delete cascade;""")
     conn.commit()
 
 
