@@ -27,10 +27,6 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("""drop table if exists payment_credentials;
-                """)
-    conn.commit()
-
 
     cur.execute("""
 
@@ -1103,4 +1099,4 @@ def add_header(response):
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 10000))
-    socketio.run(app, host="0.0.0.0", port=port)
+    socketio.run(app, host="0.0.0.0", port=port, debug=True)
