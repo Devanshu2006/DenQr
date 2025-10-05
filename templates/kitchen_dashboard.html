@@ -145,7 +145,7 @@
       } 
     });
 
-    const restaurantId = "{{ session['restaurant_id'] }}";
+    const restaurantId = "{{ session['restaurants_id']}}";
     socket.emit("join", { restaurant_id: restaurantId });
     socket.on("new_order", () => {
       console.log("📦 New order event received from server");
