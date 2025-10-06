@@ -31,7 +31,8 @@ conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
 def init_db():
-    cur = conn.cursor("""
+    cur = conn.cursor()
+    cur.execute("""
                     CREATE TABLE IF NOT EXISTS reset_tokens (
                     id serial PRIMARY KEY,
                     email VARCHAR(255) NOT NULL,
