@@ -1113,7 +1113,7 @@ def send_reset_email(user_email, token):
     reset_link = f"https://denqr.onrender.com/reset_password/{token}"
     params = {
         "from": "DenQr <onboarding@resend.dev>",
-        "to": [user_email],
+        "to": "devanshupawar2006@gail.com",
         "subject":"password reset request",
         "html":f"""
             <h3>Password Reset</h3>
