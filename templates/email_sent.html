@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Sent</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+    <div class="container-form" style="text-align: center;">
+        <h3>A password reset link has been sent to {{ email }}.</h3>
+        <p>please check your inbox and click the link to reset your password.</p>
+    </div>
+</body>
+</html>

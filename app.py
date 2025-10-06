@@ -1,8 +1,10 @@
 import eventlet
 eventlet.monkey_patch()
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify, json
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, json, flash
 from flask_sqlalchemy import SQLAlchemy
 import psycopg2
+from flask_mail import Mail, Message
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import os
 import razorpay
 from flask_socketio import SocketIO, emit, join_room
@@ -122,7 +124,13 @@ def init_db():
 with app.app_context():
     init_db()
 
-# app = Flask("__main__")
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'denqrorg.in@gmail.com'
+app.config['MAIL_PASSWORD'] = 'ydni tyfx zdrn umxk'
+mail = Mail(app)
+s= URLSafeTimedSerializer(app.secret_key)
 
 client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
 
@@ -1088,6 +1096,54 @@ def staff_login():
         
     return render_template("staff_login.html")
 
+@app.route('/forgot_password', methods=['GET','POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM admins where email=%s",(email,))
+        user = cur.fetchone()
+        cur.close()
+
+        if user:
+            token = s.dumps(email, salt='password-reset-salt')
+            reset_link = url_for('reset_password', token=token, _external=True)
+
+            msg = Message('Password Reset Request',
+                          sender='denqrorg.in@gmail.com',
+                          recipients=[email])
+            msg.body = f"Hello,\nClick the link below to reset your DenQr Account password:\n{reset_link}\n\nThis link expires in 30 minutes."
+            mail.send(msg)
+            
+            return render_template('email_sent.html', email=email)
+        else:
+            flash("No account found with that email.","danger")
+    return render_template("forgot_password.html")
+
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='password-reset-salt', max_age=30)
+    except Exception:
+        flash('The reset link is invalid or expired.', 'danger')
+        return redirect(url_for('forgot_password'))
+    error = None
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        if new_password != confirm_password:
+            error = "Incorrect Password"
+            return 500
+        hashed_password = generate_password_hash(new_password)
+        cur = conn.cursor()
+        cur.execute("Update admins set password = %s where email = %s", (hashed_password, email))
+        conn.commit()
+        cur.close()
+
+        flash('Your Password has been updated successfully!', 'success')
+        return redirect(url_for('signin'))
+    
+    return render_template('reset_password.html', email=email, error=error)
 
 
 @app.after_request
