@@ -126,7 +126,7 @@ def init_db():
 with app.app_context():
     init_db()
 
-SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+SENDGRID_API_KEY = "re_FJhM8V47_9q9ku17hZQZpS7vPuWLYpgNLre_FR3DocJZ_82TQwWAoENyfmZWrHeacbqGP"
 SENDER_EMAIL = "noreply@denqr.com"
 s= URLSafeTimedSerializer(app.secret_key)
 
