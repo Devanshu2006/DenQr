@@ -17,10 +17,12 @@ import encodings
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from datetime import datetime, timedelta
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 app = Flask(__name__, template_folder="templates")
 print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
-app.secret_key = "my_dream_project_of_2006"
+app.secret_key = os.environ.get('APP_SECRET_KEY')
 socketio = SocketIO(app)
 
 DATABASE_URL = "postgresql://oddz_7d2m_user:XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw@dpg-d3f1mo15pdvs73ccof50-a/oddz_7d2m"
@@ -124,12 +126,8 @@ def init_db():
 with app.app_context():
     init_db()
 
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'denqrorg.in@gmail.com'
-app.config['MAIL_PASSWORD'] = 'ydni tyfx zdrn umxk'
-mail = Mail(app)
+SENDGRID_API_KEY = os.environ.get('SENDGRID_API_KEY')
+SENDER_EMAIL = "noreply@denqr.com"
 s= URLSafeTimedSerializer(app.secret_key)
 
 client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
@@ -1100,6 +1098,27 @@ def staff_login():
 def email_sent():
     return render_template("email_sent")
 
+def send_reset_email(user_email, token):
+    reset_link = url_for('reset_password', token=token, _external=True)
+    message = Mail(
+        from_email=SENDER_EMAIL,
+        to_emails=user_email,
+        subject="Password Reset Requests",
+        html_content=f"""
+                        <h3>Password Reset</h3>
+                        <p>Click the link below to reset your password:</p>
+                        <a href="{reset_link}">{reset_link}</a>
+                        <p>If you did't request this ignore this email.</p>"""
+    )
+    try:
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        sg.send(message)
+        print("✅ Email sent successfully")
+    except Exception as e:
+        print(f"❌ Error sending email : {e}")
+        raise e
+
+
 @app.route('/forgot_password', methods=['GET','POST'])
 def forgot_password():
     if request.method == 'POST':
@@ -1111,14 +1130,11 @@ def forgot_password():
 
         if user:
             token = s.dumps(email, salt='password-reset-salt')
-            reset_link = url_for('reset_password', token=token, _external=True)
-
-            msg = Message('Password Reset Request',
-                          sender='denqrorg.in@gmail.com',
-                          recipients=[email])
-            msg.body = f"Hello,\nClick the link below to reset your DenQr Account password:\n{reset_link}\n\nThis link expires in 30 minutes."
-            mail.send(msg)
-            
+            try:
+                send_reset_email(email, token)
+            except:
+                flash("Error Sending email. Try again later.","danger")
+                return redirect(url_for('forgot_password'))
             return render_template('email_sent.html', email=email)
         else:
             flash("No account found with that email.","danger")
