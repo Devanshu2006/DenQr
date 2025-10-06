@@ -17,8 +17,9 @@ import encodings
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from datetime import datetime, timedelta
-from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+import resend
+# from sendgrid import SendGridAPIClient
+# from sendgrid.helpers.mail import Mail
 
 app = Flask(__name__, template_folder="templates")
 print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
@@ -30,7 +31,15 @@ conn = psycopg2.connect(DATABASE_URL)
 cur = conn.cursor()
 
 def init_db():
-    cur = conn.cursor()
+    cur = conn.cursor("""
+                    CREATE TABLE IF NOT EXISTS reset_tokens (
+                    id serial PRIMARY KEY,
+                    email VARCHAR(255) NOT NULL,
+                    token VARCHAR(255) NOT NULL,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+    """)
+    conn.commit()
 
     cur.execute("""
 
@@ -126,8 +135,9 @@ def init_db():
 with app.app_context():
     init_db()
 
-SENDGRID_API_KEY = "SG.re_FJhM8V47_9q9ku17hZQZpS7vPuWLYpgNLre_FR3DocJZ_82TQwWAoENyfmZWrHeacbqGP"
-SENDER_EMAIL = "devanshupawar2006@gmail.com"
+# SENDGRID_API_KEY = "SG.re_FJhM8V47_9q9ku17hZQZpS7vPuWLYpgNLre_FR3DocJZ_82TQwWAoENyfmZWrHeacbqGP"
+# SENDER_EMAIL = "devanshupawar2006@gmail.com"
+resend.api_key = "re_FJhM8V47_9q9ku17hZQZpS7vPuWLYpgNLre_FR3DocJZ_82TQwWAoENyfmZWrHeacbqGP"
 s= URLSafeTimedSerializer(app.secret_key)
 
 client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
@@ -1099,20 +1109,19 @@ def email_sent():
     return render_template("email_sent")
 
 def send_reset_email(user_email, token):
-    reset_link = url_for('reset_password', token=token, _external=True)
-    message = Mail(
-        from_email=SENDER_EMAIL,
-        to_emails=user_email,
-        subject="Password Reset Requests",
-        html_content=f"""
-                        <h3>Password Reset</h3>
-                        <p>Click the link below to reset your password:</p>
-                        <a href="{reset_link}">{reset_link}</a>
-                        <p>If you did't request this ignore this email.</p>"""
-    )
+    reset_link = f"https://denqr.onrender.com/reset_password/{token}"
+    params = {
+        "from": "DenQr <noreply@denqr.com>",
+        "to": [user_email],
+        "subject":"password reset request",
+        "html":f"""
+            <h3>Password Reset</h3>
+            <p>Click the link below to reset your password:</p>
+            <a href="{reset_link}">{reset_link}</a>
+            <p>If you did't request this ignore this email.</p>"""
+    }
     try:
-        sg = SendGridAPIClient(SENDGRID_API_KEY)
-        sg.send(message)
+        email = resend.Emails.send(params)
         print("✅ Email sent successfully")
     except Exception as e:
         print(f"❌ Error sending email : {e}")
@@ -1129,15 +1138,17 @@ def forgot_password():
         cur.close()
 
         if user:
-            token = s.dumps(email, salt='password-reset-salt')
-            try:
-                send_reset_email(email, token)
-            except:
-                flash("Error Sending email. Try again later.","danger")
-                return redirect(url_for('forgot_password'))
-            return render_template('email_sent.html', email=email)
+            token = s.dumps(email, salt="reset-password")
+            cur.execute("INSERT INTO reset_tokens(email, token) VALUES (%s, %s)",(email, token),)
+            conn.commit()
+
+            send_reset_email(email, token)
+            flash("✅ Reset link sent to your email!", "success")
         else:
             flash("No account found with that email.","danger")
+        
+        cur.close()
+        return redirect(url_for('forgot_password'))
     return render_template("forgot_password.html")
 
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
@@ -1148,6 +1159,12 @@ def reset_password(token):
         flash('The reset link is invalid or expired.', 'danger')
         return redirect(url_for('forgot_password'))
     error = None
+    cur = conn.cursor()
+    cur.execute("select * from reset_tokens where token = %s", (token,))
+    token_row = cur.fetchone()
+    if not token_row:
+        flash("⚠️ Invalid or expired token.", "danger")
+        return redirect(url_for('signin'))
     if request.method == 'POST':
         new_password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
