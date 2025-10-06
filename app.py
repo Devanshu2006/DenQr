@@ -1136,7 +1136,6 @@ def forgot_password():
         cur = conn.cursor()
         cur.execute("SELECT * FROM admins where email=%s",(email,))
         user = cur.fetchone()
-        cur.close()
 
         if user:
             token = s.dumps(email, salt="reset-password")
