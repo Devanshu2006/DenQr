@@ -138,7 +138,7 @@ with app.app_context():
 
 # SENDGRID_API_KEY = "SG.re_FJhM8V47_9q9ku17hZQZpS7vPuWLYpgNLre_FR3DocJZ_82TQwWAoENyfmZWrHeacbqGP"
 # SENDER_EMAIL = "devanshupawar2006@gmail.com"
-resend.api_key = "re_FJhM8V47_9q9ku17hZQZpS7vPuWLYpgNLre_FR3DocJZ_82TQwWAoENyfmZWrHeacbqGP"
+resend.api_key = "re_bJ379Dea_JsDw4XVHsYXEtUzRnug7w6pi"
 s= URLSafeTimedSerializer(app.secret_key)
 
 client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
