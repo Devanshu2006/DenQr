@@ -138,7 +138,7 @@ with app.app_context():
 
 # SENDGRID_API_KEY = "SG.re_FJhM8V47_9q9ku17hZQZpS7vPuWLYpgNLre_FR3DocJZ_82TQwWAoENyfmZWrHeacbqGP"
 # SENDER_EMAIL = "devanshupawar2006@gmail.com"
-resend.api_key = "re_bJ379Dea_JsDw4XVHsYXEtUzRnug7w6pi"
+resend.api_key = "re_DzzShbJw_KszVBthicYZhNVhqiJnmKzsy"
 s= URLSafeTimedSerializer(app.secret_key)
 
 client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
@@ -1112,7 +1112,7 @@ def email_sent():
 def send_reset_email(user_email, token):
     reset_link = f"https://denqr.onrender.com/reset_password/{token}"
     params = {
-        "from": "DenQr <noreply@denqr.com>",
+        "from": "onboarding@resend.dev",
         "to": [user_email],
         "subject":"password reset request",
         "html":f"""
