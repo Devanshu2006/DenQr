@@ -1096,6 +1096,10 @@ def staff_login():
         
     return render_template("staff_login.html")
 
+@app.route('/email_sent')
+def email_sent():
+    return render_template("email_sent")
+
 @app.route('/forgot_password', methods=['GET','POST'])
 def forgot_password():
     if request.method == 'POST':
