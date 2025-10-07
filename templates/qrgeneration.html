@@ -129,7 +129,7 @@ button:hover {
                     const linkSource = `data:application/pdf;base64,${result.pdf_data}`;
                     const downloadLink = document.createElement("a")
                     downloadLink.href = linkSource;
-                    downloadLink.download = `QR pdf`;
+                    downloadLink.download = "Qr Codes.pdf";
                     downloadLink.click();
                 });
             } else {
