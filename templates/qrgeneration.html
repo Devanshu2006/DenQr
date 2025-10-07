@@ -120,17 +120,17 @@ button:hover {
                     pagetitlelink.target = "_blank";
                     qrCard.appendChild(pagetitlelink);
 
-                    // const downloadLink = document.createElement("a");
-                    // downloadLink.href = qr.image;
-                    // downloadLink.download = qr.path;
-                    // container.appendChild(qrCard);
-                    // downloadLink.click();
-
-                    const linkSource = `data:application/pdf;base64,${result.pdf_data}`;
-                    const downloadLink = document.createElement("a")
-                    downloadLink.href = linkSource;
-                    downloadLink.download = "Qr Codes.pdf";
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = qr.image;
+                    downloadLink.download = qr.path;
+                    container.appendChild(qrCard);
                     downloadLink.click();
+
+                    // const linkSource = `data:application/pdf;base64,${result.pdf_data}`;
+                    // const downloadLink = document.createElement("a")
+                    // downloadLink.href = linkSource;
+                    // downloadLink.download = "Qr Codes.pdf";
+                    // downloadLink.click();
                 });
             } else {
                 container.innerHTML = "<p>No QR codes were generated.</p>";
