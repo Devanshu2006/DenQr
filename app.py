@@ -598,8 +598,18 @@ def generate_qrs_json():
         plan_name = row[0]
         status = row[1]
 
-    if plan_name == 'trail' or table_Count <= 10:
+    plan_limits = {
+        'trail': 10,
+        'basic': 6,
+        'moderate': 12,
+        'Premium': float('inf')
+    }
+
+    max_tables = plan_limits.get(plan_name, 0)
+
+    if table_Count <= max_tables:
         qr_data = []
+
         for i in range(1, table_Count + 1):
             unique_token = str(uuid.uuid4())
 
@@ -626,131 +636,39 @@ def generate_qrs_json():
             img_data = f"data:image/png;base64,{qr_base64}"
 
             qr_data.append({"path": filename,"link": link, "image":img_data})
-            
-        return jsonify({"message": "QR Codes Generated", "qrs":qr_data})
-    
-    elif plan_name == 'basic' and table_Count <= 5:
-    
-        qr_data = []
-        for i in range(1, table_Count + 1):
-            unique_token = str(uuid.uuid4())
+        cur.close() 
 
-            cur.execute("""INSERT INTO qr_token (token, admin_id, restaurant_id, table_number)
-                        VALUES (%s, %s, %s, %s)
-                        ON CONFLICT (restaurant_id, table_number) DO UPDATE SET token = EXCLUDED.token;""", (unique_token, admin_id, restaurants_id, i))
-            
-            conn.commit()
-            link = url_for(
-                'orderpage',
-                token=unique_token,
-                _external=True
-            )
 
-            qr = qrcode.make(link)
-            filename = f'qr_{restaurants_id}_{i}.png'
-                
+        pdf_buffer = io.BytesIO()
+        pdf = canvas.Canvas(pdf_buffer, pagesize=A4)
+        width, height = A4
 
-            buffer = io.BytesIO()
-            qr.save(buffer, format="PNG")
-            buffer.seek(0)
+        x, y = 50, height -100
+        qr_size = 150
+        margin = 50
 
-            qr_base64 = base64.b64encode(buffer.read()).decode("utf-8")
-            img_data = f"data:image/png;base64,{qr_base64}"
+        for item in qr_data:
+            img_bytes = base64.b64decode(item['image'].split(',')[1])
+            img_buffer = io.BytesIO(img_bytes)
 
-            qr_data.append({"path": filename,"link": link, "image":img_data})
-            
-        return jsonify({"message": "QR Codes Generated", "qrs":qr_data})
-        
+            pdf.drawInlineImage(img_buffer, x, y - qr_size, qr_size, qr_size, qr_size)
+            pdf.drawString(x, y - qr_size - 15, item['item'])
 
-    elif plan_name == 'moderate' and table_Count<=10:
-        qr_data = []
-        for i in range(1, table_Count + 1):
-            unique_token = str(uuid.uuid4())
+            x += qr_size + margin
+            if x + qr_size > width:
+                x = 50
+                y -= qr_size + 50
+                if y - qr_size < 50:
+                    pdf.showPage()
+                    x, y = 50, height - 100
+        pdf.save()
+        pdf_buffer.seek(0)
+        pdf_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-            cur.execute("""INSERT INTO qr_token (token, admin_id, restaurant_id, table_number)
-                        VALUES (%s, %s, %s, %s)
-                        ON CONFLICT (restaurant_id, table_number) DO UPDATE SET token = EXCLUDED.token;""", (unique_token, admin_id, restaurants_id, i))
-            
-            conn.commit()
-            link = url_for(
-                'orderpage',
-                token=unique_token,
-                _external=True
-            )
-            qr = qrcode.make(link)
-            filename = f'qr_{restaurants_id}_{i}.png'
-                
-
-            buffer = io.BytesIO()
-            qr.save(buffer, format="PNG")
-            buffer.seek(0)
-
-            qr_base64 = base64.b64encode(buffer.read()).decode("utf-8")
-            img_data = f"data:image/png;base64,{qr_base64}"
-
-            qr_data.append({"path": filename,"link": link, "image":img_data})
-            
-        return jsonify({"message": "QR Codes Generated", "qrs":qr_data})
-
-    elif plan_name == 'standard':
-        qr_data = []
-        for i in range(1, table_Count + 1):
-            unique_token = str(uuid.uuid4())
-
-            cur.execute("""INSERT INTO qr_token (token, admin_id, restaurant_id, table_number)
-                        VALUES (%s, %s, %s, %s)
-                        ON CONFLICT (restaurant_id, table_number) DO UPDATE SET token = EXCLUDED.token;""", (unique_token, admin_id, restaurants_id, i))
-            
-            conn.commit()
-            link = url_for(
-                'orderpage',
-                token=unique_token,
-                _external=True
-            )
-
-            qr = qrcode.make(link)
-            filename = f'qr_{restaurants_id}_{i}.png'
-                
-
-            buffer = io.BytesIO()
-            qr.save(buffer, format="PNG")
-            buffer.seek(0)
-
-            qr_base64 = base64.b64encode(buffer.read()).decode("utf-8")
-            img_data = f"data:image/png;base64,{qr_base64}"
-
-            qr_data.append({"path": filename,"link": link, "image":img_data})
-            
-        return jsonify({"message": "QR Codes Generated", "qrs":qr_data})
-    
+        return jsonify({"pdf": True, "qrs": qr_data, "pdf_data":pdf_base64})
     else:
         return jsonify({'error':"You Are Accsseding the QR generation Limit."})
 
-
-    # qr_data = []
-    # for i in range(1, table_Count + 1):
-    #     link = url_for(
-    #         'orderpage',
-    #         admin_id=admin_id,
-    #         restaurant_id=restaurants_id,
-    #         table_number=i,
-    #         _external=True
-    #     )
-        
-    #     qr = qrcode.make(link)
-    #     filename = f'qr_{restaurants_id}_{i}.png'
-        
-
-    #     buffer = io.BytesIO()
-    #     qr.save(buffer, format="PNG")
-    #     buffer.seek(0)
-
-    #     qr_base64 = base64.b64encode(buffer.read()).decode("utf-8")
-    #     img_data = f"data:image/png;base64,{qr_base64}"
-
-    #     qr_data.append({"path": filename,"link": link, "image":img_data})
-    
-    # return jsonify({"message": "QR Codes Generated", "qrs":qr_data})
 
 
 @app.route("/qr")
