@@ -661,7 +661,12 @@ def generate_qrs_json():
             image_stream = io.BytesIO(image_bytes)
 
             p.drawImage(
-                image_stream, x_pos, y_pos - qr_size, width=qr_size, height=qr_size
+                image=image_stream,
+                x=x_pos,
+                y=y_pos - qr_size,
+                width=qr_size,
+                height=qr_size,
+                mask='auto'
             )
 
             p.setFont("Helvetica", 10)
