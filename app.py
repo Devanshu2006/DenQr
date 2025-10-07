@@ -18,6 +18,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from datetime import datetime, timedelta
 import resend
+import re
 # from sendgrid import SendGridAPIClient
 # from sendgrid.helpers.mail import Mail
 
@@ -828,6 +829,8 @@ def handle_join(data):
     join_room(str(restaurant_id))
     print(f"Restaurnt {restaurant_id} joined room")
 
+TXN_REGEX = re.compile(r'^[A-Za-z0-9\-_]{8,64}$')
+
 @app.route("/place_order", methods=['GET','POST'])
 def place_order():
     restaurant_name = session.get('restaurant_name')
@@ -845,6 +848,8 @@ def place_order():
         #--- item_content = json.dumps(item_name) ---#
         # total_amount = sum(float(i['price']) for i in items)
         total_amount = data.get('total_amount')
+        if not txn_id or not TXN_REGEX.match(txn_id):
+            return jsonify({"erroe": "Invalid Transaction ID"}), 400
         cur = conn.cursor()
         cur.execute(
             "INSERT into Orders (restaurant_id, table_number, total_amount, txn_id) Values (%s, %s, %s, %s) RETURNING order_id", (restaurants_id, table_number, total_amount, txn_id)
