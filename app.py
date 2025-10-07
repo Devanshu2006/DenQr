@@ -16,6 +16,7 @@ import io, base64
 import encodings
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import inch
 from datetime import datetime, timedelta
 import resend
 import re
@@ -639,39 +640,50 @@ def generate_qrs_json():
             qr_data.append({"path": filename,"link": link, "image":img_data})
         cur.close() 
 
-
-        pdf_buffer = io.BytesIO()
-        pdf = canvas.Canvas(pdf_buffer, pagesize=A4)
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=A4)
         width, height = A4
+        margin = 0.5 * inch
 
-        x, y = 50, height -100
-        qr_size = 150
-        margin = 50
+        x_pos = margin
+        y_pos = height - margin
+        qr_size = 1.5 * inch
+        spacing = 0.2 * inch 
 
-        for item in qr_data:
-            img_bytes = base64.b64decode(item['image'].split(',')[1])
-            img_buffer = io.BytesIO(img_bytes)
-            img = Image.open(img_buffer, formats='PNG')
+        p.setFont("Helvetica-Bold", 16)
+        p.drawString(margin, height - margin / 2, f"DenQr {restaurants_id}")
 
-            pdf.drawInlineImage(img_buffer, x, y - qr_size, qr_size, qr_size, qr_size)
-            pdf.drawString(x, y - qr_size - 15, item['item'])
+        y_pos -= margin
 
-            x += qr_size + margin
-            if x + qr_size > width:
-                x = 50
-                y -= qr_size + 50
-                if y - qr_size < 50:
-                    pdf.showPage()
-                    x, y = 50, height - 100
-        pdf.save()
-        pdf_buffer.seek(0)
+        for index, data in enumerate(qr_data):
+            base64_string = data['image'].split(',')[1]
+            image_bytes = base64.b64decode(base64_string)
+            image_stream = io.BytesIO(image_bytes)
+
+            p.drawImage(
+                image_stream, x_pos, y_pos - qr_size, width=qr_size, height=qr_size
+            )
+
+            p.setFont("Helvetica", 10)
+            table_number = data['path'].split('_')(-1).replace('.png', '')
+            p.drawString(x_pos + qr_size + spacing, y_pos - 0.5 * inch,f"Table Number: {table_number}")
+        
+            p.setFont("Helvetica", 8)
+            # Wrap the text if the link is too long
+            p.drawString(x_pos + qr_size + spacing, y_pos - 0.8 * inch, f"Link: {data['link']}")
+            
+            # Move y_pos down for the next entry
+            y_pos -= (qr_size + spacing)
+            
+        p.showPage()
+        p.save()
+        buffer.seek(0)
+
         pdf_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
-
+    
         return jsonify({"pdf": True, "qrs": qr_data, "pdf_data":pdf_base64})
     else:
         return jsonify({'error':"You Are Accsseding the QR generation Limit."})
-
-
 
 @app.route("/qr")
 def qr_generation_page():
