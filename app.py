@@ -651,7 +651,7 @@ def generate_qrs_json():
         for item in qr_data:
             img_bytes = base64.b64decode(item['image'].split(',')[1])
             img_buffer = io.BytesIO(img_bytes)
-            img = Image.open(img_buffer, format='PNG')
+            img = Image.open(img_buffer, formats='PNG')
 
             pdf.drawInlineImage(img_buffer, x, y - qr_size, qr_size, qr_size, qr_size)
             pdf.drawString(x, y - qr_size - 15, item['item'])
