@@ -651,9 +651,9 @@ def generate_qrs_json():
         gap_y = 80  # vertical space between QRs
         per_row = 3  # 3 QR codes per row
 
-        # Title
+        c.setTitle(f"DenQr-{restaurants_id}")
         c.setFont("Helvetica-Bold", 20)
-        c.drawCentredString(width / 2, height - 50, f"DenQr - Restaurant ID: {restaurants_id}")
+        c.drawCentredString(width / 2, height - 50, f"DenQr - {restaurants_id}")
 
         x = margin_x
         y = height - margin_y
@@ -824,6 +824,7 @@ def generate_slip(restaurant_name, order_id, table_number, items, total_amount, 
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
 
+    c.setTitle(f"DenQr-{restaurant_name}")
     c.setFont("Helvetica-Bold", 16)
     c.drawString(250, 800,f"{restaurant_name}")
 
