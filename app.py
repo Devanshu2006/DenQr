@@ -965,6 +965,7 @@ def change_password():
         confirmpassword = request.form.get('confirmpassword')
 
         if not currentpassword or not newpassword or not confirmpassword:
+            print(currentpassword, newpassword, confirmpassword)
             return jsonify({"error":"All Password fields are required"})
 
         cur.execute("select password from admins where id = %s" , (admin_id,))
