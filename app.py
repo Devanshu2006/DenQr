@@ -16,7 +16,7 @@ import io, base64
 import encodings
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
-from reportlab.lib.units import inch
+from reportlab.lib.utils import ImageReader
 from datetime import datetime, timedelta
 import resend
 import re
@@ -639,20 +639,55 @@ def generate_qrs_json():
 
             qr_data.append({"path": filename,"link": link, "image":img_data})
         cur.close()
-
+        
         buffer = io.BytesIO()
         c = canvas.Canvas(buffer, pagesize=A4)
 
-        c.setFont("Helvetica-Bold", 16)
-        c.drawString(250, 800, f"DenQr {restaurants_id}")
+        width, height = A4
+        x, y = 50, height - 100
+        qr_size = 120
+        per_row = 4  # 4 QR codes per row
 
-        for item in qr_data:
-            c.drawImage(item.get('img_data'))
+        # ✅ Title on top
+        c.setFont("Helvetica-Bold", 18)
+        c.drawCentredString(width / 2, height - 40, f"DenQr - Restaurant ID: {restaurants_id}")
 
+        # ✅ Loop through each QR code
+        for index, item in enumerate(qr_data):
+            # Generate QR from link
+            link = item.get('link')
+            qr_img = qrcode.make(link)
+            img_buffer = io.BytesIO()
+            qr_img.save(img_buffer, format='PNG')
+            img_buffer.seek(0)
+
+            # Use ImageReader to render correctly in PDF
+            img = ImageReader(img_buffer)
+            c.drawImage(img, x, y - qr_size, qr_size, qr_size)
+
+            # Label under each QR
+            c.setFont("Helvetica", 10)
+            c.drawString(x, y - qr_size - 15, f"Table: {index + 1}")
+
+            # Next QR position
+            x += qr_size + 40
+
+            # Move to new row after 4 QRs
+            if (index + 1) % per_row == 0:
+                x = 50
+                y -= qr_size + 60
+
+            # Add new page if space runs out
+            if y < 100:
+                c.showPage()
+                c.setFont("Helvetica-Bold", 18)
+                c.drawCentredString(width / 2, height - 40, f"DenQr - Restaurant ID: {restaurants_id}")
+                x, y = 50, height - 100
+
+        # ✅ Finalize PDF
         c.showPage()
         c.save()
         buffer.seek(0)
-
         pdf_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 
