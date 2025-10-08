@@ -340,8 +340,9 @@
         })
     });
 
-
-    fetch("/change_password", {
+    document.getElementById("resetPanel").addEventListener("submit", function(event) {
+        
+        fetch("/change_password", {
             method: "POST",
         })
         .then(response => response.json())
@@ -359,7 +360,7 @@
             console.error("Error:", error);
             showToast("An error occured. please try again");
         })
-    
+    });
 
     document.getElementById("paymentPanel").addEventListener("submit", function(event) {
         event.preventDefault();
