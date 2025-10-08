@@ -1040,7 +1040,7 @@ def staff_login():
                 (name, role, phone)
             )
             row = cur.fetchone() 
-            if row is None:
+            if not row:
                 return "You have entered wrong details!", 401
             
             db_name, db_role, db_phone, restaurant_id = row
