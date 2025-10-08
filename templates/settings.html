@@ -326,6 +326,7 @@
         event.preventDefault();
         fetch('/update_upi',{
             method:"POST",
+            body: new FormData(this)
         })
         .then(response => response.json())
         .then(data => {
@@ -345,7 +346,7 @@
         event.preventDefault()
         fetch("/change_password",{
             method: "POST",
-            body: JSON.stringify(FormData)
+            body: new FormData(this)
         })
         .then(response => response.json())
         .then(data => {
@@ -368,6 +369,7 @@
         event.preventDefault();
         fetch("/get_upi", {
             method: "POST",
+            body: new FormData(this)
         })
         .then(response => response.json())
         .then(data => {
