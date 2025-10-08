@@ -275,11 +275,9 @@
     const resetToggle = document.getElementById('resetPassword');
     const resetPanel = document.getElementById('resetPanel')
 
-    resetToggle.addEventListener('click', function() {
-        resetPanel.classList.toggle('show');
-        this.classList.toggle('active');
-    });
-
+    resetToggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+    })
     document.addEventListener('click', function(e) {
         if (!resetPanel.contains(e.target) && !resetToggle.contains(e.target)) {
             resetPanel.classList.remove('show');
