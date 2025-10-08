@@ -996,7 +996,8 @@ def update_upi():
         cur.execute("Update payment_credentials SET upi_id=%s where admin_id=%s and restaurant_id=%s", (upi_id, admin_id, restaurant_id))
         conn.commit()
         cur.close()
-        return "UPI has been updated successfully."
+        return jsonify({"message":"UPI has been updated successfully."})
+    return redirect(url_for('settings'))
 
 @app.route('/settings', methods=["GET","POST"])
 def settings():

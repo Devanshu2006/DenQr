@@ -196,6 +196,11 @@
         </form>
     </div>
     
+    
+    <div class="settings-card">
+        <a href="/logout">Logout</a>
+    </div>
+    
     <div  class="settings-card danger-zone">
         <h3>Delete Your Account</h3>
         <p>
@@ -204,10 +209,6 @@
         <form method="POST" action="/settings">
             <button type="submit" class="btn btn-danger">Delete Account</button>
         </form>
-    </div>
-
-    <div class="settings-card">
-        <a href="/logout">Logout</a>
     </div>
 
 </div>
@@ -273,7 +274,19 @@
             accountToggle.classList.remove('active');
         }
     });
-    
+    fetch('/update_upi',{
+        method:'POST',
+        body: JSON.stringify(message)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        window.location.reload()
+    })
+    .catch(error => {
+        console.error("Error", error);
+        alert("an error accured");
+    })
 </script>
 
 
