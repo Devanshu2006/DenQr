@@ -644,47 +644,54 @@ def generate_qrs_json():
         c = canvas.Canvas(buffer, pagesize=A4)
 
         width, height = A4
-        x, y = 50, height - 100
-        qr_size = 120
-        per_row = 4  # 4 QR codes per row
+        qr_size = 130  # slightly larger QR
+        margin_x = 50
+        margin_y = 100
+        gap_x = 60  # horizontal space between QRs
+        gap_y = 80  # vertical space between QRs
+        per_row = 3  # 3 QR codes per row
 
-        # ✅ Title on top
-        c.setFont("Helvetica-Bold", 18)
-        c.drawCentredString(width / 2, height - 40, f"DenQr - Restaurant ID: {restaurants_id}")
+        # Title
+        c.setFont("Helvetica-Bold", 20)
+        c.drawCentredString(width / 2, height - 50, f"DenQr - Restaurant ID: {restaurants_id}")
 
-        # ✅ Loop through each QR code
+        x = margin_x
+        y = height - margin_y
+
         for index, item in enumerate(qr_data):
-            # Generate QR from link
-            link = item.get('link')
-            qr_img = qrcode.make(link)
+            # Generate QR image
+            qr_img = qrcode.make(item['link'])
             img_buffer = io.BytesIO()
             qr_img.save(img_buffer, format='PNG')
             img_buffer.seek(0)
-
-            # Use ImageReader to render correctly in PDF
             img = ImageReader(img_buffer)
+
+            # Draw QR
             c.drawImage(img, x, y - qr_size, qr_size, qr_size)
 
-            # Label under each QR
-            c.setFont("Helvetica", 10)
-            c.drawString(x, y - qr_size - 15, f"Table: {index + 1}")
+            # Draw border box (optional but looks neat)
+            c.rect(x - 5, y - qr_size - 5, qr_size + 10, qr_size + 30)
 
-            # Next QR position
-            x += qr_size + 40
+            # Add label under QR
+            c.setFont("Helvetica", 12)
+            c.drawCentredString(x + qr_size / 2, y - qr_size - 20, f"Table: {index + 1}")
 
-            # Move to new row after 4 QRs
+            # Move to next position
+            x += qr_size + gap_x
+
+            # Wrap to next row
             if (index + 1) % per_row == 0:
-                x = 50
-                y -= qr_size + 60
+                x = margin_x
+                y -= qr_size + gap_y
 
-            # Add new page if space runs out
-            if y < 100:
+            # Add new page if needed
+            if y - qr_size < 50:
                 c.showPage()
-                c.setFont("Helvetica-Bold", 18)
-                c.drawCentredString(width / 2, height - 40, f"DenQr - Restaurant ID: {restaurants_id}")
-                x, y = 50, height - 100
+                c.setFont("Helvetica-Bold", 20)
+                c.drawCentredString(width / 2, height - 50, f"DenQr - Restaurant ID: {restaurants_id}")
+                x = margin_x
+                y = height - margin_y
 
-        # ✅ Finalize PDF
         c.showPage()
         c.save()
         buffer.seek(0)
