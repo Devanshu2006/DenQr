@@ -277,7 +277,10 @@
 
     resetToggle.addEventListener('click', function(e) {
         e.stopPropagation();
-    })
+        resetPanel.classList.toggle('show');
+        this.classList.toggle('active');
+    });
+
     document.addEventListener('click', function(e) {
         if (!resetPanel.contains(e.target) && !resetToggle.contains(e.target)) {
             resetPanel.classList.remove('show');
