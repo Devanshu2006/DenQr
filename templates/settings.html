@@ -274,19 +274,22 @@
             accountToggle.classList.remove('active');
         }
     });
-    const response = await fetch('/update_upi', {
-    method: 'POST',
-    body: JSON.stringify(message)
-    });
-    const data = await response.json();
-    if (data && data.message) {
-        alert(data.message); // <-- Success message ka pop-up!
-    } else {
-        alert("UPI details updated successfully!"); // Backup message
-    }
-        
-        // Page ko reload karna
-    window.location.reload(); 
+
+    document.getElementById("clearPanel").addEventListener("submit", function(event){
+        event.preventDefault();
+        fetch("/update_upi",{
+            method:"POST",
+            body: new FormData(this)
+        })
+        .then(respponse => response.json())
+        .then(data => {
+            alert(data.message);
+            window.location.reload();
+        }).catch(error => {
+            console.error("Error:", error);
+            alert("An error occured. please try again");
+        })
+    })
 </script>
 
 
