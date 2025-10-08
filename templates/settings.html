@@ -278,9 +278,9 @@
         method:'POST',
         body: JSON.stringify(message)
     })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
+    .then(response => res.json())
+    .then(res => {
+        alert(res.message);
         window.location.reload()
     })
     .catch(error => {
