@@ -343,8 +343,9 @@
 
     document.getElementById("resetPanel").addEventListener("submit", function(event) {
         event.preventDefault()
-        fetch("/change_password", {
+        fetch("/change_password",{
             method: "POST",
+            body: JSON.stringify(FormData)
         })
         .then(response => response.json())
         .then(data => {
