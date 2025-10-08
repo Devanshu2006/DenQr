@@ -791,8 +791,12 @@ def place_order():
         #--- item_content = json.dumps(item_name) ---#
         # total_amount = sum(float(i['price']) for i in items)
         total_amount = data.get('total_amount')
-        if txn_id !='CASH' or not TXN_REGEX.match(txn_id) or not txn_id:
-            return jsonify({"erroe": "Invalid Transaction ID"}), 400
+        if not txn_id:
+            return jsonify({"error": "Transaction ID is required"}), 400
+        
+        if txn_id.upper() != "CASH":
+            if not TXN_REGEX.matchmatch(txn_id):
+                return jsonify({"error":"Invalid Transaction ID"}), 400
         cur = conn.cursor()
         cur.execute(
             "INSERT into Orders (restaurant_id, table_number, total_amount, txn_id) Values (%s, %s, %s, %s) RETURNING order_id", (restaurants_id, table_number, total_amount, txn_id)
