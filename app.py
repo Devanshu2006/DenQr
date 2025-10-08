@@ -960,9 +960,9 @@ def change_password():
         admin_id = session.get('admin_id')
         if not admin_id:
             return redirect(url_for('signin'))
-        currentpassword = request.form.get('current_password')
-        newpassword = request.form.get('new_password')
-        confirmpassword = request.form.get('confirm_password')
+        currentpassword = request.form('current_password')
+        newpassword = request.form('new_password')
+        confirmpassword = request.form('confirm_password')
 
         if not currentpassword or not newpassword or not confirmpassword:
             print(currentpassword, newpassword, confirmpassword)

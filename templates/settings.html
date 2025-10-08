@@ -341,7 +341,7 @@
     });
 
     document.getElementById("resetPanel").addEventListener("submit", function(event) {
-        
+        event.preventDefault()
         fetch("/change_password", {
             method: "POST",
         })
