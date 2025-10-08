@@ -280,7 +280,7 @@
         fetch('/update_upi',{
             method:"POST",
         })
-        .then(respponse => response.json())
+        .then(response => response.json())
         .then(data => {
             alert(data.message);
             window.location.reload();
