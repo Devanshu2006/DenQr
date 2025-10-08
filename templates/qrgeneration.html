@@ -124,6 +124,7 @@ button:hover {
                     const downloadLink = document.createElement("a");
                     downloadLink.href = qr.image;
                     downloadLink.download = qr.path;
+                    downloadlink.textContent = "Download"
                     container.appendChild(qrCard);
 
                     qrCard.appendChild(downloadLink);
