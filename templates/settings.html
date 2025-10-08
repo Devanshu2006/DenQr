@@ -277,9 +277,8 @@
 
     document.getElementById("clearPanel").addEventListener("submit", function(event){
         event.preventDefault();
-        fetch("/update_upi",{
+        fetch('/update_upi',{
             method:"POST",
-            body: new FormData(this)
         })
         .then(respponse => response.json())
         .then(data => {
