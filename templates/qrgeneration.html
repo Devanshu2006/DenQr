@@ -121,14 +121,21 @@ button:hover {
                     qrCard.appendChild(pagetitlelink);
 
                     
-                    const downloadLink = document.createElement("a");
-                    downloadLink.href = qr.image;
-                    downloadLink.download = qr.path;
-                    downloadLink.textContent = "Download (PNG)";
-                    container.appendChild(qrCard);
+                    // const downloadLink = document.createElement("a");
+                    // downloadLink.href = qr.image;
+                    // downloadLink.download = qr.path;
+                    // downloadLink.textContent = "Download (PNG)";
+                    // container.appendChild(qrCard);
 
-                    qrCard.appendChild(downloadLink);
-                    downloadLink.click();
+
+                    // qrCard.appendChild(downloadLink);
+                    // downloadLink.click();
+
+                    const link = documen.createElement("a");
+                    const pdfData = result.pdf_data
+                    link.href = "data:application/pdf;base64,"+ pdfData;
+                    link.download = "qr_codes.pdf";
+                    link.click()
 
                 });
             } else {

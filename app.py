@@ -638,8 +638,25 @@ def generate_qrs_json():
             img_data = f"data:image/png;base64,{qr_base64}"
 
             qr_data.append({"path": filename,"link": link, "image":img_data})
-        cur.close() 
-        return jsonify({"pdf": True, "qrs": qr_data})
+        cur.close()
+
+        buffer = io.BytesIO()
+        c = canvas.Canvas(buffer, pagesize=A4)
+
+        c.setFont("Helvetica-Bold", 16)
+        c.drawString(250, 800, f"DenQr {restaurants_id}")
+
+        for item in qr_data:
+            c.drawImage(item.get('img_data'))
+
+        c.showPage()
+        c.save()
+        buffer.seek(0)
+
+        pdf_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+
+        return jsonify({"pdf": True, "qrs": qr_data, "pdf_data":pdf_base64})
     else:
         return jsonify({'error':"You Are Accsseding the QR generation Limit."})
 
