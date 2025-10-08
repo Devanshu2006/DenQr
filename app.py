@@ -532,7 +532,7 @@ def add_multiple_menu():
                 "INSERT INTO menu (restaurants_id, admins_id, item_name, about, price, category) VALUES (%s, %s, %s, %s, %s, %s)",(restaurants_id, admin_id, item_name, about, price, category)
             )
         conn.commit()
-        return jsonify({"message": "Menu items added successfully!"})
+        return jsonify({"message": "🎉Menu items added successfully!"})
     return render_template('menu.html')
 
 @app.route('/menu', methods=['GET', 'POST'])
@@ -576,7 +576,7 @@ def add_multiple_team():
             )
         conn.commit()
         cur.close()
-        return jsonify({"message":"Team members added successfully!"})
+        return jsonify({"message":"🎉Team members added successfully!"})
 
     return redirect(url_for('team'))
 
@@ -996,7 +996,7 @@ def update_upi():
         cur.execute("Update payment_credentials SET upi_id=%s where admin_id=%s and restaurant_id=%s", (upi_id, admin_id, restaurant_id))
         conn.commit()
         cur.close()
-        return jsonify({"message":"UPI has been updated successfully."})
+        return jsonify({"message":"🎉 UPI has been updated successfully."})
     return redirect(url_for('settings'))
 
 @app.route('/settings', methods=["GET","POST"])
