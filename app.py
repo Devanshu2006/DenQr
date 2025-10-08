@@ -955,14 +955,14 @@ def checkout():
 
 @app.route('/change_password' , methods=['GET', 'POST'])
 def change_password():
-    if request.method == 'POST':
+    if request.method == "POST":
         cur = conn.cursor()
         admin_id = session.get('admin_id')
         if not admin_id:
             return redirect(url_for('signin'))
-        currentpassword = request.form.get('currentpassword')
-        newpassword = request.form.get('newpassword')
-        confirmpassword = request.form.get('confirmpassword')
+        currentpassword = request.form.get('current_password')
+        newpassword = request.form.get('new_password')
+        confirmpassword = request.form.get('confirm_password')
 
         if not currentpassword or not newpassword or not confirmpassword:
             print(currentpassword, newpassword, confirmpassword)
