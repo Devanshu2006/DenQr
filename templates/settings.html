@@ -340,27 +340,27 @@
         })
     });
 
-    document.getElementById("resetPanel").addEventListener("submit", function(event) {
-        event.preventDefault()
-        fetch("/change_password", {
-            method: "POST",
-        })
-        .then(response => response.json())
-        .then(data => {
-            if(data.message){
-                showToast(data.message)
-            }
-            else{
-                showToast(data.error)
-            }
-            setTimeout(() => {
-                window.location.reload()
-            },2000)
-        }).catch(error => {
-            console.error("Error:", error);
-            showToast("An error occured. please try again");
-        })
-    });
+    // document.getElementById("resetPanel").addEventListener("submit", function(event) {
+    //     event.preventDefault()
+    //     fetch("/change_password", {
+    //         method: "POST",
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if(data.message){
+    //             showToast(data.message)
+    //         }
+    //         else{
+    //             showToast(data.error)
+    //         }
+    //         setTimeout(() => {
+    //             window.location.reload()
+    //         },2000)
+    //     }).catch(error => {
+    //         console.error("Error:", error);
+    //         showToast("An error occured. please try again");
+    //     })
+    // });
 
     document.getElementById("paymentPanel").addEventListener("submit", function(event) {
         event.preventDefault();
