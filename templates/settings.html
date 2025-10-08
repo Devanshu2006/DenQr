@@ -215,7 +215,6 @@
             <input type="password" name="currentpassword" placeholder="Current Password" required>
             <input type="password" name="newpassword" placeholder="New Password" required>
             <input type="password" name="confirmpassword" placeholder="Confirm Password" required>
-            
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
     </div>
@@ -341,9 +340,8 @@
         })
     });
 
-    document.getElementById("resetPanel").addEventListener("submit", function(event) {
-        event.preventDefault();
-        fetch("/change_password", {
+
+    fetch("/change_password", {
             method: "POST",
         })
         .then(response => response.json())
@@ -361,7 +359,7 @@
             console.error("Error:", error);
             showToast("An error occured. please try again");
         })
-    });
+    
 
     document.getElementById("paymentPanel").addEventListener("submit", function(event) {
         event.preventDefault();
