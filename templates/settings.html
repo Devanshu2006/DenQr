@@ -322,7 +322,7 @@
     }
 
 
-    document.getElementById("clearPanel").addEventListener("submit", function(event){
+    document.getElementById("clearPanel").addEventListener("submit", function(event) {
         event.preventDefault();
         fetch('/update_upi',{
             method:"POST",
@@ -339,7 +339,49 @@
             console.error("Error:", error);
             showToast("An error occured. please try again");
         })
-    })
+    });
+
+    document.getElementById("resetPanel").addEventListener("submit", function(event) {
+        event.preventDefault();
+        fetch("/change_password", {
+            method: "POST",
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.message){
+                showToast(data.message)
+            }
+            else{
+                showToast(data.error)
+            }
+            setTimeout(() => {
+                window.location.reload()
+            },2000)
+        }).catch(error => {
+            console.error("Error:", error);
+            showToast("An error occured. please try again");
+        })
+    });
+
+    document.getElementById("paymentPanel").addEventListener("submit", function(event) {
+        event.preventDefault();
+        fetch("/get_upi", {
+            method: "POST",
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.message){
+                showToast(data.message)
+            }
+            setTimeout(() => {
+                window.location.reload()
+            },2000)
+        }).catch(error => {
+            console.error("Error:", error);
+            showToast("An error occured. please try again");
+        })
+    });
+
 </script>
 
 

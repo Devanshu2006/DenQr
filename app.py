@@ -931,7 +931,7 @@ def get_upi():
 
         cur.execute("INSERT INTO payment_credentials (admin_id, upi_id, restaurant_id) values(%s, %s, %s)",(admin_id, upi_id, restaurant_id))
         conn.commit()
-        return "All Set To Recive Payments"
+        return jsonify({"message": "All Set To Recive Payments"})
     return redirect(url_for('settings'))
 
 def get_admin_upi(restaurant_id):
@@ -968,14 +968,14 @@ def change_password():
         result = cur.fetchone()
 
         if not result:
-            return "User not found"
+            return jsonify({"error":"User not found"})
         current_hashed_password = result[0]
 
         if not check_password_hash(current_hashed_password, currentpassword):
-            return "Incorrect password"
+            return jsonify({"error":"Incorrect password"})
         
         if newpassword != confirmpassword:
-            return "Password do not match"
+            return jsonify({"error":"Password do not match"})
         
         hashed_password = generate_password_hash(newpassword)
 
@@ -983,7 +983,7 @@ def change_password():
         conn.commit()
         cur.close()
 
-        return "Password updated successfully!"
+        return jsonify({"message":"🎉Password updated successfully!"})
     return redirect(url_for('settings'))
 
 @app.route('/update_upi', methods=['GET','POST'])
