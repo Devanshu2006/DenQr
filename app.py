@@ -812,7 +812,7 @@ def place_order():
             conn.commit()
         socketio.emit("new_order", {"message": "order placed"}, to=str(restaurants_id))
         pdf_base64 = generate_slip(restaurant_name, order_id, table_number, items, total_amount, txn_id)
-        return jsonify({"message": "Thank You for the Order.","order_id": order_id, "status": status, "pdf_data": pdf_base64})
+        return jsonify({"message": "🎉Thank You for the Order.","order_id": order_id, "status": status, "pdf_data": pdf_base64})
 
 def generate_slip(restaurant_name, order_id, table_number, items, total_amount, txn_id):
     buffer = io.BytesIO()
@@ -931,7 +931,7 @@ def get_upi():
 
         cur.execute("INSERT INTO payment_credentials (admin_id, upi_id, restaurant_id) values(%s, %s, %s)",(admin_id, upi_id, restaurant_id))
         conn.commit()
-        return jsonify({"message": "All Set To Recive Payments"})
+        return jsonify({"message": "🎉All Set To Recive Payments"})
     return redirect(url_for('settings'))
 
 def get_admin_upi(restaurant_id):
