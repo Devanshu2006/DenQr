@@ -795,7 +795,7 @@ def place_order():
             return jsonify({"error": "Transaction ID is required"}), 400
         
         if txn_id.upper() != "CASH":
-            if not TXN_REGEX.matchmatch(txn_id):
+            if not TXN_REGEX.match(txn_id):
                 return jsonify({"error":"Invalid Transaction ID"}), 400
         cur = conn.cursor()
         cur.execute(
