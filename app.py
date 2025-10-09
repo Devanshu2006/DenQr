@@ -35,11 +35,6 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("""
-                    alter table orders
-                    add column verification varchar(50);
-    """)
-    conn.commit()
 
     cur.execute("""
 
