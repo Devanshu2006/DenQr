@@ -174,7 +174,7 @@
 
     socket.on('verification_update',(data) => {
       const badge = document.getElementById(`verification-${data.order_id}`);
-      if(badge) {
+      if (badge) {
         badge.innerText = `Verification: ${data.verification}`;
         badge.className = `badge ${data.verification.toLowerCase()}`;
       }

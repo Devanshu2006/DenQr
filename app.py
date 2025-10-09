@@ -922,8 +922,8 @@ def update_status():
             conn.rollback()
             return jsonify({"success":False, "error": str(e)}), 500
         
-@app.route('/updateverification',methods=['GET','POST'])
-def updateveri():
+@app.route('/updateverification', methods=['GET','POST'])
+def updateverification():
     cur = conn.cursor()
     if request.method == "POST":
         data = request.json
