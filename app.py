@@ -576,6 +576,7 @@ def generate_qrs_json():
     cur = conn.cursor()
     admin_id = session.get('admin_id')
     restaurants_id = session.get('restaurants_id')
+    restaurant_name = session.get('restaurant_name')
     data = request.get_json() 
     table_Count = int(data.get('tableCount', 0)) 
     
@@ -630,12 +631,12 @@ def generate_qrs_json():
 
             qr_data.append({"path": filename,"link": link, "image":img_data})
         cur.close()
-        pdf_data = generate_pdf(qr_data, restaurants_id)
+        pdf_data = generate_pdf(qr_data, restaurants_id, restaurant_name)
         return jsonify({"pdf": True, "qrs": qr_data, "pdf_data":pdf_data})
     else:
         return jsonify({'error':"You Are Accsseding the QR generation Limit."})
 
-def generate_pdf(qr_data, restaurants_id):
+def generate_pdf(qr_data, restaurants_id, restaurant_name):
     buffer = io.BytesIO()
     c = canvas.Canvas(buffer, pagesize=A4)
 
@@ -647,9 +648,9 @@ def generate_pdf(qr_data, restaurants_id):
     gap_y = 80
     per_row = 3
 
-    c.setTitle(f"DenQr-{restaurants_id}")
+    c.setTitle(f"DenQr-{restaurant_name}")
     c.setFont("Helvetica-Bold", 18)
-    c.drawCentredString(width / 2, height - 50, f"DenQr - {restaurants_id}")
+    c.drawCentredString(width / 2, height - 50, f"DenQr-{restaurant_name}")
 
     x = margin_x
     y = height - margin_y
@@ -677,7 +678,7 @@ def generate_pdf(qr_data, restaurants_id):
         if y - qr_size < 50:
             c.showPage()
             c.setFont("Helvetica-Bold", 18)
-            c.drawCentredString(width / 2, height - 50, f"DenQr - {restaurants_id}")
+            c.drawCentredString(width / 2, height - 50, f"DenQr-{restaurant_name}")
             x = margin_x
             y = height - margin_y
 

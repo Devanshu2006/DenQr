@@ -408,7 +408,7 @@
       fetch("/place_order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ admin_id: admin_id, items: cart, total_amount: totalPrice, txn_id: "CASH", verification:"required"})
+        body: JSON.stringify({ admin_id: admin_id, items: cart, total_amount: totalPrice, txn_id: "CASH", verification: "required"})
       })
       .then(res => res.json())
       .then(result => {
