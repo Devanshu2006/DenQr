@@ -217,7 +217,7 @@
       const response = await fetch("/updateverification", {
         method:"POST",
         headers: { "content-Type": "application/json"},
-        body: JSON.stringify({order_id: orderId, status: newVeri})
+        body: JSON.stringify({order_id: orderId, newverification: newVeri})
       });
     }
     catch (error) {
