@@ -927,8 +927,8 @@ def updateverification():
     cur = conn.cursor()
     if request.method == "POST":
         data = request.json
-        order_id = data.get('order_id')
-        newveri = data.get('newverification')
+        order_id = data.get("order_id")
+        newveri = data.get("newverification")
         if not order_id or not newveri:
             return jsonify({"error":"Order or Verification not made"})
         try:   
