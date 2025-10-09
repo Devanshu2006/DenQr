@@ -927,18 +927,19 @@ def updateverification():
         if not order_id or not newveri:
             return jsonify({"error":"Order or Verification not made"})
         try:   
-            cur.execute("update orders set verification=%s where order_id=%s RETURNING verification",(order_id, newveri))
+            cur.execute("update orders set verification=%s where order_id=%s RETURNING verification",(newveri, order_id))
+            conn.commit()
             veri = cur.fetchone()
             updated_veri = veri[0] if veri else 0
             cur.close()
             if updated_veri:
-                socketio.emit("verification_update", {"order_id": {order_id}, "verification":{updated_veri}})
-                return jsonify({"success": True, "verification":{updated_veri}})
+                socketio.emit("verification_update", {"order_id": order_id, "verification":updated_veri})
+                return jsonify({"success": True, "verification": updated_veri})
             else:
                 return jsonify({"success":False, "error":"order not found "})
         except Exception as e:
             conn.rollback()
-            return jsonify({"success":False, "error":str(e)})
+            return jsonify({"success":False, "error":str(e)}), 500
 
 
 
