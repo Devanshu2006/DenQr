@@ -62,7 +62,16 @@
     .badge.received { color: #3498db;}   /* Blue */
     .badge.making { color: #f39c12;}     /* Orange */
     .badge.delivered { color: #2ecc71;}  /* Green */
-
+    
+    .verification-badge {
+      padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 18px;
+        font-weight: bold;
+        color: rgb(38, 8, 8);
+    }
+    .badge.required{color:red;}
+    .badge.verified{color:#2ecc71;}
     @media (min-width: 768px) {
         .order-card p {
           font-size: 16px;
@@ -71,7 +80,10 @@
           font-size: 18px;
           font-weight: bold;
         }
-      
+        .verification-badge{
+          font-size: 16px;
+          font-weight: bold;
+        }
     }
   </style>
 </head>
@@ -108,7 +120,12 @@
                   <h3>Table #${order.table_number}</h3>
                   <h3>Order Id:${order.order_id}</h3>
                 </div>
-                <h4>AT: ${order.order_time}</h4>
+                <div class="header-container">
+                  <h4>AT: ${order.order_time}</h4>
+                  {%if ${order.txn_id}=="CASH"%}
+                    <h4>Payment: ${order.txn_id}</h4>
+                  {%endif%}
+                </div>
                 <p><b>Total:</b> ₹${order.total_amount}</p>
                 <ul>${itemsHtml}</ul>
               </div>
@@ -121,6 +138,16 @@
                   <option value="Delivered" ${order.status === "Delivered" ? "selected" : ""}>Delivered</option>
                 </select>
               </div>
+              {%if ${order.txn_id != "CASH"}%}
+                <div class="verification-badge">
+                  <span id="verification-${order.order_id}" class="badge ${order.verification.toLowerCase()}">Verification: ${order.verification}</span>
+                  <select onchange="updateverification(${order.order_id}, this.value)">
+                    <option value="Required" ${order.verification} === "Required" ? "selected" : ""}>Required</option>
+                    <option value="Verified" ${order.verification} === "Verified" ? "selected" : ""}>Verified</option>
+                  </select>
+                </div>
+              {%endif%}
+
             `;
             ordersDiv.innerHTML += card;
           });
@@ -144,6 +171,14 @@
         badge.className = `badge ${data.status.toLowerCase()}`; 
       } 
     });
+
+    socket.on('verification_update',(data) => {
+      const badge = document.getElementById(`verification-${data.order_id}`);
+      if(badge) {
+        badge.innerText = `Verification: ${data.verification}`;
+        badge.className = `badge ${data.verification.toLowerCase()}`;
+      }
+    })
 
     const restaurantId = "{{ session['restaurants_id']}}";
     socket.emit("join", { restaurant_id: restaurantId });
@@ -174,6 +209,19 @@
     }
     catch (error) {
       alert("⚠️ Error: " + "It doesnt work out well");
+    }
+  }
+
+  async function updateverification(orderId, newVeri){
+    try{
+      const response = await fetch("/updateverification", {
+        method:"POST",
+        headers: { "content-Type": "application/json"},
+        body: JSON.stringify({order_id: orderId, status: newVeri})
+      });
+    }
+    catch (error) {
+      alert("error :"+"it soesnt workout well");
     }
   }
   </script>

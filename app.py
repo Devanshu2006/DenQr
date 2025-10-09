@@ -36,12 +36,8 @@ cur = conn.cursor()
 def init_db():
     cur = conn.cursor()
     cur.execute("""
-                    CREATE TABLE IF NOT EXISTS reset_tokens (
-                    id serial PRIMARY KEY,
-                    email VARCHAR(255) NOT NULL,
-                    token VARCHAR(255) NOT NULL,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    );
+                    alter table orders
+                    add column verification varchar(50);
     """)
     conn.commit()
 
@@ -788,6 +784,7 @@ def place_order():
         restaurants_id = session.get('restaurants_id')
         items = data.get('items')
         txn_id = data.get('txn_id')
+        verification = data.get('verification')
         #--- item_content = json.dumps(item_name) ---#
         # total_amount = sum(float(i['price']) for i in items)
         total_amount = data.get('total_amount')
@@ -799,7 +796,7 @@ def place_order():
                 return jsonify({"error":"Invalid Transaction ID"}), 400
         cur = conn.cursor()
         cur.execute(
-            "INSERT into Orders (restaurant_id, table_number, total_amount, txn_id) Values (%s, %s, %s, %s) RETURNING order_id", (restaurants_id, table_number, total_amount, txn_id)
+            "INSERT into Orders (restaurant_id, table_number, total_amount, txn_id, verification) Values (%s, %s, %s, %s, %s) RETURNING order_id", (restaurants_id, table_number, total_amount, txn_id, verification)
         )
         order_id = cur.fetchone()[0]
         conn.commit()
@@ -865,6 +862,8 @@ def get_orders():
                 o.table_number,
                 o.total_amount,
                 o.status,
+                o.txn_id,
+                o.verification,
                 To_char(o.order_time, 'HH12:MI:SS AM') AS order_time,
                 json_agg(json_build_object(
                     'item_name', m.item_name,
@@ -887,8 +886,10 @@ def get_orders():
             "table_number": r[1],
             "total_amount": float(r[2]),
             "status":r[3],
-            "order_time": r[4],
-            "items": r[5]
+            "txn_id":r[4],
+            "verification":r[5],
+            "order_time": r[6],
+            "items": r[7]
         })
 
     conn.close()
@@ -921,6 +922,29 @@ def update_status():
             conn.rollback()
             return jsonify({"success":False, "error": str(e)}), 500
         
+@app.route('/updateverification',methods=['GET','POST'])
+def updateveri():
+    cur = conn.cursor()
+    if request.method == "POST":
+        data = request.json
+        order_id = data.get('order_id')
+        newveri = data.get('newverification')
+        if not order_id or not newveri:
+            return jsonify({"error":"Order or Verification not made"})
+        try:   
+            cur.execute("update orders set verification=%s where order_id=%s RETURNING verification",(order_id, newveri))
+            veri = cur.fetchone()
+            updated_veri = veri[0] if veri else 0
+            cur.close()
+            if updated_veri:
+                socketio.emit("verification_update", {"order_id": {order_id}, "verification":{updated_veri}})
+                return jsonify({"success": True, "verification":{updated_veri}})
+            else:
+                return jsonify({"success":False, "error":"order not found "})
+        except Exception as e:
+            conn.rollback()
+            return jsonify({"success":False, "error":str(e)})
+
 
 
 @app.route('/get_upi', methods=['GET','POST'])
