@@ -363,7 +363,7 @@
       const response = await fetch("/place_order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ admin_id: admin_id, items: cart, total_amount: totalPrice, txn_id: txnId, verification: "Required"})
+        body: JSON.stringify({ admin_id: admin_id, items: cart, total_amount: totalPrice, txn_id: txnId, verification: "required"})
       });
       const result = await response.json();
       if (response.ok) {
@@ -408,7 +408,7 @@
       fetch("/place_order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ admin_id: admin_id, items: cart, total_amount: totalPrice, txn_id: "CASH", verification:"Done"})
+        body: JSON.stringify({ admin_id: admin_id, items: cart, total_amount: totalPrice, txn_id: "CASH", verification:"required"})
       })
       .then(res => res.json())
       .then(result => {
