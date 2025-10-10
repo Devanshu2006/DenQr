@@ -35,7 +35,7 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    
+
     cur.execute("update subscriptions set end_at=to_timestamp(%s) where admin_id=%s",(datetime.now(),3))
     conn.commit()
 
@@ -551,6 +551,7 @@ def webhook():
         conn.commit()
     
     cur.close()
+    print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} ({status})")
     return jsonify({"message":"Subscription purchesed"})
 
 @app.route('/main_dashboard', methods=['GET', 'POST'])
