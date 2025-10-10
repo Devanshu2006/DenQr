@@ -19,7 +19,40 @@ body {
     align-items: center;
     height: 100%; */
 }
+.dropdown {
+      position: relative;
+      cursor: pointer;
+    }
 
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 25px;
+      left: 0;
+      background-color: #78bfde;
+      color: #dbd22b;
+      min-width: 160px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+      z-index: 100;
+    }
+
+    .dropdown-content a {
+      display: block;
+      color: white;
+      padding: 10px 15px;
+      text-decoration: none;
+      transition: background 0.3s;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #6cabd2;
+    }
+
+    .dropdown.active .dropdown-content {
+      display: block;
+    }
 </style>    
 <nav class="navbar" method="POST" action="/main_dashboard">
         <div class="navbar-container container">
@@ -34,13 +67,36 @@ body {
                 <li><a href="/menu">Menu</a></li>
                 <li><a href="/qr">Generate</a></li>
                 <li><a href="/kitchen_dashboard">Orders</a></li>
-                <li><a href="/team">Team</a></li>
+                <!-- <li><a href="/team">Team</a></li>
                 <li><a href="/settings">Settings</a></li>
-                <li><a href="/payment">Upgrade</a></li>
+                <li><a href="/payment">Upgrade</a></li> -->
+                <li class="dropdown" id="dropdown">
+                    <a id="dropdownToggle">Services▾</a>
+                    <div class="dropdown-content" id="dropdownmenu">
+                        <a href="/team">Team</a>
+                        <a href="/settings">Settings</a>
+                    </div>
+                </li>
             </ul>
             <h1 class="logo">{{ restaurant_name }}</h1>
         </div>
     </nav>
+
+<script>
+    const dropdown = document.getElementById("dropdown");
+    const toggle = document.getElementById("dropdownToggle")
+
+    toggle.addEventListener("click", () => {
+        dropdown.classList.toggle("active");
+    });
+
+    window.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target)) {
+            dropdown.classList.remove("active");
+        }
+    });
+</script>
+
 {% block content%}{% endblock %}
 </body>
 </html>
