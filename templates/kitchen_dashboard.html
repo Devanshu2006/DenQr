@@ -140,7 +140,7 @@
               <div class="status-badge">
                 <span id="status-${order.order_id}" class="badge ${order.status.toLowerCase()}">Status: ${order.status}</span>
                 <select onchange="updateStatus(${order.order_id}, this.value)">
-                  <option value="In Process" ${order.status} === "In Process" ? "selected" : ""}>In Process</option>
+                  <option value="In Process" ${order.status === "In Process" ? "selected" : ""}>In Process</option>
                   <option value="Received" ${order.status === "Received" ? "selected" : ""}>Received</option>
                   <option value="Making" ${order.status === "Making" ? "selected" : ""}>Making</option>
                   <option value="Delivered" ${order.status === "Delivered" ? "selected" : ""}>Delivered</option>
@@ -150,8 +150,8 @@
               <div class="verification-badge">
                 <span id="verification-${order.order_id}" class="badge ${order.verification.toLowerCase()}">Verification: ${order.verification}</span>
                 <select onchange="updateverification(${order.order_id}, this.value)">
-                  <option value="Required" ${order.verification} === "Required" ? "selected" : ""}>Required</option>
-                  <option value="Verified" ${order.verification} === "Verified" ? "selected" : ""}>Verified</option>
+                  <option value="Required" ${order.verification === "Required" ? "selected" : ""}>Required</option>
+                  <option value="Verified" ${order.verification === "Verified" ? "selected" : ""}>Verified</option>
                 </select>
               </div>
             
