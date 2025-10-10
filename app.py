@@ -428,9 +428,12 @@ def dashboard():
         session['restaurants_id'] = restaurants_id
         cur.execute("SELECT restaurant_name FROM restaurants WHERE admin_id = %s", (admin_id,))
         row = cur.fetchone()
+        cur.execute("select email from admins where id=%s",(admin_id,))
+        ema = cur.fetchone()
+        email = ema[0] if ema else 0
         start_at = datetime.now()
         end_at = start_at + timedelta(days=30)
-        cur.execute("insert into subscriptions(start_at, end_at, plan_name, status, active, admin_id)values(%s, %s, %s, %s, %s, %s) returning start_at",(start_at, end_at, 'trail', 'active', 'True', admin_id))
+        cur.execute("insert into subscriptions(email, contact, start_at, end_at, plan_name, status, active, admin_id)values(%s, %s, to_timestamp(%s), to_timestamp(%s), %s, %s, %s, %s) returning start_at",(email, phone, start_at, end_at, 'trail', 'active', 'True', admin_id))
         conn.commit()
         session['restaurant_name'] = row[0] if row else "Unknown"
         return redirect(url_for('Analytics'))
@@ -452,19 +455,85 @@ def signin():
             subscription_check = check_admin()
             if subscription_check is not None:
                 return subscription_check
-            cur.execute('SELECT id FROM restaurants WHERE admin_id = %s', (admin_id,))
-            res_id = cur.fetchone()
+            cur.execute('SELECT id, phone FROM restaurants WHERE admin_id = %s', (admin_id,))
+            res = cur.fetchone()
+            ras = res
+            res_id = ras[0]
+            phone = ras[1]
             session['restaurants_id'] = res_id[0]
             cur.execute("SELECT restaurant_name FROM restaurants WHERE admin_id = %s", (admin_id,))
             row = cur.fetchone()
             session['restaurant_name'] = row[0] if row else "Unknown"
             subscription_check = check_admin()
+            cur.execute("Update subscriptions set email=%s, contact=%s where admin_id=%s",(username, phone, admin_id))
             if subscription_check is not None:
                 return subscription_check
             return redirect(url_for('Analytics'))
         else:
             error = "invalid email or password"
     return render_template('signin.html', error=error)
+
+@app.route('/webhook', methods=['GET', 'POST'])
+def webhook():
+    data = request.get_json()
+    event = data.get("event")
+
+    if event != "subscription.activated" and event != "subscription.charged":
+        return jsonify({"ok":True})
+    
+    subscription = data["payload"]["subscription"]["entity"]
+    customer = data["payload"]["customer"]["entity"]
+
+    restaurant_id = customer.get("restaurant_id")
+    email = customer.get("email")
+    contact = customer.get("contact")
+    plan_id = subscription.get("plan_id")
+    plan_amount = subscription.get("amount")
+    plan_name = subscription.get("plan_name")
+    sub_id = subscription.get("id")
+    status = subscription.get("status")
+    start_at = subscription.get("start_at")
+    end_at = subscription.get("end_at")
+
+    if plan_name.lower() == 'basic' or plan_name.lower() == 'moderate' or plan_name.lower() == 'premium':
+        interval = 'monthly'
+    elif plan_name.lower() == 'yearly':
+        interval = 'yearly'
+
+    cur = conn.cursor()
+    cur.execute("""
+                    UPDATE subscriptions
+                SET
+                    restaurant_id = %s,
+                    contact = %s,
+                    plan_name = %s,
+                    plan_amount = %s,
+                    validity = %s,
+                    subscription_id = %s,
+                    status = %s,
+                    active = %s,
+                    start_at = to_timestamp(%s),
+                    end_at = to timestamp(%s)
+                where email = %s
+
+    """,(
+        restaurant_id, contact, plan_name, plan_amount, interval, sub_id, status, 'True', start_at, end_at, email))
+    
+    conn.commit()
+    if cur.rowcount == 0:
+        cur.execute("""
+                    INSERT INTO subscriptions (
+                        restaurant_id, email, contact, plan_name, plan_amount,
+                        validity, subscription_id, status, active, start_at, end_at)
+                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s), to_timestamp(%s))
+                    )
+        """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
+              sub_id, status, 'True', start_at, end_at))
+        
+        conn.commit()
+    
+    cur.close()
+    return jsonify({"message":"Subscription purchesed"})
 
 @app.route('/main_dashboard', methods=['GET', 'POST'])
 def main_dashboard():
