@@ -19,68 +19,6 @@ body {
     align-items: center;
     height: 100%; */
 }
-/* --- Dropdown Container (Parent Li) --- */
-.dropdown {
-    position: relative;
-    cursor: pointer;
-    list-style: none; /* बुलेट पॉइंट हटाएँ */
-    margin: 10px 0; /* मेनू आइटम के बीच जगह */
-}
-
-/* --- Toggle Link (The 'Services' link) --- */
-.dropdown > a {
-    display: block;
-    color: #ffffff; /* मेन लिंक के लिए सफ़ेद/हल्का रंग */
-    padding: 10px 15px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: color 0.3s;
-}
-
-.dropdown > a:hover {
-    color: #FFD700; /* हॉवर पर गोल्ड रंग */
-}
-
-/* --- Dropdown Content Box --- */
-.dropdown-content {
-    /* Initially hidden and uses opacity for smooth fade-in */
-    display: block; 
-    max-height: 0; /* Animation के लिए मुख्य प्रॉपर्टी */
-    overflow: hidden;
-    opacity: 0;
-    
-    position: static; /* Side menu के अंदर, इसे स्टैटिक रखें */
-    left: 0;
-    width: 100%; 
-    
-    background-color: #0d0d0d; /* मेन्यू से थोड़ा गहरा बैकग्राउंड */
-    
-    /* Transition for smooth animation (height/opacity/max-height) */
-    transition: max-height 0.4s ease-out, opacity 0.3s ease-in;
-    
-    z-index: 100;
-}
-
-/* --- Dropdown Active State (Open) --- */
-.dropdown.active .dropdown-content {
-    max-height: 500px; /* एक बड़ा मान ताकि सभी आइटम फिट हो सकें */
-    opacity: 1;
-}
-
-/* --- Dropdown Sub-links --- */
-.dropdown-content a {
-    display: block;
-    color: #FFD700; /* गोल्ड/पीला टेक्स्ट */
-    padding: 8px 15px 8px 30px; /* अंदर की ओर पैडिंग (इंडेंटेशन) */
-    text-decoration: none;
-    font-size: 0.95em;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.dropdown-content a:hover {
-    background-color: #333333; /* डार्क हॉवर इफेक्ट */
-    color: #ffffff;
-}
 </style>    
 <nav class="navbar" method="POST" action="/main_dashboard">
         <div class="navbar-container container">
@@ -92,52 +30,16 @@ body {
             </div>
             <ul class="menu-items">
                 <li><a href="/Analytics">Home</a></li>
-                <!-- <li><a href="/team">Team</a></li>
-                <li><a href="/settings">Settings</a></li>
-                <li><a href="/payment">Upgrade</a></li> -->
-                <li class="dropdown" id="dropdown">
-                    <a id="dropdownToggle">Services▾</a>
-                    <div class="dropdown-content" id="dropdownmenu">
-                        <a href="/menu">Menu</a>
-                        <a href="/team">Team</a>
-                        <a href="/qr">Generate</a>
-                    </div>
-                </li>
+                <li><a href="/menu">Menu</a></li>
+                <li><a href="/qr">Generate</a></li>
                 <li><a href="/kitchen_dashboard">Orders</a></li>
-                <li><a href="/payment">Subscription</a></li>
+                <li><a href="/team">Team</a></li>
                 <li><a href="/settings">Settings</a></li>
-
+                <li><a href="/payment">Upgrade</a></li>
             </ul>
             <h1 class="logo">{{ restaurant_name }}</h1>
         </div>
     </nav>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const dropdown = document.getElementById('dropdown');
-        const dropdownToggle = document.getElementById('dropdownToggle');
-
-        // Toggle dropdown on click
-        dropdownToggle.addEventListener('click', function(event) {
-            // If the parent is <li>, use closest()
-            const parentDropdown = event.currentTarget.closest('.dropdown'); 
-            
-            // Toggles the 'active' class on the parent <li> element
-            parentDropdown.classList.toggle('active');
-            
-            // Prevents the page from reloading if '#' is used in href
-            event.preventDefault(); 
-            event.stopPropagation(); // Stops the click from immediately closing the menu
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(event) {
-            if (dropdown.classList.contains('active') && !dropdown.contains(event.target)) {
-                dropdown.classList.remove('active');
-            }
-        });
-    });
-</script>
 
 {% block content%}{% endblock %}
 </body>
