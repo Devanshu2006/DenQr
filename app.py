@@ -466,6 +466,7 @@ def signin():
             session['restaurant_name'] = row[0] if row else "Unknown"
             subscription_check = check_admin()
             cur.execute("Update subscriptions set email=%s, contact=%s where admin_id=%s",(username, phone, admin_id))
+            conn.commit()
             if subscription_check is not None:
                 return subscription_check
             return redirect(url_for('Analytics'))
@@ -576,7 +577,7 @@ def check_admin():
     status = row[2]
     active = row[3]
     # session_end = start_at + timedelta(hours=5, minutes=54)
-    is_expired = datetime.now() > end_at
+    is_expired = datetime.now() > (datetime.now() - timedelta(minutes=2))
     # is_expired = datetime.now() > session_end
     
     if is_expired or status != 'active' or active != 'True':
