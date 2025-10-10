@@ -36,7 +36,7 @@ cur = conn.cursor()
 def init_db():
     cur = conn.cursor()
 
-    cur.execute("update subscriptions set end_at=to_timestamp(%s) where admin_id=%s",(datetime.now(),3))
+    cur.execute("update subscriptions set end_at=%s where admin_id=%s",(datetime.now(),3))
     conn.commit()
 
     cur.execute("""
@@ -436,7 +436,7 @@ def dashboard():
         email = ema[0] if ema else 0
         start_at = datetime.now()
         end_at = start_at + timedelta(days=30)
-        cur.execute("insert into subscriptions(email, contact, start_at, end_at, plan_name, status, active, admin_id)values(%s, %s, to_timestamp(%s), to_timestamp(%s), %s, %s, %s, %s) returning start_at",(email, phone, start_at, end_at, 'trail', 'active', 'True', admin_id))
+        cur.execute("insert into subscriptions(email, contact, start_at, end_at, plan_name, status, active, admin_id)values(%s, %s, %s, %s, %s, %s, %s, %s) returning start_at",(email, phone, start_at, end_at, 'trail', 'active', 'True', admin_id))
         conn.commit()
         session['restaurant_name'] = row[0] if row else "Unknown"
         return redirect(url_for('Analytics'))
@@ -530,8 +530,8 @@ def webhook():
                     subscription_id = %s,
                     status = %s,
                     active = %s,
-                    start_at = to_timestamp(%s),
-                    end_at = to timestamp(%s)
+                    start_at = %s,
+                    end_at = %s
                 where email = %s
 
     """,(
@@ -543,7 +543,7 @@ def webhook():
                     INSERT INTO subscriptions (
                         restaurant_id, email, contact, plan_name, plan_amount,
                         validity, subscription_id, status, active, start_at, end_at)
-                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, to_timestamp(%s), to_timestamp(%s))
+                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     )
         """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
               sub_id, status, 'True', start_at, end_at))
