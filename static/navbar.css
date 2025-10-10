@@ -26,7 +26,7 @@ body {
 .navbar {
     top: 0%;
     left: 0%;
-    background-color: black;
+    background-color: #000000;
     background-attachment: fixed;
     background-repeat: no-repeat;
     position: fixed;
@@ -76,40 +76,6 @@ h1 {
 
 .navbar a:hover{
     color: #fff;
-}
-.dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-/* Dropdown menu hidden by default */
-.dropdown-content {
-  display: none;
-  position: absolute;
-  top: 100%;  /* button ke neeche */
-  left: 0;
-  background-color: black;
-  min-width: 160px;
-  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-  z-index: 999;
-}
-
-/* Dropdown items */
-.dropdown-content a {
-  color: gold;
-  padding: 8px 12px;
-  text-decoration: none;
-  display: block;
-}
-
-/* Hover effect */
-.dropdown-content a:hover {
-  background-color: #333;
-}
-
-/* Show dropdown on hover */
-.dropdown:hover .dropdown-content {
-  display: block;
 }
 
 @media (max-width: 768px){

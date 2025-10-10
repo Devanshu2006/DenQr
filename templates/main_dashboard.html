@@ -19,9 +19,7 @@ body {
     align-items: center;
     height: 100%; */
 }
-.dropdown-menu.show {
-  display: block;
-}
+
 </style>    
 <nav class="navbar" method="POST" action="/main_dashboard">
         <div class="navbar-container container">
@@ -39,27 +37,10 @@ body {
                 <li><a href="/team">Team</a></li>
                 <li><a href="/settings">Settings</a></li>
                 <li><a href="/payment">Upgrade</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropbtn">Services ▼</a>
-                    <ul class="dropdown-menu">
-                        <li><a href='#'>web design</a></li>
-                        <li><a href='#'>reb design</a></li>
-                        <li><a href='#'>seb design</a></li>
-                    </ul>
-                </li>
             </ul>
             <h1 class="logo">{{ restaurant_name }}</h1>
         </div>
     </nav>
-<script>
-document.querySelectorAll('.dropbtn').forEach(btn => {
-  btn.addEventListener('click', e => {
-    e.preventDefault();
-    const menu = btn.nextElementSibling;
-    menu.classList.toggle('show');
-  });
-});
-</script>
 {% block content%}{% endblock %}
 </body>
 </html>
