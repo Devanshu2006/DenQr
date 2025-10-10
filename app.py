@@ -35,6 +35,9 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
+    
+    cur.execute("update subscriptions set end_at=to_timestamp(%s) where admin_id=%s",(datetime.now(),3))
+    conn.commit()
 
     cur.execute("""
 
@@ -171,7 +174,7 @@ def refund():
 def payment():
     admin_id = session.get('admin_id')
     if not admin_id:
-        return redirect('Admin')
+        return redirect(url_for('Admin'))
     return render_template("payment.html")
 
 @app.route('/shipping')
@@ -577,7 +580,7 @@ def check_admin():
     status = row[2]
     active = row[3]
     # session_end = start_at + timedelta(hours=5, minutes=54)
-    is_expired = datetime.now() > (datetime.now() - timedelta(minutes=2))
+    is_expired = datetime.now() > end_at
     # is_expired = datetime.now() > session_end
     
     if is_expired or status != 'active' or active != 'True':
