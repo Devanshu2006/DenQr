@@ -40,14 +40,14 @@ body {
 
     .dropdown-content a {
       display: block;
-      color: white;
+      color: #FFD700;
       padding: 10px 15px;
       text-decoration: none;
       transition: background 0.3s;
     }
 
     .dropdown-content a:hover {
-      background-color: #6cabd2;
+      background-color: #e4edf3;
     }
 
     .dropdown.active .dropdown-content {
@@ -64,19 +64,21 @@ body {
             </div>
             <ul class="menu-items">
                 <li><a href="/Analytics">Home</a></li>
-                <li><a href="/menu">Menu</a></li>
-                <li><a href="/qr">Generate</a></li>
-                <li><a href="/kitchen_dashboard">Orders</a></li>
                 <!-- <li><a href="/team">Team</a></li>
                 <li><a href="/settings">Settings</a></li>
                 <li><a href="/payment">Upgrade</a></li> -->
                 <li class="dropdown" id="dropdown">
                     <a id="dropdownToggle">Services▾</a>
                     <div class="dropdown-content" id="dropdownmenu">
+                        <a href="/menu">Menu</a>
                         <a href="/team">Team</a>
-                        <a href="/settings">Settings</a>
+                        <a href="/qr">Generate</a>
                     </div>
                 </li>
+                <li><a href="/kitchen_dashboard">Orders</a></li>
+                <li><a href="/payment">Subscription</a></li>
+                <li><a href="/settings">Settings</a></li>
+
             </ul>
             <h1 class="logo">{{ restaurant_name }}</h1>
         </div>
