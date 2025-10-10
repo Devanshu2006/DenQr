@@ -460,7 +460,7 @@ def signin():
             ras = res
             res_id = ras[0]
             phone = ras[1]
-            session['restaurants_id'] = res_id[0]
+            session['restaurants_id'] = res_id
             cur.execute("SELECT restaurant_name FROM restaurants WHERE admin_id = %s", (admin_id,))
             row = cur.fetchone()
             session['restaurant_name'] = row[0] if row else "Unknown"
@@ -668,7 +668,7 @@ def generate_qrs_json():
         'trail': 10,
         'basic': 6,
         'moderate': 12,
-        'Premium': float('inf')
+        'premium': float('inf')
     }
 
     max_tables = plan_limits.get(plan_name, 0)
