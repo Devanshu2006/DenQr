@@ -6,7 +6,7 @@ import psycopg2
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import os
-import razorpay
+import razorpay, hmac, hashlib
 from flask_socketio import SocketIO, emit, join_room
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -475,6 +475,20 @@ def signin():
 
 @app.route('/webhook', methods=['GET', 'POST'])
 def webhook():
+
+    webhook_secret = os.environ['RAZORPAY_WEBHOOK_SECRET']
+    received_sig = request.headers.get('X-Razorpay-Signature')
+    body = request.data.decode('utf-8')
+
+    generated_sig = hmac.new(
+        webhook_secret.encode(),
+        body.encode(),
+        hashlib.sha256
+    ).hexdigest()
+
+    if not hmac.compare_digest(received_sig, generated_sig):
+        return jsonify({"error": "Invalid signature"}), 400
+
     data = request.get_json()
     event = data.get("event")
 
