@@ -169,6 +169,9 @@ def refund():
 
 @app.route('/payment')
 def payment():
+    admin_id = session.get('admin_id')
+    if not admin_id:
+        return redirect('Admin')
     return render_template("payment.html")
 
 @app.route('/shipping')
