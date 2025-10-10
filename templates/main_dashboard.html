@@ -7,7 +7,6 @@
     <title>Lets Create, Generate and Work|den-qr</title>
     <link rel="stylesheet" href="{{url_for('static', filename='navbar.css')}}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 <style>
@@ -19,6 +18,9 @@ body {
     justify-content: center;
     align-items: center;
     height: 100%; */
+}
+.dropdown-menu.show {
+  display: block;
 }
 </style>    
 <nav class="navbar" method="POST" action="/main_dashboard">
@@ -34,27 +36,30 @@ body {
                 <li><a href="/menu">Menu</a></li>
                 <li><a href="/qr">Generate</a></li>
                 <li><a href="/kitchen_dashboard">Orders</a></li>
-                <!-- <li><a href="/team">Team</a></li>
+                <li><a href="/team">Team</a></li>
                 <li><a href="/settings">Settings</a></li>
-                <li><a href="/payment">Upgrade</a></li> -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" 
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Dropdown Menu
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                    <a class="dropdown-item" href="#">Action</a>
-                    <a class="dropdown-item" href="#">Another action</a>
-                    <a class="dropdown-item" href="#">Something else here</a>
-                    </div>
+                <li><a href="/payment">Upgrade</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn">Services ▼</a>
+                    <ul class="dropdown-menu">
+                        <li><a href='#'>web design</a></li>
+                        <li><a href='#'>reb design</a></li>
+                        <li><a href='#'>seb design</a></li>
+                    </ul>
                 </li>
             </ul>
             <h1 class="logo">{{ restaurant_name }}</h1>
         </div>
     </nav>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+document.querySelectorAll('.dropbtn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    const menu = btn.nextElementSibling;
+    menu.classList.toggle('show');
+  });
+});
+</script>
 {% block content%}{% endblock %}
 </body>
 </html>
