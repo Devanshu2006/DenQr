@@ -20,38 +20,43 @@ body {
     height: 100%; */
 }
 .dropdown {
-      position: relative;
-      cursor: pointer;
-    }
+    position: relative;
+    cursor: pointer;
+}
 
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      top: 25px;
-      left: 0;
-      /* background-color: #78bfde; */
-      color: #dbd22b;
-      min-width: 160px;
-      border-radius: 8px;
-      overflow: hidden;
-      z-index: 100;
-    }
+.dropdown-content {
+    display: none;
+    position: absolute;
+    top: 25px;
+    left: 0;
+    /* FIX: Set a dark background matching your menu style */
+    background-color: #1a1a1a; 
+    color: #dbd22b;
+    min-width: 160px;
+    border-radius: 8px;
+    /* Adding a subtle shadow for depth */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); 
+    overflow: hidden;
+    z-index: 100;
+}
 
-    .dropdown-content a {
-      display: block;
-      color: #FFD700;
-      padding: 10px 15px;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
+.dropdown-content a {
+    display: block;
+    color: #FFD700; /* Gold/Yellow link color */
+    padding: 10px 15px;
+    text-decoration: none;
+    transition: background 0.3s;
+}
 
-    .dropdown-content a:hover {
-      background-color: #e4edf3;
-    }
+.dropdown-content a:hover {
+    /* Set hover background slightly lighter than content background */
+    background-color: #333333; 
+    color: #ffffff; /* White text on hover for contrast */
+}
 
-    .dropdown.active .dropdown-content {
-      display: block;
-    }
+.dropdown.active .dropdown-content {
+    display: block;
+}
 </style>    
 <nav class="navbar" method="POST" action="/main_dashboard">
         <div class="navbar-container container">
@@ -84,17 +89,21 @@ body {
     </nav>
 
 <script>
-    const dropdown = document.getElementById("dropdown");
-    const toggle = document.getElementById("dropdownToggle")
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropdown = document.getElementById('dropdown');
 
-    toggle.addEventListener("click", () => {
-        dropdown.classList.toggle("active");
-    });
+        // Toggle dropdown on click
+        dropdown.addEventListener('click', function(event) {
+            dropdown.classList.toggle('active');
+            event.stopPropagation(); // Stop click from immediately closing the menu
+        });
 
-    window.addEventListener("click", (e) => {
-        if (!dropdown.contains(e.target)) {
-            dropdown.classList.remove("active");
-        }
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            if (dropdown.classList.contains('active')) {
+                dropdown.classList.remove('active');
+            }
+        });
     });
 </script>
 
