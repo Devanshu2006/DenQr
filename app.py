@@ -36,9 +36,6 @@ cur = conn.cursor()
 def init_db():
     cur = conn.cursor()
 
-    cur.execute("update subscriptions set end_at=%s where admin_id=%s",(datetime.now(),3))
-    conn.commit()
-
     cur.execute("""
 
         CREATE TABLE IF NOT EXISTS admins(
@@ -566,7 +563,7 @@ def webhook():
             start_at = datetime.now()
             end_at = start_at + timedelta(days=30 if interval=="monthly" else 365)
             status = "active"
-            active = True
+            active = "True"
             
             # --- Database Logic ---
             cur = conn.cursor()
