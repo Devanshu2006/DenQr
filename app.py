@@ -496,27 +496,48 @@ def webhook():
     data = request.get_json()
     event = data.get("event")
 
-    if event != "subscription.activated" and event != "subscription.charged":
+    if event == "payment.failed":
         return jsonify({"ok":True})
     
-    subscription = data["payload"]["subscription"]["entity"]
-    customer = data["payload"]["customer"]["entity"]
+    payment_info = data["payload"]["subscription"]["entity"]
+    plan_id = payment_info["id"]
+    email = payment_info.get("email")
+    contact = payment_info.get("contact")
+    plan_amount = payment_info.get("phone")
+    restaurant_id = payment_info.get("restaurant_id")
+    admin_id = payment_info.get("admin_id")
 
-    restaurant_id = customer.get("restaurant_id")
-    email = customer.get("email")
-    contact = customer.get("contact")
-    plan_id = subscription.get("plan_id")
-    plan_amount = subscription.get("amount")
-    plan_name = subscription.get("plan_name")
-    sub_id = subscription.get("id")
-    status = subscription.get("status")
-    start_at = subscription.get("start_at")
-    end_at = subscription.get("end_at")
+    if plan_amount == '999':
+        plan_name = "Basic"
+        interval = "monthly"
+        start_at = datetime.now()
+        end_at = start_at + timedelta(days=30)
+        status = "active"
+        active = "True"
 
-    if plan_name.lower() == 'basic' or plan_name.lower() == 'moderate' or plan_name.lower() == 'premium':
-        interval = 'monthly'
-    elif plan_name.lower() == 'yearly':
-        interval = 'yearly'
+    elif plan_amount == '1999':
+        interval = "Monthly"
+        plan_name = "Moderate"
+        start_at = datetime.now()
+        end_at = start_at + timedelta(days=30)
+        status = "active"
+        active = "True"
+
+    elif plan_amount == '2999':
+        plan_name = "Basic"
+        interval = "Premium"
+        start_at = datetime.now()
+        end_at = start_at + timedelta(days=30)
+        status = "active"
+        active = "True"
+
+    elif plan_amount == '24001':
+        plan_name = "Yearly"
+        interval = "Yearly"
+        start_at = datetime.now()
+        end_at = start_at + timedelta(days=365)
+        status = "active"
+        active = "True"
 
     cur = conn.cursor()
     cur.execute("""
@@ -532,10 +553,10 @@ def webhook():
                     active = %s,
                     start_at = %s,
                     end_at = %s
-                where email = %s
+                where email = %s or admin_id = %s
 
     """,(
-        restaurant_id, contact, plan_name, plan_amount, interval, sub_id, status, 'True', start_at, end_at, email))
+        restaurant_id, contact, plan_name, plan_amount, interval, plan_id, status, active, start_at, end_at, email, admin_id))
     
     conn.commit()
     if cur.rowcount == 0:
@@ -546,7 +567,7 @@ def webhook():
                     values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     )
         """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
-              sub_id, status, 'True', start_at, end_at))
+              plan_id, status, active, start_at, end_at))
         
         conn.commit()
     
