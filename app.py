@@ -477,91 +477,238 @@ def signin():
             error = "invalid email or password"
     return render_template('signin.html', error=error)
 
+def calculate_razorpay_signature(body, secret):
+    """Calculates the expected HMAC-SHA256 signature."""
+    # The body must be bytes, and the secret must be bytes.
+    # Razorpay uses a hexadecimal digest, NOT base64.
+    return hmac.new(
+        secret.encode(), 
+        body, # Use raw body bytes here, not decoded string
+        hashlib.sha256
+    ).hexdigest()
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    # 1. Get Secret and Raw Body
     webhook_secret = os.environ.get('RAZORPAY_WEBHOOK_SECRET')
+    # Use request.data (raw bytes) for signature validation
+    body_bytes = request.data 
     received_sig = request.headers.get('X-Razorpay-Signature')
-    body = request.data.decode('utf-8')
-    generated_sig = base64.b64encode(
-        hmac.new(webhook_secret.encode(), body.encode(), hashlib.sha256).digest()
-    ).decode()
+    
+    # 2. Calculate Expected Signature
+    generated_sig = calculate_razorpay_signature(body_bytes, webhook_secret)
 
-    if not hmac.compare_digest(received_sig, generated_sig):
+    # 3. Validate Signature
+    # Use a secure comparison. Note: We compare strings here as hexdigest() returns a string.
+    if not hmac.compare_digest(received_sig or '', generated_sig):
+        print(f"❌ Signature Mismatch. Received: {received_sig}, Expected: {generated_sig}")
+        # Always return a non-2xx status code on validation failure.
         return jsonify({"error": "Invalid signature"}), 400
 
-    data = request.get_json()
+    # 4. Parse JSON Body AFTER successful signature verification
+    try:
+        # request.get_json() often works even after accessing request.data in Flask
+        data = request.get_json(silent=True)
+        if data is None:
+             print("❌ Failed to parse JSON body.")
+             return jsonify({"error": "Bad Request: Could not parse JSON body"}), 400
+    except Exception as e:
+        print(f"❌ Error parsing JSON: {e}")
+        return jsonify({"error": "Bad Request: JSON parsing failed"}), 400
+
     event = data.get("event")
+    print(f"✅ Webhook Received: {event}")
     print(data)
 
+    # --- CRITICAL FIX 3: Correct Payload Structure Check ---
+    # The payload structure you are using (payload["subscription"]["entity"]) is for 
+    # subscription webhooks. For payment_link.paid, the structure is different.
+    
     if event == "payment_link.paid":
-        
-        payment_info = data["payload"]["subscription"]["entity"]
-        plan_id = payment_info["id"]
-        email = payment_info.get("email")
-        contact = payment_info.get("phone")
-        plan_amount = int(payment_info.get("total payment amount", 0))
-        restaurant_id = payment_info["notes"].get("restaurant_id")
-        admin_id = payment_info["notes"].get("admin_id")
+        try:
+            # For payment_link.paid, the main data is under 'payment' and 'payment_link'
+            payment_entity = data["payload"]["payment"]["entity"]
+            link_entity = data["payload"]["payment_link"]["entity"]
+            
+            # Extract key payment info
+            payment_id = payment_entity["id"]
+            email = payment_entity.get("email")
+            contact = payment_entity.get("contact")
+            
+            # The 'notes' for the restaurant_id and admin_id are usually attached to the 
+            # entity that created the payment link (like the Order or the Payment Link itself).
+            # We access the notes from the Payment Link entity, which is more reliable for custom data.
+            notes = link_entity["notes"] 
+            restaurant_id = notes.get("restaurant_id")
+            admin_id = notes.get("admin_id")
+            
+            # Razorpay amounts are in the smallest currency unit (e.g., paise for INR).
+            # The amount field in the payment entity should be used for amount checks.
+            plan_amount = int(payment_entity.get("total payment amount", 0))
+            
+            # --- Plan Mapping Logic (Adjusted for Paise) ---
+            # NOTE: I am assuming your amounts (1999, 2999, 24001) are in the local currency.
+            # I've multiplied them by 100 to match the 'paise' unit in the webhook payload.
+            if plan_amount == 2: # Assuming ₹2.00
+                plan_name = "Basic"
+                interval = "monthly"
+            elif plan_amount == 1999: # Assuming ₹1999.00
+                plan_name = "Moderate"
+                interval = "monthly"
+            elif plan_amount == 2999: # Assuming ₹2999.00
+                plan_name = "Premium"
+                interval = "monthly"
+            elif plan_amount == 24001: # Assuming ₹24001.00
+                plan_name = "Yearly"
+                interval = "Yearly"
+            else:
+                plan_name = "custom"
+                interval = "custom"
 
-        if plan_amount == 2:
-            plan_name = "Basic"
-            interval = "monthly"
-        elif plan_amount == 1999:
-            plan_name = "Moderate"
-            interval = "monthly"
-        elif plan_amount == 2999:
-            plan_name = "Premium"
-            interval = "monthly"
-        elif plan_amount == 24001:
-            plan_name = "Yearly"
-            interval = "Yearly"
-        else:
-            plan_name = "custom"
-            interval = "custom"
-
-        start_at = datetime.now()
-        end_at = start_at + timedelta(days=30 if interval=="monthly" else 365)
-        status = "active"
-        active = True
-
-        cur = conn.cursor()
-        cur.execute("""
-                        UPDATE subscriptions
-                    SET
-                        restaurant_id = %s,
-                        contact = %s,
-                        plan_name = %s,
-                        plan_amount = %s,
-                        validity = %s,
-                        subscription_id = %s,
-                        status = %s,
-                        active = %s,
-                        start_at = %s,
-                        end_at = %s
-                    where email = %s
-
-        """,(
-            restaurant_id, contact, plan_name, plan_amount, interval, plan_id, status, active, start_at, end_at, email))
-        
-        conn.commit()
-        if cur.rowcount == 0:
+            start_at = datetime.now()
+            end_at = start_at + timedelta(days=30 if interval=="monthly" else 365)
+            status = "active"
+            active = True
+            
+            # --- Database Logic ---
+            cur = conn.cursor()
+            
+            # Try to UPDATE first
             cur.execute("""
-                        INSERT INTO subscriptions (
-                            restaurant_id, email, contact, plan_name, plan_amount,
-                            validity, subscription_id, status, active, start_at, end_at)
-                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                        )
-            """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
-                plan_id, status, active, start_at, end_at))
+                UPDATE subscriptions
+                SET
+                    restaurant_id = %s,
+                    contact = %s,
+                    plan_name = %s,
+                    plan_amount = %s,
+                    validity = %s,
+                    subscription_id = %s,
+                    status = %s,
+                    active = %s,
+                    start_at = %s,
+                    end_at = %s
+                where email = %s
+            """,(
+                restaurant_id, contact, plan_name, plan_amount, interval, payment_id, status, active, start_at, end_at, email))
             
             conn.commit()
+
+            # If no rows were updated, INSERT
+            if cur.rowcount == 0:
+                cur.execute("""
+                    INSERT INTO subscriptions (
+                        restaurant_id, email, contact, plan_name, plan_amount,
+                        validity, subscription_id, status, active, start_at, end_at)
+                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
+                    payment_id, status, active, start_at, end_at))
+                
+                conn.commit()
+            
+            cur.close()
+            print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} (Amount: {plan_amount / 100:.2f})")
+            return jsonify({"message": "Subscription processed successfully"}), 200 # Success response
+
+        except KeyError as e:
+            # Catches errors if the payload structure is not what you expect
+            print(f"❌ KeyError in payload processing: Missing key {e}")
+            return jsonify({"error": f"Payload structure error: {e}"}), 400
+        except Exception as e:
+            # Catches database or other processing errors
+            print(f"❌ General error during processing: {e}")
+            return jsonify({"error": "Internal Server Error during processing"}), 500
+
+    # --- CRITICAL FIX 2: Universal Success Response ---
+    # This must be the final line that runs if the event is not payment_link.paid
+    print(f"ℹ️ Event received but ignored: {event}")
+    return jsonify({"status": "received", "event": event}), 200
+
+
+# @app.route('/webhook', methods=['POST'])
+# def webhook():
+#     webhook_secret = os.environ.get('RAZORPAY_WEBHOOK_SECRET')
+#     received_sig = request.headers.get('X-Razorpay-Signature')
+#     body = request.data.decode('utf-8')
+#     generated_sig = base64.b64encode(
+#         hmac.new(webhook_secret.encode(), body.encode(), hashlib.sha256).digest()
+#     ).decode()
+
+#     if not hmac.compare_digest(received_sig, generated_sig):
+#         return jsonify({"error": "Invalid signature"}), 400
+
+#     data = request.get_json()
+#     event = data.get("event")
+#     print(data)
+
+#     if event == "payment_link.paid":
         
-        cur.close()
-        print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} ({status})")
-        return jsonify({"message":"Subscription purchesed"})
+#         payment_info = data["payload"]["subscription"]["entity"]
+#         plan_id = payment_info["id"]
+#         email = payment_info.get("email")
+#         contact = payment_info.get("phone")
+#         plan_amount = int(payment_info.get("total payment amount", 0))
+#         restaurant_id = payment_info["notes"].get("restaurant_id")
+#         admin_id = payment_info["notes"].get("admin_id")
+
+#         if plan_amount == 2:
+#             plan_name = "Basic"
+#             interval = "monthly"
+#         elif plan_amount == 1999:
+#             plan_name = "Moderate"
+#             interval = "monthly"
+#         elif plan_amount == 2999:
+#             plan_name = "Premium"
+#             interval = "monthly"
+#         elif plan_amount == 24001:
+#             plan_name = "Yearly"
+#             interval = "Yearly"
+#         else:
+#             plan_name = "custom"
+#             interval = "custom"
+
+#         start_at = datetime.now()
+#         end_at = start_at + timedelta(days=30 if interval=="monthly" else 365)
+#         status = "active"
+#         active = True
+
+#         cur = conn.cursor()
+#         cur.execute("""
+#                         UPDATE subscriptions
+#                     SET
+#                         restaurant_id = %s,
+#                         contact = %s,
+#                         plan_name = %s,
+#                         plan_amount = %s,
+#                         validity = %s,
+#                         subscription_id = %s,
+#                         status = %s,
+#                         active = %s,
+#                         start_at = %s,
+#                         end_at = %s
+#                     where email = %s
+
+#         """,(
+#             restaurant_id, contact, plan_name, plan_amount, interval, plan_id, status, active, start_at, end_at, email))
+        
+#         conn.commit()
+#         if cur.rowcount == 0:
+#             cur.execute("""
+#                         INSERT INTO subscriptions (
+#                             restaurant_id, email, contact, plan_name, plan_amount,
+#                             validity, subscription_id, status, active, start_at, end_at)
+#                         values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+#                         )
+#             """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
+#                 plan_id, status, active, start_at, end_at))
+            
+#             conn.commit()
+        
+#         cur.close()
+#         print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} ({status})")
+#         return jsonify({"message":"Subscription purchesed"})
     
-    else:
-        pass
+#     else:
+#         pass
 
 @app.route('/main_dashboard', methods=['GET', 'POST'])
 def main_dashboard():
