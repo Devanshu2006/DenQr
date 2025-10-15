@@ -524,7 +524,7 @@ def webhook():
     # The payload structure you are using (payload["subscription"]["entity"]) is for 
     # subscription webhooks. For payment_link.paid, the structure is different.
     
-    if event == "payment_link.paid":
+    if event == "payment_link.paid" or event == "payment.captured":
         try:
             # For payment_link.paid, the main data is under 'payment' and 'payment_link'
             payment_entity = data["payload"]["payment"]["entity"]
@@ -544,7 +544,7 @@ def webhook():
             
             # Razorpay amounts are in the smallest currency unit (e.g., paise for INR).
             # The amount field in the payment entity should be used for amount checks.
-            plan_amount = int(payment_entity.get("total payment amount", 0))
+            plan_amount = int(payment_entity.get("amount", 0))
             
             # --- Plan Mapping Logic (Adjusted for Paise) ---
             # NOTE: I am assuming your amounts (1999, 2999, 24001) are in the local currency.
@@ -736,9 +736,9 @@ def check_admin():
     end_at = row[1]
     status = row[2]
     active = row[3]
-    # session_end = start_at + timedelta(hours=5, minutes=54)
+    
     is_expired = datetime.now() > end_at
-    # is_expired = datetime.now() > session_end
+
     
     if is_expired or status != 'active' or active != 'True':
         cur.execute("update subscriptions set status=%s, active=%s where admin_id=%s", ('expired', 'False', admin_id))
