@@ -492,73 +492,75 @@ def webhook():
     data = request.get_json()
     event = data.get("event")
 
-    if event == "payment.failed":
-        return jsonify({"ok":True})
-    
-    payment_info = data["payload"]["subscription"]["entity"]
-    plan_id = payment_info["id"]
-    email = payment_info.get("email")
-    contact = payment_info.get("phone")
-    plan_amount = int(payment_info.get("total payment amount", 0))
-    restaurant_id = payment_info.get("restaurant_id")
-    admin_id = payment_info.get("admin_id")
-    status = payment_info.get("payment status")
+    if event == "payment_link.paid":
+        
+        payment_info = data["payload"]["subscription"]["entity"]
+        plan_id = payment_info["id"]
+        email = payment_info.get("email")
+        contact = payment_info.get("phone")
+        plan_amount = int(payment_info.get("total payment amount", 0))
+        restaurant_id = payment_info["notes"].get("restaurant_id")
+        admin_id = payment_info["notes"].get("admin_id")
 
-    if plan_amount == 2:
-        plan_name = "Basic"
-        interval = "monthly"
-    elif plan_amount == 1999:
-        plan_name = "Moderate"
-        interval = "monthly"
-    elif plan_amount == 2999:
-        plan_name = "Premium"
-        interval = "monthly"
-    elif plan_amount == 24001:
-        plan_name = "Yearly"
-        interval = "Yearly"
-    else:
-        plan_name = "custom"
-        interval = "custom"
+        if plan_amount == 2:
+            plan_name = "Basic"
+            interval = "monthly"
+        elif plan_amount == 1999:
+            plan_name = "Moderate"
+            interval = "monthly"
+        elif plan_amount == 2999:
+            plan_name = "Premium"
+            interval = "monthly"
+        elif plan_amount == 24001:
+            plan_name = "Yearly"
+            interval = "Yearly"
+        else:
+            plan_name = "custom"
+            interval = "custom"
 
-    start_at = datetime.now()
-    end_at = start_at + timedelta(days=30 if interval=="monthly" else 365)
-    active = True
+        start_at = datetime.now()
+        end_at = start_at + timedelta(days=30 if interval=="monthly" else 365)
+        status = "active"
+        active = True
 
-    cur = conn.cursor()
-    cur.execute("""
-                    UPDATE subscriptions
-                SET
-                    restaurant_id = %s,
-                    contact = %s,
-                    plan_name = %s,
-                    plan_amount = %s,
-                    validity = %s,
-                    subscription_id = %s,
-                    status = %s,
-                    active = %s,
-                    start_at = %s,
-                    end_at = %s
-                where email = %s
-
-    """,(
-        restaurant_id, contact, plan_name, plan_amount, interval, plan_id, status, active, start_at, end_at, email))
-    
-    conn.commit()
-    if cur.rowcount == 0:
+        cur = conn.cursor()
         cur.execute("""
-                    INSERT INTO subscriptions (
-                        restaurant_id, email, contact, plan_name, plan_amount,
-                        validity, subscription_id, status, active, start_at, end_at)
-                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    )
-        """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
-              plan_id, status, active, start_at, end_at))
+                        UPDATE subscriptions
+                    SET
+                        restaurant_id = %s,
+                        contact = %s,
+                        plan_name = %s,
+                        plan_amount = %s,
+                        validity = %s,
+                        subscription_id = %s,
+                        status = %s,
+                        active = %s,
+                        start_at = %s,
+                        end_at = %s
+                    where email = %s
+
+        """,(
+            restaurant_id, contact, plan_name, plan_amount, interval, plan_id, status, active, start_at, end_at, email))
         
         conn.commit()
+        if cur.rowcount == 0:
+            cur.execute("""
+                        INSERT INTO subscriptions (
+                            restaurant_id, email, contact, plan_name, plan_amount,
+                            validity, subscription_id, status, active, start_at, end_at)
+                        values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        )
+            """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
+                plan_id, status, active, start_at, end_at))
+            
+            conn.commit()
+        
+        cur.close()
+        print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} ({status})")
+        return jsonify({"message":"Subscription purchesed"})
     
-    cur.close()
-    print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} ({status})")
-    return jsonify({"message":"Subscription purchesed"})
+    else:
+        pass
 
 @app.route('/main_dashboard', methods=['GET', 'POST'])
 def main_dashboard():
