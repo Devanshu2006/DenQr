@@ -477,18 +477,14 @@ def signin():
             error = "invalid email or password"
     return render_template('signin.html', error=error)
 
-@app.route('/webhook', methods=['GET', 'POST'])
+@app.route('/webhook', methods=['POST'])
 def webhook():
-
-    webhook_secret = os.environ['RAZORPAY_WEBHOOK_SECRET']
+    webhook_secret = os.environ.get('RAZORPAY_WEBHOOK_SECRET')
     received_sig = request.headers.get('X-Razorpay-Signature')
     body = request.data.decode('utf-8')
-
-    generated_sig = hmac.new(
-        webhook_secret.encode(),
-        body.encode(),
-        hashlib.sha256
-    ).hexdigest()
+    generated_sig = base64.b64encode(
+        hmac.new(webhook_secret.encode(), body.encode(), hashlib.sha256).digest()
+    ).decode()
 
     if not hmac.compare_digest(received_sig, generated_sig):
         return jsonify({"error": "Invalid signature"}), 400
@@ -502,42 +498,31 @@ def webhook():
     payment_info = data["payload"]["subscription"]["entity"]
     plan_id = payment_info["id"]
     email = payment_info.get("email")
-    contact = payment_info.get("contact")
-    plan_amount = payment_info.get("phone")
+    contact = payment_info.get("phone")
+    plan_amount = int(payment_info.get("total payment amount", 0))
     restaurant_id = payment_info.get("restaurant_id")
     admin_id = payment_info.get("admin_id")
+    status = payment_info.get("payment status")
 
-    if plan_amount == '2':
+    if plan_amount == 2:
         plan_name = "Basic"
         interval = "monthly"
-        start_at = datetime.now()
-        end_at = start_at + timedelta(days=30)
-        status = "active"
-        active = "True"
-
-    elif plan_amount == '1999':
-        interval = "Monthly"
+    elif plan_amount == 1999:
         plan_name = "Moderate"
-        start_at = datetime.now()
-        end_at = start_at + timedelta(days=30)
-        status = "active"
-        active = "True"
-
-    elif plan_amount == '2999':
-        plan_name = "Basic"
-        interval = "Premium"
-        start_at = datetime.now()
-        end_at = start_at + timedelta(days=30)
-        status = "active"
-        active = "True"
-
-    elif plan_amount == '24001':
+        interval = "monthly"
+    elif plan_amount == 2999:
+        plan_name = "Premium"
+        interval = "monthly"
+    elif plan_amount == 24001:
         plan_name = "Yearly"
         interval = "Yearly"
-        start_at = datetime.now()
-        end_at = start_at + timedelta(days=365)
-        status = "active"
-        active = "True"
+    else:
+        plan_name = "custom"
+        interval = "custom"
+
+    start_at = datetime.now()
+    end_at = start_at + timedelta(days=30 if interval=="monthly" else 365)
+    active = True
 
     cur = conn.cursor()
     cur.execute("""
@@ -553,10 +538,10 @@ def webhook():
                     active = %s,
                     start_at = %s,
                     end_at = %s
-                where email = %s or admin_id = %s
+                where email = %s
 
     """,(
-        restaurant_id, contact, plan_name, plan_amount, interval, plan_id, status, active, start_at, end_at, email, admin_id))
+        restaurant_id, contact, plan_name, plan_amount, interval, plan_id, status, active, start_at, end_at, email))
     
     conn.commit()
     if cur.rowcount == 0:
