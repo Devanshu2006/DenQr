@@ -491,6 +491,7 @@ def webhook():
 
     data = request.get_json()
     event = data.get("event")
+    print(data)
 
     if event == "payment_link.paid":
         
