@@ -486,25 +486,15 @@ def calculate_razorpay_signature(body, secret):
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    # 1. Get Secret and Raw Body
     webhook_secret = os.environ.get('RAZORPAY_WEBHOOK_SECRET')
-    # Use request.data (raw bytes) for signature validation
     body_bytes = request.data 
     received_sig = request.headers.get('X-Razorpay-Signature')
-    
-    # 2. Calculate Expected Signature
     generated_sig = calculate_razorpay_signature(body_bytes, webhook_secret)
-
-    # 3. Validate Signature
-    # Use a secure comparison. Note: We compare strings here as hexdigest() returns a string.
     if not hmac.compare_digest(received_sig or '', generated_sig):
         print(f"❌ Signature Mismatch. Received: {received_sig}, Expected: {generated_sig}")
-        # Always return a non-2xx status code on validation failure.
         return jsonify({"error": "Invalid signature"}), 400
 
-    # 4. Parse JSON Body AFTER successful signature verification
     try:
-        # request.get_json() often works even after accessing request.data in Flask
         data = request.get_json(silent=True)
         if data is None:
              print("❌ Failed to parse JSON body.")
@@ -515,35 +505,16 @@ def webhook():
 
     event = data.get("event")
     print(f"✅ Webhook Received: {event}")
-    print(data)
-
-    # --- CRITICAL FIX 3: Correct Payload Structure Check ---
-    # The payload structure you are using (payload["subscription"]["entity"]) is for 
-    # subscription webhooks. For payment_link.paid, the structure is different.
-    
+   
     if event == "payment_link.paid" or event == "payment.captured":
         try:
-            # For payment_link.paid, the main data is under 'payment' and 'payment_link'
             payment_entity = data["payload"]["payment"]["entity"]
-            
-            # Extract key payment info
             payment_id = payment_entity["id"]
             email = payment_entity.get("email")
             contact = payment_entity.get("contact")
-            
-            # The 'notes' for the restaurant_id and admin_id are usually attached to the 
-            # entity that created the payment link (like the Order or the Payment Link itself).
-            # We access the notes from the Payment Link entity, which is more reliable for custom data.
             restaurant_id = payment_entity["notes"].get("restaurant_id")
             admin_id = payment_entity["notes"].get("admin_id")
-            
-            # Razorpay amounts are in the smallest currency unit (e.g., paise for INR).
-            # The amount field in the payment entity should be used for amount checks.
             plan_amount = payment_entity.get("amount", 0)
-            
-            # --- Plan Mapping Logic (Adjusted for Paise) ---
-            # NOTE: I am assuming your amounts (1999, 2999, 24001) are in the local currency.
-            # I've multiplied them by 100 to match the 'paise' unit in the webhook payload.
             if plan_amount == 200: # Assuming ₹2.00
                 plan_name = "Basic"
                 interval = "monthly"
@@ -564,11 +535,7 @@ def webhook():
             end_at = start_at + timedelta(days=30 if interval=="monthly" else 365)
             status = "active"
             active = "True"
-            
-            # --- Database Logic ---
             cur = conn.cursor()
-            
-            # Try to UPDATE first
             cur.execute("""
                 UPDATE subscriptions
                 SET
@@ -605,16 +572,11 @@ def webhook():
             return jsonify({"message": "Subscription processed successfully"}), 200 # Success response
 
         except KeyError as e:
-            # Catches errors if the payload structure is not what you expect
             print(f"❌ KeyError in payload processing: Missing key {e}")
             return jsonify({"error": f"Payload structure error: {e}"}), 400
         except Exception as e:
-            # Catches database or other processing errors
             print(f"❌ General error during processing: {e}")
             return jsonify({"error": "Internal Server Error during processing"}), 500
-
-    # --- CRITICAL FIX 2: Universal Success Response ---
-    # This must be the final line that runs if the event is not payment_link.paid
     print(f"ℹ️ Event received but ignored: {event}")
     return jsonify({"status": "received", "event": event}), 200
 
