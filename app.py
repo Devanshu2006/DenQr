@@ -528,7 +528,6 @@ def webhook():
         try:
             # For payment_link.paid, the main data is under 'payment' and 'payment_link'
             payment_entity = data["payload"]["payment"]["entity"]
-            link_entity = data["payload"]["payment_link"]["entity"]
             
             # Extract key payment info
             payment_id = payment_entity["id"]
@@ -538,9 +537,8 @@ def webhook():
             # The 'notes' for the restaurant_id and admin_id are usually attached to the 
             # entity that created the payment link (like the Order or the Payment Link itself).
             # We access the notes from the Payment Link entity, which is more reliable for custom data.
-            notes = link_entity["notes"] 
-            restaurant_id = notes.get("restaurant_id")
-            admin_id = notes.get("admin_id")
+            restaurant_id = payment_entity["notes"].get("restaurant_id")
+            admin_id = payment_entity["notes"].get("admin_id")
             
             # Razorpay amounts are in the smallest currency unit (e.g., paise for INR).
             # The amount field in the payment entity should be used for amount checks.
