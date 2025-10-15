@@ -542,21 +542,21 @@ def webhook():
             
             # Razorpay amounts are in the smallest currency unit (e.g., paise for INR).
             # The amount field in the payment entity should be used for amount checks.
-            plan_amount = int(payment_entity.get("amount", 0))
+            plan_amount = payment_entity.get("amount", 0)
             
             # --- Plan Mapping Logic (Adjusted for Paise) ---
             # NOTE: I am assuming your amounts (1999, 2999, 24001) are in the local currency.
             # I've multiplied them by 100 to match the 'paise' unit in the webhook payload.
-            if plan_amount == 2: # Assuming ₹2.00
+            if plan_amount == 200: # Assuming ₹2.00
                 plan_name = "Basic"
                 interval = "monthly"
-            elif plan_amount == 1999: # Assuming ₹1999.00
+            elif plan_amount == 199900: # Assuming ₹1999.00
                 plan_name = "Moderate"
                 interval = "monthly"
-            elif plan_amount == 2999: # Assuming ₹2999.00
+            elif plan_amount == 299900: # Assuming ₹2999.00
                 plan_name = "Premium"
                 interval = "monthly"
-            elif plan_amount == 24001: # Assuming ₹24001.00
+            elif plan_amount == 2400100: # Assuming ₹24001.00
                 plan_name = "Yearly"
                 interval = "Yearly"
             else:
@@ -591,17 +591,17 @@ def webhook():
             
             conn.commit()
 
-            # If no rows were updated, INSERT
-            if cur.rowcount == 0:
-                cur.execute("""
-                    INSERT INTO subscriptions (
-                        restaurant_id, email, contact, plan_name, plan_amount,
-                        validity, subscription_id, status, active, start_at, end_at)
-                    values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
-                    payment_id, status, active, start_at, end_at))
+            # # If no rows were updated, INSERT
+            # if cur.rowcount == 0:
+            #     cur.execute("""
+            #         INSERT INTO subscriptions (
+            #             restaurant_id, email, contact, plan_name, plan_amount,
+            #             validity, subscription_id, status, active, start_at, end_at)
+            #         values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            #     """, (restaurant_id, email, contact, plan_name, plan_amount, interval,
+            #         payment_id, status, active, start_at, end_at))
                 
-                conn.commit()
+            #     conn.commit()
             
             cur.close()
             print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} (Amount: {plan_amount / 100:.2f})")
