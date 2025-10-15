@@ -507,7 +507,7 @@ def webhook():
     restaurant_id = payment_info.get("restaurant_id")
     admin_id = payment_info.get("admin_id")
 
-    if plan_amount == '999':
+    if plan_amount == '2':
         plan_name = "Basic"
         interval = "monthly"
         start_at = datetime.now()
