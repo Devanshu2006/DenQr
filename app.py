@@ -515,7 +515,8 @@ def webhook():
             contact = payment_entity.get("contact")
             restaurant_id = payment_entity["notes"].get("restaurant_id")
             admin_id = payment_entity["notes"].get("admin_id")
-            plan_amount = int(payment_entity.get("amount", 0))
+            amount_paise = payment_entity.get("amount", 0)
+            plan_amount = int(amount_paise) / 100
             if plan_amount == 999:
                 plan_name = "Basic"
                 interval = "monthly"
