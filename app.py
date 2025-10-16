@@ -570,7 +570,7 @@ def webhook():
             #     conn.commit()
             
             cur.close()
-            print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} (Amount: {plan_amount / 100:.2f})")
+            print(f"✅ Subscription Updated: {restaurant_id} → {plan_name} (Amount: {plan_amount})")
             return jsonify({"message": "Subscription processed successfully"}), 200 # Success response
 
         except KeyError as e:
