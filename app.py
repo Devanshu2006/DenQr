@@ -796,7 +796,7 @@ def generate_qrs_json():
     cur.execute("SELECT plan_name, status from subscriptions where admin_id=%s",(admin_id,))
     rows = cur.fetchall()
     for row in rows:
-        plan_name = row[0]
+        plan_name = row[0].lower()
         status = row[1]
 
     plan_limits = {
