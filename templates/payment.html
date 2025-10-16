@@ -152,27 +152,6 @@
     <h2>You have to enter email/phone using which you have been created account on DenQr otherwise you are not able to get Subscription</h2>
     <h2>आपको वह ईमेल/फ़ोन नंबर दर्ज करना होगा जिसके ज़रिए आपने DenQr पर खाता बनाया है, अन्यथा आप सदस्यता प्राप्त नहीं कर पाएँगे</h2>
     <div class="plan-container">
-    
-        <div class="plan-card">
-                <h2>Basic (Trial)</h2>
-                <p class="price">₹0</p>
-                <p class="validity">7 Days Validity</p>
-                
-                <ul>
-                    <li>Upto 10 Tables QR</li>
-                    <li>Basic Analytics Access</li>
-                    <li>Standard Support</li>
-                    <li>Automatic Reciept Generation</li>
-                    <li>Live Status Updation</li>
-                </ul>
-
-                <button class="purchase-btn" 
-                        data-plan-name="Basic" 
-                        data-plan-amount="0" 
-                        data-validity-days="7">
-                    Start 7 Day Trial
-                </button>
-            </div>
 
             <div class="plan-card">
                 <h2>Basic</h2>
@@ -191,7 +170,7 @@
                 <button id="basic" class="purchase-btn" 
                         data-plan-name="Basic" 
                         data-plan-amount="999" 
-                        data-validity-days="30">
+                        data-validity-days="30" onclick="window.location.href='https://rzp.io/rzp/denqr'">
                     Subscribe Now
                 </button>
             </div>
@@ -213,7 +192,7 @@
                 <button class="purchase-btn" 
                         data-plan-name="Moderate" 
                         data-plan-amount="1999" 
-                        data-validity-days="30">
+                        data-validity-days="30" onclick="window.location.href='https://rzp.io/rzp/denqrADV'">
                     Subscribe Now
                 </button>
             </div>
@@ -235,7 +214,7 @@
                 <button class="purchase-btn" 
                         data-plan-name="Premium" 
                         data-plan-amount="2999" 
-                        data-validity-days="30">
+                        data-validity-days="30" onclick="window.location.href='https://rzp.io/rzp/DenqrPre'">
                     Subscribe Now
                 </button>
             </div>
@@ -258,135 +237,14 @@
                 <button class="purchase-btn" 
                         data-plan-name="Yearly/Premium Plan" 
                         data-plan-amount="24001" 
-                        data-validity-days="365">
+                        data-validity-days="365" onclick="window.location.href='https://rzp.io/rzp/denqr365'">
                     Subscribe Now
                 </button>
             </div>
 
+
         </div>
-        <!-- <div class="plan-card">
-            <h2>The Seedling (Trial)</h2>
-            <p class="price">₹0</p>
-            <p class="validity">Seven Days of Discovery</p>
-            
-            <ul>
-                <li>Upto 10 Tables QR Generation</li>
-                <li>Essential Analytics</li>
-                <li>Foundational Support</li>
-            </ul>
-
-            <button class="purchase-btn" 
-                    data-plan-name="Trial" 
-                    data-plan-amount="0" 
-                    data-validity-days="7">
-                Begin the Trial
-            </button>
-        </div>
-
-        <div class="plan-card">
-            <h2>The Evergreen (Premium)</h2>
-            <p class="price">₹499</p>
-            <p class="validity">A Month of Flourishing</p>
-            
-            <ul>
-                <li>Unlimited Tables QR Generation</li>
-                <li>Advanced Insights & Reports</li>
-                <li>Dedicated Priority Support</li>
-                <li>Custom Branding & Themes</li>
-            </ul>
-
-            <button class="purchase-btn" 
-                    data-plan-name="Evergreen" 
-                    data-plan-amount="499" 
-                    data-validity-days="30">
-                Unlock Full Potential
-            </button>
-        </div> -->
-        
-
-
     </div>
 </div>
-<script>
-    document.getElementById('basic').addEventListener('click', function(){
-        window.location.href='https://rzp.io/rzp/denqr?plan_name=Basic'
-    })
-</script>
-<!-- <script>
-document.querySelectorAll('.purchase-btn').forEach(button => {
-    button.addEventListener('click', function() {
-        const planName = this.getAttribute('data-plan-name');
-        const planAmount = this.getAttribute('data-plan-amount');
-        const validityDays = this.getAttribute('data-validity-days');
-        const container = document.querySelector('.container');
-
-        // Display a simple loading message
-        container.innerHTML = `
-            <h1 style="color: #004d40;">Processing ${planName} Plan...</h1>
-            <p style="text-align: center; color: #6d4c41;">Please wait for the server response.</p>
-        `;
-
-
-        // 1. Handle Free/Trial Plan
-        if (planAmount === '0') {
-            handleSubscription('free', planName, planAmount, validityDays);
-            return;
-        }
-
-        // 2. Handle Paid Plan (In a real app, this initiates the payment gateway)
-        alert(`Initiating payment for ${planName} Plan (₹${planAmount}). A payment gateway will open now...`);
-        
-        // DEMO: Simulate successful payment after a small delay
-        setTimeout(() => {
-            handleSubscription('paid', planName, planAmount, validityDays);
-        }, 1500); // Simulate 1.5 second payment process
-    });
-});
-
-function handleSubscription(type, planName, planAmount, validityDays) {
-    // Back-end (Flask) AJAX call
-    fetch('/process_subscription', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            plan_name: planName,
-            plan_amount: planAmount,
-            validity_days: validityDays,
-            payment_status: (type === 'free' ? 'FREE_TRIAL' : 'PAID')
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const container = document.querySelector('.container');
-        
-        if (data.success) {
-            container.innerHTML = `
-                <h1 style="color: #004d40;">✨ Success! ✨</h1>
-                <p style="text-align: center; color: green; font-size: 1.2em;">${data.message}</p>
-                <p style="text-align: center; margin-top: 30px;">
-                    <a href="/admin_dashboard" style="color: #ffc107; font-weight: bold; text-decoration: none;">Go to Dashboard</a>
-                </p>
-            `;
-            // Redirect after 3 seconds
-            setTimeout(() => {
-                window.location.href = '/admin_dashboard'; 
-            }, 3000);
-        } else {
-            container.innerHTML = `
-                <h1 style="color: #6d4c41;">Subscription Failed</h1>
-                <p style="text-align: center; color: red; font-size: 1.2em;">Error: ${data.message}</p>
-                <p style="text-align: center; margin-top: 30px;">Please try again later.</p>
-            `;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while contacting the server.');
-    });
-}
-</script>
-
 </body>
-</html> -->
+</html>
