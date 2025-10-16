@@ -479,11 +479,9 @@ def signin():
 
 def calculate_razorpay_signature(body, secret):
     """Calculates the expected HMAC-SHA256 signature."""
-    # The body must be bytes, and the secret must be bytes.
-    # Razorpay uses a hexadecimal digest, NOT base64.
     return hmac.new(
         secret.encode(), 
-        body, # Use raw body bytes here, not decoded string
+        body,
         hashlib.sha256
     ).hexdigest()
 
@@ -517,17 +515,17 @@ def webhook():
             contact = payment_entity.get("contact")
             restaurant_id = payment_entity["notes"].get("restaurant_id")
             admin_id = payment_entity["notes"].get("admin_id")
-            plan_amount = payment_entity.get("amount", 0)
-            if plan_amount == 200: # Assuming ₹2.00
+            plan_amount = int(payment_entity.get("amount", 0))
+            if plan_amount == 999:
                 plan_name = "Basic"
                 interval = "monthly"
-            elif plan_amount == 199900: # Assuming ₹1999.00
+            elif plan_amount == 1999:
                 plan_name = "Moderate"
                 interval = "monthly"
-            elif plan_amount == 299900: # Assuming ₹2999.00
+            elif plan_amount == 2999:
                 plan_name = "Premium"
                 interval = "monthly"
-            elif plan_amount == 2400100: # Assuming ₹24001.00
+            elif plan_amount == 24001:
                 plan_name = "Yearly"
                 interval = "Yearly"
             else:
