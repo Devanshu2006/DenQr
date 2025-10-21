@@ -1243,8 +1243,17 @@ def settings():
     restaurant_name = session.get('restaurant_name')
     admin_id = session.get('admin_id')
     restaurants_id = session.get('restaurants_id')
+
     if not admin_id:
         return redirect(url_for('signin'))
+    
+    cur.execute("select status, end_at from subscriptions where admin_id=%s",(admin_id,))
+    rows = cur.fetchone()
+
+    status = rows[0]
+    end_at = rows[1]
+
+
     if request.method == 'POST':
         if admin_id :
             cur.execute('delete from team where restaurants_id = %s',(restaurants_id,))
@@ -1259,7 +1268,7 @@ def settings():
             session.clear()
             return "Your account has been deleted successfully."
         return render_template("Admin.html")
-    return render_template('settings.html', restaurant_name = restaurant_name, admin_id = admin_id, restaurant_id = restaurants_id)
+    return render_template('settings.html', restaurant_name = restaurant_name, admin_id = admin_id, restaurant_id = restaurants_id, status = status, end_at = end_at)
 
 @app.route('/staff_login', methods=['GET','POST'])
 def staff_login():
