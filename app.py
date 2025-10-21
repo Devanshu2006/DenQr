@@ -21,8 +21,7 @@ from datetime import datetime, timedelta
 import resend
 import re
 from PIL import Image
-# from sendgrid import SendGridAPIClient
-# from sendgrid.helpers.mail import Mail
+
 
 app = Flask(__name__, template_folder="templates")
 print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
