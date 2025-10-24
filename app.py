@@ -34,10 +34,6 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("UPDATE subscriptions set status=%s, active=%s where admin_id=%s",("active", "True", 3))
-    conn.commit()
-    cur.execute("UPDATE subscriptions set status=%s, active=%s where admin_id=%s",("active", "True", 5))
-    conn.commit()
     cur.execute("select * from subscriptions")
     row = cur.fetchall()
     print(row)
