@@ -34,7 +34,10 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-
+    cur.execute("UPDATE subscriptions set status=%s, active=%s where admin_id=%s",("active", "True", 3))
+    conn.commit()
+    cur.execute("UPDATE subscriptions set status=%s, active=%s where admin_id=%s",("active", "True", 5))
+    conn.commit()
     cur.execute("select * from subscriptions")
     row = cur.fetchall()
     print(row)
@@ -694,15 +697,11 @@ def check_admin():
     end_at = row[1]
     status = row[2]
     active = row[3]
-
-    if isinstance(end_at, str):
-        end_at = datetime.strptime(end_at, "%Y-%m-%d %H:%M:%S")
-
-
+    
     is_expired = datetime.now() > end_at
 
     
-    if is_expired or status != 'active' or str(active).lower != 'true':
+    if is_expired or status != 'active' or str(active).lower() != 'true':
         cur.execute("update subscriptions set status=%s, active=%s where admin_id=%s", ('expired', 'False', admin_id))
         conn.commit()
         return redirect(url_for('payment'))
