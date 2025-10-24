@@ -694,11 +694,15 @@ def check_admin():
     end_at = row[1]
     status = row[2]
     active = row[3]
-    
+
+    if isinstance(end_at, str):
+        end_at = datetime.strptime(end_at, "%Y-%m-%d %H:%M:%S")
+
+
     is_expired = datetime.now() > end_at
 
     
-    if is_expired or status != 'active' or active != 'True':
+    if is_expired or status != 'active' or str(active).lower != 'true':
         cur.execute("update subscriptions set status=%s, active=%s where admin_id=%s", ('expired', 'False', admin_id))
         conn.commit()
         return redirect(url_for('payment'))
@@ -1246,7 +1250,7 @@ def settings():
     if not admin_id:
         return redirect(url_for('signin'))
     
-    cur.execute("select status, end_at from subscriptions where admin_id=%s",(admin_id,))
+    cur.execute("select plan_name, end_at from subscriptions where admin_id=%s",(admin_id,))
     rows = cur.fetchone()
 
     status = rows[0]
