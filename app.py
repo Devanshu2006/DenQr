@@ -715,6 +715,7 @@ def generate_qrs_json():
         'trail': 10,
         'basic': 6,
         'moderate': 12,
+        'custom': 5,
         'premium': float('inf')
     }
 
