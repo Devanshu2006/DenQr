@@ -794,8 +794,10 @@ def generate_pdf(qr_data, restaurants_id, restaurant_name):
 
         c.drawImage(img, x, y - qr_size, qr_size, qr_size)
 
-        c.drawCentredString(f"DenQr-{restaurant_name}")
         c.rect(x - 5, y - qr_size - 5, qr_size + 10, qr_size + 30)
+
+        c.setFont("Helvetica-Bold", 10)
+        c.drawCentredString(x+qr_size/2, y-10, f"DenQr-{restaurant_name}")
 
         c.setFont("Helvetica", 12)
         c.drawCentredString(x + qr_size / 2, y - qr_size - 20, f"Table: {index + 1}")
