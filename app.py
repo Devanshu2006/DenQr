@@ -794,6 +794,7 @@ def generate_pdf(qr_data, restaurants_id, restaurant_name):
 
         c.drawImage(img, x, y - qr_size, qr_size, qr_size)
 
+        c.drawCentredString(f"DenQr-{restaurant_name}")
         c.rect(x - 5, y - qr_size - 5, qr_size + 10, qr_size + 30)
 
         c.setFont("Helvetica", 12)
@@ -979,7 +980,7 @@ def generate_slip(restaurant_name, order_id, table_number, items, total_amount, 
 
 @app.route("/get_orders")
 def get_orders():
-    # conn = psycopg2.connect(DATABASE_URL)
+    conn = psycopg2.connect(DATABASE_URL)
     cur = conn.cursor()
     restaurant_id = session.get('restaurants_id')
     cur.execute("""
