@@ -762,7 +762,7 @@ def generate_qrs_json():
             qr_data.append({"path": filename,"link": link, "image":img_data})
         cur.close()
         pdf_data = generate_pdf(qr_data, restaurants_id, restaurant_name)
-        return jsonify({"pdf": True, "qrs": qr_data, "pdf_data":pdf_data})
+        return jsonify({"pdf": True, "qrs": qr_data, "pdf_data":pdf_data, "restaurant_name":restaurant_name})
     else:
         return jsonify({'error':"You Are Accsseding the QR generation Limit."})
 
