@@ -107,7 +107,7 @@ button:hover {
                 const pdfData = data.pdf_data;
                 const link = document.createElement("a");
                 link.href = "data:application/pdf;base64," + pdfData;
-                // link.download = "DenQr.pdf";
+                link.download = `DenQr-${data.restaurant_name}.pdf`;
                 link.click();
             }
 
