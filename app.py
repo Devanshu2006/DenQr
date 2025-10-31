@@ -34,8 +34,7 @@ socketio = SocketIO(app)
 # conn = psycopg2.connect(DATABASE_URL)
 conn = psycopg2.connect(
     host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
-    dbname="postgres",
-    user="oddz",
+    user="postgres",
     password="7999178184",
     port="5432"
 )
