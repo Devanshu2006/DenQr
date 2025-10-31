@@ -43,9 +43,9 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("select * from subscriptions")
-    row = cur.fetchall()
-    print(row)
+    # cur.execute("select * from subscriptions")
+    # row = cur.fetchall()
+    # print(row)
     cur.execute("""
 
         CREATE TABLE IF NOT EXISTS admins(
