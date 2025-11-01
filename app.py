@@ -46,7 +46,7 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("alter table orders alter column verification set default 'required';")
+    cur.execute("alter table orders alter column status set default 'In Process';")
     conn.commit()
     cur.execute("select * from subscriptions")
     row = cur.fetchall()
