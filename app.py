@@ -1101,8 +1101,8 @@ def get_upi():
 def get_admin_upi(restaurant_id):
     cur = conn.cursor()
     cur.execute("SELECT upi_id from payment_credentials where restaurant_id = %s", (restaurant_id,))
-    row = cur.fetchone()[0]
-    return row if row else None
+    row = cur.fetchone()
+    return row[0] if row else None
 
 @app.route('/checkout', methods=['GET','POST'])
 def checkout():
