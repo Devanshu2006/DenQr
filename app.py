@@ -26,26 +26,26 @@ from PIL import Image
 
 app = Flask(__name__, template_folder="templates")
 print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
-# app.secret_key = os.environ.get('APP_SECRET_KEY')
-app.secret_key = "my_dream_project_of_2006"
+app.secret_key = os.environ.get('APP_SECRET_KEY')
+# app.secret_key = "my_dream_project_of_2006"
 socketio = SocketIO(app)
 
-# DATABASE_URL = "postgresql://oddz_7d2m_user:XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw@dpg-d3f1mo15pdvs73ccof50-a/oddz_7d2m"
-# conn = psycopg2.connect(DATABASE_URL)
-conn = psycopg2.connect(
-    host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
-    user="postgres",
-    password="7999178184",
-    port="5432"
-)
+DATABASE_URL = "postgresql://oddz_7d2m_user:XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw@dpg-d3f1mo15pdvs73ccof50-a/oddz_7d2m"
+conn = psycopg2.connect(DATABASE_URL)
+# conn = psycopg2.connect(
+#     host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
+#     user="postgres",
+#     password="7999178184",
+#     port="5432"
+# )
 cur = conn.cursor()
 # cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    # cur.execute("select * from subscriptions")
-    # row = cur.fetchall()
-    # print(row)
+    cur.execute("select * from subscriptions")
+    row = cur.fetchall()
+    print(row)
     cur.execute("""
 
         CREATE TABLE IF NOT EXISTS admins(
@@ -981,13 +981,13 @@ def generate_slip(restaurant_name, order_id, table_number, items, total_amount, 
 
 @app.route("/get_orders")
 def get_orders():
-    # conn = psycopg2.connect(DATABASE_URL)
-    conn = psycopg2.connect(
-    host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
-    user="postgres",
-    password="7999178184",
-    port="5432"
-)
+    conn = psycopg2.connect(DATABASE_URL)
+    # conn = psycopg2.connect(
+    #     host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
+    #     user="postgres",
+    #     password="7999178184",
+    #     port="5432"
+    # )
     cur = conn.cursor()
     restaurant_id = session.get('restaurants_id')
     cur.execute("""
