@@ -93,7 +93,7 @@ def init_db():
             status varchar(25),
             order_time timestamp default current_timestamp,
             txn_id varchar(255),
-            verification varchar(30)
+            verification varchar(30) default 'required'
         );
 
         CREATE TABLE IF NOT EXISTS order_items(
