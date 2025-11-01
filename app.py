@@ -43,6 +43,8 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
+    cur.execute("update orders add column verification varchar(30)")
+    conn.commit()
     cur.execute("select * from subscriptions")
     row = cur.fetchall()
     print(row)
