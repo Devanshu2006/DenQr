@@ -8,6 +8,7 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import os
 import razorpay, hmac, hashlib
+from flask_cors import CORS
 from flask_socketio import SocketIO, emit, join_room
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -25,6 +26,8 @@ from PIL import Image
 
 
 app = Flask(__name__, template_folder="templates")
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
 # app.secret_key = os.environ.get('APP_SECRET_KEY')
 app.secret_key = "my_dream_project_of_2006"
