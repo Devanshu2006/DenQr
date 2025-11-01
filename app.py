@@ -43,8 +43,6 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("ALTER TABLE orders ADD COLUMN verification VARCHAR(30)")
-    conn.commit()
     cur.execute("select * from subscriptions")
     row = cur.fetchall()
     print(row)
@@ -89,7 +87,8 @@ def init_db():
             total_amount numeric(10,2),
             status varchar(25),
             order_time timestamp default current_timestamp,
-            txn_id varchar(255)
+            txn_id varchar(255),
+            verification varchar(30)
         );
 
         CREATE TABLE IF NOT EXISTS order_items(
