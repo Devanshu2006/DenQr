@@ -33,14 +33,14 @@ print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(
 app.secret_key = "my_dream_project_of_2006"
 socketio = SocketIO(app)
 
-# DATABASE_URL = "postgresql://oddz_7d2m_user:XchteBlGGUaBLNnTqBUM55Hw1ap0LRNw@dpg-d3f1mo15pdvs73ccof50-a/oddz_7d2m"
-# conn = psycopg2.connect(DATABASE_URL)
-conn = psycopg2.connect(
-    host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
-    user="postgres",
-    password="7999178184",
-    port="5432"
-)
+DATABASE_URL = "postgresql://oddz_vyps_user:mko3Fj7GOhOBNLERam9ObGHMPjHVi3Hz@dpg-d43ja7mr433s739ih770-a/oddz_vyps"
+conn = psycopg2.connect(DATABASE_URL)
+# conn = psycopg2.connect(
+#     host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
+#     user="postgres",
+#     password="7999178184",
+#     port="5432"
+# )
 cur = conn.cursor()
 # cur = conn.cursor()
 
