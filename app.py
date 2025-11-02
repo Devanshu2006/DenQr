@@ -29,8 +29,8 @@ app = Flask(__name__, template_folder="templates")
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
-# app.secret_key = os.environ.get('APP_SECRET_KEY')
-app.secret_key = "my_dream_project_of_2006"
+app.secret_key = os.environ.get('APP_SECRET_KEY')
+# app.secret_key = "my_dream_project_of_2006"
 socketio = SocketIO(app)
 
 DATABASE_URL = "postgresql://oddz_vyps_user:mko3Fj7GOhOBNLERam9ObGHMPjHVi3Hz@dpg-d43ja7mr433s739ih770-a/oddz_vyps"
@@ -92,7 +92,7 @@ def init_db():
             restaurant_id int not null references restaurants(id) on delete cascade,
             table_number int,
             total_amount numeric(10,2),
-            status varchar(25),
+            status varchar(25) default 'In Process',
             order_time timestamp default current_timestamp,
             txn_id varchar(255),
             verification varchar(30) default 'required'
