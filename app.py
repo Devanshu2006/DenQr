@@ -26,9 +26,9 @@ from PIL import Image
 
 
 app = Flask(__name__, template_folder="templates")
-# CORS(app)
-# socketio = SocketIO(app, cors_allowed_origins="*")
-socketio = SocketIO(app)
+CORS(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
+# socketio = SocketIO(app)
 print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
 app.secret_key = os.environ.get('APP_SECRET_KEY')
 # app.secret_key = "my_dream_project_of_2006"
@@ -1010,13 +1010,13 @@ def generate_slip(restaurant_name, order_id, table_number, items, total_amount, 
 
 @app.route("/get_orders")
 def get_orders():
-    # conn = psycopg2.connect(DATABASE_URL)
-    conn = psycopg2.connect(
-        host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
-        user="postgres",
-        password="7999178184",
-        port="5432"
-    )
+    conn = psycopg2.connect(DATABASE_URL)
+    # conn = psycopg2.connect(
+    #     host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
+    #     user="postgres",
+    #     password="7999178184",
+    #     port="5432"
+    # )
     cur = conn.cursor()
     restaurant_id = session.get('restaurants_id')
     cur.execute("""
