@@ -430,26 +430,50 @@ def dashboard():
         image = request.files['logo']
         image_path = None
         if image and image.filename != '':
-            filename = secure_filename(image.filename)
-            image_path = os.path.join('static/images', filename)
-            image.save(image_path)
+            # filename = secure_filename(image.filename)
+            # image_path = os.path.join('static/images', filename)
+            # image.save(image_path)
+            image_path = image.read()
+            cur.execute("""INSERT INTO restaurants (admin_id, restaurant_name, address, phone, logo, category) values (%s, %s, %s, %s, %s, %s)RETURNING id, restaurant_name""", (admin_id, Restaurant, address, phone, psycopg2.Binary(image_path), category))
+            result = cur.fetchone()
+            conn.commit()
+
+            restaurants_id=result[0]
+            restaurant_name=result[1]
+            session['restaurants_id'] = restaurants_id
+            session['restaurant_name'] = restaurant_name
+
+            cur.execute("select email from admins where id=%s",(admin_id,))
+            ema = cur.fetchone()
+            email = ema[0] if ema else 0
+
+            start_at = datetime.now()
+            end_at = start_at + timedelta(days=30)
+
+            cur.execute("insert into subscriptions(email, contact, start_at, end_at, plan_name, status, active, admin_id) values (%s, %s, %s, %s, %s, %s, %s, %s)",(email, phone, start_at, end_at, 'trail', 'active', 'True', admin_id))
+            conn.commit()
+            
+            return redirect(url_for('Analytics'))
         
-        cur.execute("INSERT INTO restaurants (admin_id, restaurant_name, address, phone, logo, category) values (%s, %s, %s, %s, %s, %s)", (admin_id, Restaurant, address, phone, image_path, category))
+        cur.execute("""INSERT INTO restaurants (admin_id, restaurant_name, address, phone, logo, category) values (%s, %s, %s, %s, %s, %s)RETURNING id, restaurant_name""", (admin_id, Restaurant, address, phone, image_path, category))
+        result = cur.fetchone()
         conn.commit()
 
-        cur.execute("SELECT id from restaurants where admin_id =%s",(admin_id,))
-        restaurants_id = cur.fetchone()[0]
+        restaurants_id=result[0]
+        restaurant_name=result[1]
         session['restaurants_id'] = restaurants_id
-        cur.execute("SELECT restaurant_name FROM restaurants WHERE admin_id = %s", (admin_id,))
-        row = cur.fetchone()
+        session['restaurant_name'] = restaurant_name
+
         cur.execute("select email from admins where id=%s",(admin_id,))
         ema = cur.fetchone()
         email = ema[0] if ema else 0
+
         start_at = datetime.now()
         end_at = start_at + timedelta(days=30)
-        cur.execute("insert into subscriptions(email, contact, start_at, end_at, plan_name, status, active, admin_id)values(%s, %s, %s, %s, %s, %s, %s, %s) returning start_at",(email, phone, start_at, end_at, 'trail', 'active', 'True', admin_id))
+
+        cur.execute("insert into subscriptions(email, contact, start_at, end_at, plan_name, status, active, admin_id) values (%s, %s, %s, %s, %s, %s, %s, %s)",(email, phone, start_at, end_at, 'trail', 'active', 'True', admin_id))
         conn.commit()
-        session['restaurant_name'] = row[0] if row else "Unknown"
+            
         return redirect(url_for('Analytics'))
     return render_template('details.html')
 
