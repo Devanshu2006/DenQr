@@ -26,8 +26,9 @@ from PIL import Image
 
 
 app = Flask(__name__, template_folder="templates")
-CORS(app)
-socketio = SocketIO(app, cors_allowed_origins="*")
+# CORS(app)
+# socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app)
 print("Templates folder absolute path:", os.path.abspath(os.path.join(os.getcwd(), "templates")))
 app.secret_key = os.environ.get('APP_SECRET_KEY')
 # app.secret_key = "my_dream_project_of_2006"
