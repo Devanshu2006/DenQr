@@ -53,57 +53,6 @@
                 </p>
             </div>
         </section>
-
-    {%else%}
-    <section">
-            <div class="section-card">
-                <h3 class="section-title">📊 Last 7 Days Performance</h3>
-                <div class="chart-wrapper desktop-only">
-                    <canvas id="salesOrdersChart"></canvas>
-                </div>
-                <div class="table-wrapper mobile-only">
-                    {% for day_data in chart_data %}
-                        <div class="table-row">
-                            <span class="date">{{ day_data.date }}</span>
-                            <div class="right">
-                                <span class="orders">{{ day_data.orders }} Orders</span>
-                                <span class="sales">₹{{ day_data.sales }}</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                <p class="totals">
-                    Total Orders: <span id="total-orders"></span><br>
-                    Total Sales: ₹<span id="total-sales"></span>
-                </p>
-            </div>
-        </section>
-        
-
-        
-        <section">
-            <div class="section-card">
-                <h3 class="section-title">📊 Last 7 Days Performance</h3>
-                <div class="chart-wrapper desktop-only">
-                    <canvas id="salesOrdersChart"></canvas>
-                </div>
-                <div class="table-wrapper mobile-only">
-                    {% for day_data in chart_data %}
-                        <div class="table-row">
-                            <span class="date">{{ day_data.date }}</span>
-                            <div class="right">
-                                <span class="orders">{{ day_data.orders }} Orders</span>
-                                <span class="sales">₹{{ day_data.sales }}</span>
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                <p class="totals">
-                    Total Orders: <span id="total-orders"></span><br>
-                    Total Sales: ₹<span id="total-sales"></span>
-                </p>
-            </div>
-        </section>
     
     {%endif%}
 
