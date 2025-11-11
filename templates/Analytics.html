@@ -2,9 +2,8 @@
 {% block content %}
 <div class="container">
     <div class="bgm">
-
-    {%if plan_name=='basic' and status == 'active'%}   
-        <section style="display: none;">
+   
+        <section {% if plan_name == 'basic' and status == 'active' %} style="display: none;" {%endif%}>
             <div class="section-card">
                 <h3 class="section-title">📊 Last 7 Days Performance</h3>
                 <div class="chart-wrapper desktop-only">
@@ -30,7 +29,7 @@
         
 
         
-        <section style="display: none;">
+        <section {% if plan_name == 'basic' and status == 'active' %} style="display: none;" {%endif%}>
             <div class="section-card">
                 <h3 class="section-title">📊 Last 7 Days Performance</h3>
                 <div class="chart-wrapper desktop-only">
@@ -53,9 +52,6 @@
                 </p>
             </div>
         </section>
-    
-    {%endif%}
-
 
         <section class="stats-section">
             <div class="card">
