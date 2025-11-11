@@ -47,7 +47,7 @@ cur = conn.cursor()
 
 def init_db():
     cur = conn.cursor()
-    cur.execute("SET timezone TO 'Asia/Kolkata';")
+    cur.execute("ALTER DATABASE oddz_vyps SET timezone TO 'Asia/Kolkata';")
     conn.commit()
     # cur.execute("select * from subscriptions")
     # row = cur.fetchall()
