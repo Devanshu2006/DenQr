@@ -377,7 +377,7 @@ def delete_menu():
         price = request.form.get('price')
         cur.execute("DELETE from menu where restaurants_id = %s and item_name = %s and price = %s", (restaurants_id, item_name, price))
         conn.commit()
-        return "Menu Has been Successfully deleted"
+        return jsonify({"message":"Menu Has been Successfully deleted!"})
     return redirect(url_for('Analytics'))
     
 @app.route('/delete_staff', methods=['GET','POST'])

@@ -283,6 +283,27 @@
 
     handleView();
     window.addEventListener('resize', handleView);
+
+function showToast(message) {
+    const container = document.getElementById('toast-container');
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 100);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            container.removeChild(toast);
+        }, 500);
+    }, 4000);
+
+}
 </script>
 
 <style>
@@ -504,6 +525,35 @@
         font-size: 16px;
         font-weight: bold;
         color: #361414;
+    }
+
+    #toast-container {
+        position:fixed;
+        bottom:20px;
+        right: 20px;
+        z-index: 1050;
+    }
+
+    .toast {
+        background-color: #4CAF50;
+        color: white;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        transition: opacity 0.5s, transform 0.5s;
+        transform: translateY(20px);
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @keyframes fadeIn {
+        from {opacity: 0; transform: translateY(-10px); }
+        to {opacity: 1; transform: translateY(0); }
     }
 
     /* Responsive behavior */
