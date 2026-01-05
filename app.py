@@ -34,7 +34,7 @@ app.secret_key = os.environ.get('APP_SECRET_KEY')
 # app.secret_key = "my_dream_project_of_2006"
 socketio = SocketIO(app)
 
-DATABASE_URL = "postgresql://highness:RSaqTrPoeViUvEU8y2liUCNT51Aeuu4D@dpg-d4p6o4muk2gs73d6cuf0-a/oddz_l5ao"
+DATABASE_URL = "postgresql://kindness:syU2peet54KutaVcbnydKHRLOEMU5bLV@dpg-d5du08euk2gs73981pu0-a/oddz_chth"
 conn = psycopg2.connect(DATABASE_URL)
 # conn = psycopg2.connect(
 #     host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
@@ -152,8 +152,7 @@ s= URLSafeTimedSerializer(app.secret_key)
 
 client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:2006@localhost:5432/oddz'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 
 
