@@ -147,8 +147,8 @@ with app.app_context():
 
 # SENDGRID_API_KEY = "SG.re_FJhM8V47_9q9ku17hZQZpS7vPuWLYpgNLre_FR3DocJZ_82TQwWAoENyfmZWrHeacbqGP"
 # SENDER_EMAIL = "devanshupawar2006@gmail.com"
-# resend.api_key = "re_bzBg2vDL_4UGs1e4exAyoxcaC7Z4WewE3"
-# s= URLSafeTimedSerializer(app.secret_key)
+resend.api_key = "re_bzBg2vDL_4UGs1e4exAyoxcaC7Z4WewE3"
+s= URLSafeTimedSerializer(app.secret_key)
 
 client = razorpay.Client(auth=(os.getenv("RAZORPAY_KEY_ID"), os.getenv("RAZORPAY_KEY_SECRET")))
 
@@ -1283,58 +1283,58 @@ def send_reset_email(user_email, token):
         raise e
 
 
-# @app.route('/forgot_password', methods=['GET','POST'])
-# def forgot_password():
-#     if request.method == 'POST':
-#         email = request.form.get('email')
-#         cur = conn.cursor()
-#         cur.execute("SELECT * FROM admins where email=%s",(email,))
-#         user = cur.fetchone()
+@app.route('/forgot_password', methods=['GET','POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM admins where email=%s",(email,))
+        user = cur.fetchone()
 
-#         if user:
-#             token = s.dumps(email, salt="reset-password")
-#             cur.execute("INSERT INTO reset_tokens(email, token) VALUES (%s, %s)",(email, token),)
-#             conn.commit()
+        if user:
+            token = s.dumps(email, salt="reset-password")
+            cur.execute("INSERT INTO reset_tokens(email, token) VALUES (%s, %s)",(email, token),)
+            conn.commit()
 
-#             send_reset_email(email, token)
-#             flash("✅ Reset link sent to your email!", "success")
-#         else:
-#             flash("No account found with that email.","danger")
+            send_reset_email(email, token)
+            flash("✅ Reset link sent to your email!", "success")
+        else:
+            flash("No account found with that email.","danger")
         
-#         cur.close()
-#         return redirect(url_for('forgot_password'))
-#     return render_template("forgot_password.html")
+        cur.close()
+        return redirect(url_for('forgot_password'))
+    return render_template("forgot_password.html")
 
-# @app.route('/reset_password/<token>', methods=['GET', 'POST'])
-# def reset_password(token):
-#     try:
-#         email = s.loads(token, salt='password-reset-salt', max_age=30)
-#     except Exception:
-#         flash('The reset link is invalid or expired.', 'danger')
-#         return redirect(url_for('forgot_password'))
-#     error = None
-#     cur = conn.cursor()
-#     cur.execute("select * from reset_tokens where token = %s", (token,))
-#     token_row = cur.fetchone()
-#     if not token_row:
-#         flash("⚠️ Invalid or expired token.", "danger")
-#         return redirect(url_for('signin'))
-#     if request.method == 'POST':
-#         new_password = request.form.get('password')
-#         confirm_password = request.form.get('confirm_password')
-#         if new_password != confirm_password:
-#             error = "Incorrect Password"
-#             return 500
-#         hashed_password = generate_password_hash(new_password)
-#         cur = conn.cursor()
-#         cur.execute("Update admins set password = %s where email = %s", (hashed_password, email))
-#         conn.commit()
-#         cur.close()
+@app.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        email = s.loads(token, salt='password-reset-salt', max_age=30)
+    except Exception:
+        flash('The reset link is invalid or expired.', 'danger')
+        return redirect(url_for('forgot_password'))
+    error = None
+    cur = conn.cursor()
+    cur.execute("select * from reset_tokens where token = %s", (token,))
+    token_row = cur.fetchone()
+    if not token_row:
+        flash("⚠️ Invalid or expired token.", "danger")
+        return redirect(url_for('signin'))
+    if request.method == 'POST':
+        new_password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        if new_password != confirm_password:
+            error = "Incorrect Password"
+            return 500
+        hashed_password = generate_password_hash(new_password)
+        cur = conn.cursor()
+        cur.execute("Update admins set password = %s where email = %s", (hashed_password, email))
+        conn.commit()
+        cur.close()
 
-#         flash('Your Password has been updated successfully!', 'success')
-#         return redirect(url_for('signin'))
+        flash('Your Password has been updated successfully!', 'success')
+        return redirect(url_for('signin'))
     
-#     return render_template('reset_password.html', email=email, error=error)
+    return render_template('reset_password.html', email=email, error=error)
 
 
 @app.after_request
