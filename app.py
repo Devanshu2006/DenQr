@@ -34,7 +34,7 @@ app.secret_key = os.environ.get('APP_SECRET_KEY')
 # app.secret_key = "my_dream_project_of_2006"
 socketio = SocketIO(app)
 
-DATABASE_URL = "postgresql://oddz_po3u_user:w6IKWNIMdTeKBFMhBaJUuKTX31HwljU3@dpg-d9o91up42hec738vbq90-a/oddz_po3u"
+DATABASE_URL = "postgresql://oddz_j2bm_user:xcYmZJa9IVrAsSvVJSghfaJJLCaxymPH@dpg-dac36tjm8hqs73ebkdfg-a/oddz_j2bm"
 conn = psycopg2.connect(DATABASE_URL)
 # conn = psycopg2.connect(
 #     host="oddz.cbg0qcaqy83i.ap-south-1.rds.amazonaws.com",
